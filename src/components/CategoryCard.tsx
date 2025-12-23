@@ -7,7 +7,7 @@ interface CategoryCardProps {
 
 export function CategoryCard({ category }: CategoryCardProps) {
   return (
-    <div className="group relative flex flex-col items-center justify-center p-6 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-xl hover:shadow-green-900/5 hover:-translate-y-1 transition-all duration-300 cursor-pointer overflow-hidden">
+    <div className="group relative flex flex-col items-center justify-center p-3 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-xl hover:shadow-green-900/5 hover:-translate-y-1 transition-all duration-300 cursor-pointer overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-br from-green-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       
       <div className="relative z-10 w-14 h-14 rounded-full bg-gray-50 flex items-center justify-center mb-4 text-gray-500 group-hover:bg-white group-hover:text-primary group-hover:scale-110 group-hover:shadow-md transition-all duration-300">

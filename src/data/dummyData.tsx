@@ -1,7 +1,7 @@
 import { 
-  Laptop, Smartphone, Shirt, Home, Watch, 
-  Headphones, Camera, Gamepad, ShoppingBag, 
-  Armchair
+  Zap, Cable, Package, Cpu, Lightbulb,
+  ToggleLeft, Grid3x3, Sun, Link2,
+  LampCeiling
 } from "lucide-react";
 
 export interface Category {
@@ -29,57 +29,57 @@ export interface FAQItem {
 }
 
 export const categories: Category[] = [
-  { id: "1", name: "Electronics", icon: Laptop },
-  { id: "2", name: "Phones", icon: Smartphone },
-  { id: "3", name: "Fashion", icon: Shirt },
-  { id: "4", name: "Home", icon: Home },
-  { id: "5", name: "Watches", icon: Watch },
-  { id: "6", name: "Audio", icon: Headphones },
-  { id: "7", name: "Cameras", icon: Camera },
-  { id: "8", name: "Gaming", icon: Gamepad },
-  { id: "9", name: "Bags", icon: ShoppingBag },
-  { id: "10", name: "Furniture", icon: Armchair },
+  { id: "1", name: "Circuit Breakers", icon: Zap },
+  { id: "2", name: "Wire & Cables", icon: Cable },
+  { id: "3", name: "Cable Management", icon: Package },
+  { id: "4", name: "Switchgear", icon: Cpu },
+  { id: "5", name: "LED Lamps", icon: Lightbulb },
+  { id: "6", name: "Switches & Sockets", icon: ToggleLeft },
+  { id: "7", name: "Distribution Boards", icon: Grid3x3 },
+  { id: "8", name: "Solar Solutions", icon: Sun },
+  { id: "9", name: "Joiners", icon: Link2 },
+  { id: "10", name: "Indoor Fittings", icon: LampCeiling },
 ];
 
 export const featuredProducts: Product[] = [
   {
     id: "f1",
-    name: "Wireless Noise Cancelling Headphones",
-    price: 299.99,
-    oldPrice: 349.99,
-    image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&q=80",
-    category: "Audio",
+    name: "MCB Circuit Breaker 32A",
+    price: 18.99,
+    oldPrice: 22.99,
+    image: "https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=500&q=80",
+    category: "Circuit Breakers",
     rating: 4.8,
     reviews: 124,
     badge: "Hot"
   },
   {
     id: "f2",
-    name: "Smart Watch Series 7",
-    price: 399.00,
-    image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&q=80",
-    category: "Watches",
+    name: "Copper Electrical Wire 2.5mm (90m)",
+    price: 79.00,
+    image: "https://images.unsplash.com/photo-1600489000022-c2086d79f9d4?w=500&q=80",
+    category: "Wire & Cables",
     rating: 4.9,
     reviews: 89,
     badge: "New"
   },
   {
     id: "f3",
-    name: "Professional Camera Kit",
-    price: 1299.00,
-    oldPrice: 1499.00,
-    image: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=500&q=80",
-    category: "Cameras",
+    name: "LED Panel Light 24W",
+    price: 29.99,
+    oldPrice: 39.99,
+    image: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=500&q=80",
+    category: "LED Lamps",
     rating: 4.7,
     reviews: 56,
     badge: "Sale"
   },
   {
     id: "f4",
-    name: "Modern Lounge Chair",
-    price: 450.00,
-    image: "https://images.unsplash.com/photo-1592078615290-033ee584e267?w=500&q=80",
-    category: "Furniture",
+    name: "Modular Switch Socket Combo",
+    price: 12.50,
+    image: "https://images.unsplash.com/photo-1600489000022-c2086d79f9d4?w=500&q=80",
+    category: "Switches & Sockets",
     rating: 4.5,
     reviews: 32
   }
@@ -88,40 +88,40 @@ export const featuredProducts: Product[] = [
 export const bestSellers: Product[] = [
   {
     id: "b1",
-    name: "Mechanical Keyboard RGB",
-    price: 149.99,
-    image: "https://images.unsplash.com/photo-1587829741301-dc798b91a603?w=500&q=80",
-    category: "Electronics",
+    name: "Distribution Board 12 Way",
+    price: 89.99,
+    image: "https://images.unsplash.com/photo-1600489000022-c2086d79f9d4?w=500&q=80",
+    category: "Distribution Boards",
     rating: 4.9,
     reviews: 230,
     badge: "Hot"
   },
   {
     id: "b2",
-    name: "Running Sneakers",
-    price: 89.99,
-    oldPrice: 119.99,
-    image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500&q=80",
-    category: "Fashion",
+    name: "Cable Trunking PVC (2m)",
+    price: 9.99,
+    oldPrice: 12.99,
+    image: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=500&q=80",
+    category: "Cable Management",
     rating: 4.6,
     reviews: 412,
     badge: "Sale"
   },
   {
     id: "b3",
-    name: "Minimalist Backpack",
-    price: 79.50,
-    image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=500&q=80",
-    category: "Bags",
+    name: "MC4 Solar Connector Pair",
+    price: 6.50,
+    image: "https://images.unsplash.com/photo-1614064641938-3bbee52942c7?w=500&q=80",
+    category: "Joiners",
     rating: 4.8,
     reviews: 156
   },
   {
     id: "b4",
-    name: "Coffee Maker Deluxe",
-    price: 199.99,
-    image: "https://images.unsplash.com/photo-1517080314057-79d19c96827c?w=500&q=80",
-    category: "Home",
+    name: "LED Ceiling Light Fixture",
+    price: 45.00,
+    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=500&q=80",
+    category: "Indoor Fittings",
     rating: 4.7,
     reviews: 98
   }
@@ -130,38 +130,38 @@ export const bestSellers: Product[] = [
 export const latestProducts: Product[] = [
   {
     id: "l1",
-    name: "VR Headset Pro",
-    price: 599.00,
-    image: "https://images.unsplash.com/photo-1622979135225-d2ba269fb1bd?w=500&q=80",
-    category: "Gaming",
+    name: "Solar Panel 550W Mono",
+    price: 249.00,
+    image: "https://images.unsplash.com/photo-1509391366360-2e959784a276?w=500&q=80",
+    category: "Solar Solutions",
     rating: 5.0,
     reviews: 12,
     badge: "New"
   },
   {
     id: "l2",
-    name: "Smart Speaker Mini",
-    price: 49.99,
-    image: "https://images.unsplash.com/photo-1589492477829-5e65395b66cc?w=500&q=80",
-    category: "Audio",
+    name: "Smart WiFi Switch Module",
+    price: 24.99,
+    image: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=500&q=80",
+    category: "Switches & Sockets",
     rating: 4.3,
     reviews: 45
   },
   {
     id: "l3",
-    name: "Leather Wallet",
-    price: 35.00,
-    image: "https://images.unsplash.com/photo-1627123424574-18bd03b4e5df?w=500&q=80",
-    category: "Fashion",
+    name: "Industrial Power Contactor",
+    price: 59.00,
+    image: "https://images.unsplash.com/photo-1600489000022-c2086d79f9d4?w=500&q=80",
+    category: "Switchgear",
     rating: 4.8,
     reviews: 230
   },
   {
     id: "l4",
-    name: "Wireless Charger Pad",
-    price: 29.99,
-    image: "https://images.unsplash.com/photo-1616348436168-de43ad0db179?w=500&q=80",
-    category: "Electronics",
+    name: "Flexible Copper Cable 4mm",
+    price: 64.99,
+    image: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=500&q=80",
+    category: "Wire & Cables",
     rating: 4.5,
     reviews: 87
   }

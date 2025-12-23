@@ -14,16 +14,11 @@ export function Footer() {
           <div className="space-y-6">
             <Link to="/" className="inline-block">
               <div className="flex items-center gap-2 cursor-pointer">
-                <div className="w-10 h-10 rounded-xl bg-primary-gradient flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-green-600/20">
-                  E
-                </div>
-                <span className="font-display font-bold text-2xl tracking-tight text-foreground">
-                  EcoStore
-                </span>
+                <img src="/logo.png" alt="logo" className="" />
               </div>
             </Link>
             <p className="text-gray-500 leading-relaxed text-sm">
-              Your one-stop destination for premium, sustainable, and high-quality products. We believe in quality that lasts and style that inspires.
+              Premium electrical components, tools, and solutions for professionals and DIY enthusiasts. Everything you need for reliable installations and repairs inside Cape Town, SA.
             </p>
             <div className="flex items-center gap-4">
               <SocialLink icon={Facebook} />
@@ -63,15 +58,15 @@ export function Footer() {
             <ul className="space-y-4 text-sm text-gray-500 mb-6">
               <li className="flex items-start gap-3">
                 <MapPin className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                <span>123 Commerce St, Market City, NY 10012, USA</span>
+                <span>123 Commerce, Cape Town, SA</span>
               </li>
               <li className="flex items-center gap-3">
                 <Phone className="w-5 h-5 text-primary shrink-0" />
-                <span>+1 (555) 123-4567</span>
+                <span>+27 66 666 6666</span>
               </li>
               <li className="flex items-center gap-3">
                 <Mail className="w-5 h-5 text-primary shrink-0" />
-                <span>support@ecostore.com</span>
+                <span>support@lumoelectrical.co.za</span>
               </li>
             </ul>
             
@@ -84,15 +79,15 @@ export function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-gray-200 py-8 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="border-t border-gray-200 py-8 flex flex-col md:flex-row items-center justify-center gap-4">
           <p className="text-sm text-gray-400">
-            © {new Date().getFullYear()} EcoStore. All rights reserved.
+            © {new Date().getFullYear()} Lumo Electrical. All rights reserved.
           </p>
-          <div className="flex items-center gap-6">
+          {/* <div className="flex items-center gap-6">
             <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" className="h-4 opacity-50 grayscale hover:grayscale-0 transition-all" />
             <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" className="h-6 opacity-50 grayscale hover:grayscale-0 transition-all" />
             <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" className="h-5 opacity-50 grayscale hover:grayscale-0 transition-all" />
-          </div>
+          </div> */}
         </div>
       </div>
     </footer>

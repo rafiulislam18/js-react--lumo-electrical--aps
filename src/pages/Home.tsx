@@ -21,7 +21,7 @@ export default function Home() {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="relative w-full h-[500px] lg:h-[600px] overflow-hidden">
+      <section className="relative w-full h-[400px] lg:h-[400px] overflow-hidden">
         {/* Background Image with Overlay */}
         <div className="absolute inset-0 z-0">
           <img 
@@ -29,30 +29,30 @@ export default function Home() {
             alt="Hero Background" 
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/50 to-black/50" />
         </div>
 
         {/* Content */}
-        <div className="container relative z-10 h-full mx-auto px-4 flex flex-col justify-center">
+        <div className="container relative z-10 h-full mx-auto flex flex-col justify-center items-center text-center">
           <div className="max-w-xl animate-in fade-in slide-in-from-bottom-10 duration-1000">
-            <span className="inline-block py-1 px-3 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 text-white text-sm font-medium mb-6">
+            {/* <span className="inline-block py-1 px-3 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 text-white text-sm font-medium mb-6">
               New Collection 2024
-            </span>
-            <h1 className="text-5xl lg:text-7xl font-display font-bold text-white leading-[1.1] mb-6 shadow-sm">
-              Discover Quality <br />
+            </span> */}
+            <h1 className="text-4xl lg:text-5xl font-display font-bold text-white leading-[1.1] mb-6 shadow-sm">
+              Power Your <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-lime-400">
-                Sustainable Living
+                Projects & Installations
               </span>
             </h1>
-            <p className="text-lg text-gray-200 mb-8 leading-relaxed max-w-lg">
-              Upgrade your lifestyle with our curated selection of premium, eco-friendly products designed for the modern home.
+            <p className="text-md lg:text-lg text-gray-200 mb-8 leading-relaxed max-w-lg">
+              Premium electrical components, tools, and solutions for professionals and DIY enthusiasts. Everything you need for reliable installations and repairs inside Cape Town, SA.
             </p>
-            <div className="flex flex-wrap gap-4">
+            <div className="flex flex-wrap justify-center gap-4">
               <Button size="lg" className="bg-primary-gradient border-0 hover:opacity-90 transition-opacity h-12 px-8 rounded-full text-base font-semibold shadow-lg shadow-green-900/20">
                 Shop Now
               </Button>
               <Button size="lg" variant="outline" className="bg-white/10 backdrop-blur-sm border-white/30 text-white hover:bg-white hover:text-gray-900 h-12 px-8 rounded-full text-base font-semibold transition-all">
-                View Collections
+                Our Store
               </Button>
             </div>
           </div>
@@ -60,7 +60,7 @@ export default function Home() {
       </section>
 
       {/* Features Bar */}
-      <section className="bg-white border-b border-gray-100 py-10">
+      {/* <section className="bg-white border-b border-gray-100 py-10">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             <FeatureItem 
@@ -85,11 +85,11 @@ export default function Home() {
             />
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Categories Grid */}
-      <section className="py-20 container mx-auto px-4">
-        <SectionHeader title="Shop by Category" subtitle="Browse our diverse collection of premium products" />
+      <section className="pb-12 container mx-auto px-4">
+        {/* <SectionHeader title="Shop by Category" subtitle="Browse our diverse collection of premium products" /> */}
         
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 lg:gap-6 mt-12">
           {categories.map((cat) => (
@@ -110,7 +110,7 @@ export default function Home() {
       </section>
 
       {/* Promotional Banner */}
-      <section className="container mx-auto px-4 py-20">
+      {/* <section className="container mx-auto px-4 py-20">
         <div className="rounded-3xl overflow-hidden relative bg-gray-900 h-[400px] flex items-center shadow-2xl shadow-gray-200">
           <img 
             src="https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=1600&q=80" 
@@ -134,7 +134,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* FAQ Section */}
       <section className="py-20 bg-white">

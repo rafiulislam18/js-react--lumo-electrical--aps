@@ -20,18 +20,13 @@ export function Navbar() {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
 
   return (
-    <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-sm transition-all">
+    <nav className="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm transition-all">
       {/* Top Row: Logo, Search, Actions */}
       <div className="container mx-auto px-4 h-20 flex items-center justify-between gap-8">
         {/* Logo */}
         <Link to="/" className="flex-shrink-0">
           <div className="flex items-center gap-2 cursor-pointer group">
-            <div className="w-10 h-10 rounded-xl bg-primary-gradient flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-green-600/20 group-hover:shadow-green-600/30 transition-all">
-              E
-            </div>
-            <span className="font-display font-bold text-2xl tracking-tight text-foreground group-hover:text-primary-gradient transition-colors bg-clip-text">
-              EcoStore
-            </span>
+            <img src="/logo.png" alt="logo" className="h-12" />
           </div>
         </Link>
 
@@ -54,14 +49,14 @@ export function Navbar() {
         {/* Action Icons */}
         <div className="flex items-center gap-2 sm:gap-4">
           <Button variant="ghost" size="icon" className="relative hover:bg-green-50 hover:text-green-600 transition-colors rounded-full">
-            <Heart className="w-5 h-5" />
-            <span className="sr-only">Wishlist</span>
-          </Button>
-          
-          <Button variant="ghost" size="icon" className="relative hover:bg-green-50 hover:text-green-600 transition-colors rounded-full">
             <ShoppingCart className="w-5 h-5" />
             <span className="absolute top-0 right-0 w-4 h-4 bg-red-500 text-white text-[10px] flex items-center justify-center rounded-full border-2 border-white">2</span>
             <span className="sr-only">Cart</span>
+          </Button>
+
+          <Button variant="ghost" size="icon" className="relative hover:bg-green-50 hover:text-green-600 transition-colors rounded-full">
+            <Heart className="w-5 h-5" />
+            <span className="sr-only">Wishlist</span>
           </Button>
 
           <DropdownMenu>
@@ -105,12 +100,12 @@ export function Navbar() {
 
       {/* Bottom Row: Categories Navigation */}
       <div className="hidden md:block border-t border-gray-100 bg-white/50">
-        <div className="container mx-auto px-4 h-12 flex items-center gap-8">
+        <div className="container mx-auto h-12 flex items-center gap-8">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button 
-                variant="ghost" 
-                className="h-full px-4 rounded-none border-b-2 border-transparent hover:border-primary hover:text-primary hover:bg-transparent font-medium flex items-center gap-2 transition-all"
+                variant="null" 
+                className="h-full rounded-none hover:text-primary hover:bg-transparent font-medium flex items-center gap-2 transition-all"
               >
                 <Menu className="w-4 h-4" />
                 All Categories
@@ -137,9 +132,9 @@ export function Navbar() {
                 {cat.name}
               </a>
             ))}
-            <a href="/deals" className="text-sm font-medium text-red-500 hover:text-red-600 transition-colors whitespace-nowrap">
+            {/* <a href="/deals" className="text-sm font-medium text-red-500 hover:text-red-600 transition-colors whitespace-nowrap">
               Hot Deals
-            </a>
+            </a> */}
           </div>
         </div>
       </div>
