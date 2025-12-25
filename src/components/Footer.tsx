@@ -14,7 +14,7 @@ export function Footer() {
           <div className="space-y-6">
             <Link to="/" className="inline-block">
               <div className="flex items-center gap-2 cursor-pointer">
-                <img src="/logo.png" alt="logo" className="" />
+                <img src="/images/logo.png" alt="logo" className="" />
               </div>
             </Link>
             <p className="text-gray-500 leading-relaxed text-sm">

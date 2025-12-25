@@ -25,7 +25,7 @@ export default function Home() {
         {/* Background Image with Overlay */}
         <div className="absolute inset-0 z-0">
           <img 
-            src={heroBanner} 
+            src="/images/home/hero-bg3.jpeg" 
             alt="Hero Background" 
             className="w-full h-full object-cover"
           />
@@ -88,8 +88,8 @@ export default function Home() {
       </section> */}
 
       {/* Categories Grid */}
-      <section className="pb-12 container mx-auto px-4">
-        {/* <SectionHeader title="Shop by Category" subtitle="Browse our diverse collection of premium products" /> */}
+      <section className="py-20 container mx-auto px-4">
+        <SectionHeader title="Explore by Category" subtitle="Browse our diverse collection of high-quality products" center />
         
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 lg:gap-6 mt-12">
           {categories.map((cat) => (

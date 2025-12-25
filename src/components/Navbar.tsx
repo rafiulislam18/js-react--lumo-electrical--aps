@@ -26,7 +26,7 @@ export function Navbar() {
         {/* Logo */}
         <Link to="/" className="flex-shrink-0">
           <div className="flex items-center gap-2 cursor-pointer group">
-            <img src="/logo.png" alt="logo" className="h-12" />
+            <img src="/images/logo.png" alt="logo" className="h-12" />
           </div>
         </Link>
 
@@ -48,22 +48,22 @@ export function Navbar() {
 
         {/* Action Icons */}
         <div className="flex items-center gap-2 sm:gap-4">
-          <Button variant="ghost" size="icon" className="relative hover:bg-green-50 hover:text-green-600 transition-colors rounded-full">
-            <ShoppingCart className="w-5 h-5" />
-            <span className="absolute top-0 right-0 w-4 h-4 bg-red-500 text-white text-[10px] flex items-center justify-center rounded-full border-2 border-white">2</span>
-            <span className="sr-only">Cart</span>
-          </Button>
+          <button className="relative p-2 rounded-full hover:bg-secondary transition-colors">
+            <ShoppingCart className="w-5 h-5 text-foreground" />
+            <span className="absolute -top-1 -right-1 w-5 h-5 flex items-center justify-center text-xs font-bold text-white bg-primary-gradient rounded-full">
+              3
+            </span>
+          </button>
 
-          <Button variant="ghost" size="icon" className="relative hover:bg-green-50 hover:text-green-600 transition-colors rounded-full">
-            <Heart className="w-5 h-5" />
-            <span className="sr-only">Wishlist</span>
-          </Button>
+          <button className="p-2 rounded-full hover:bg-secondary transition-colors">
+            <Heart className="w-5 h-5 text-foreground" />
+          </button>
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="rounded-full hover:bg-green-50 hover:text-green-600">
-                <User className="w-5 h-5" />
-              </Button>
+              <button className="p-2 rounded-full hover:bg-secondary transition-colors">
+                <User className="w-5 h-5 text-foreground" />
+              </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56 rounded-xl shadow-xl border-gray-100 p-2">
               <DropdownMenuLabel className="px-2 py-2 text-sm text-gray-500 font-medium">My Account</DropdownMenuLabel>
