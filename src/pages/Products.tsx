@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { ProductCard } from "@/components/ProductCard";
-import { featuredProducts, bestSellers, latestProducts } from "@/data/dummyData";
+import { allProducts } from "@/data/dummyData";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, SlidersHorizontal } from "lucide-react";
 import {
@@ -14,8 +14,8 @@ import {
 } from "@/components/ui/select";
 
 // Combine all products and remove duplicates
-const allProducts = [...featuredProducts, ...bestSellers, ...latestProducts].reduce((acc, product) => {
-  if (!acc.find(p => p.id === product.id)) {
+const productsData = [...allProducts].reduce((acc: any, product: any) => {
+  if (!acc.find((p: any) => p.id === product.id)) {
     acc.push(product);
   }
   return acc;
@@ -38,20 +38,20 @@ export default function Products() {
   const [showFilters, setShowFilters] = useState(false);
 
   // Get unique categories
-  const categories = Array.from(new Set(allProducts.map(p => p.category)));
+  const categories = Array.from(new Set(productsData.map((p: any) => p.category)));
 
   // Filter products
   const filteredProducts = useMemo(() => {
-    let filtered = allProducts;
+    let filtered = productsData;
 
     // Filter by category
     if (selectedCategories.length > 0) {
-      filtered = filtered.filter(p => selectedCategories.includes(p.category));
+      filtered = filtered.filter((p: any) => selectedCategories.includes(p.category));
     }
 
     // Filter by price range
     const range = PRICE_RANGES.find(r => r.label.toLowerCase().replace(/\s+/g, '') === priceRange.toLowerCase().replace(/\s+/g, '')) || PRICE_RANGES[0];
-    filtered = filtered.filter(p => p.price >= range.min && p.price <= range.max);
+    filtered = filtered.filter((p: any) => p.price >= range.min && p.price <= range.max);
 
     return filtered;
   }, [selectedCategories, priceRange]);

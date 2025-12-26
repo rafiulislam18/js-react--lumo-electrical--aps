@@ -5,10 +5,9 @@ import { CategoryCard } from "@/components/CategoryCard";
 import { ProductListColumn } from "@/components/ProductListColumn";
 import { 
   categories, featuredProducts, bestSellers, latestProducts, 
-  heroBanner, faqs 
+  faqs 
 } from "@/data/dummyData";
 import { Button } from "@/components/ui/button";
-import { Truck, ShieldCheck, RefreshCw, Headset } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
@@ -95,7 +94,7 @@ export default function Home() {
         <SectionHeader title="Explore by Category" subtitle="Browse our diverse collection of high-quality products" center />
         
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 lg:gap-6 mt-12 animate-stagger">
-          {categories.map((cat) => (
+          {categories.map((cat: any) => (
             <div key={cat.id} className="animate-slide-in-up">
               <CategoryCard category={cat} />
             </div>
@@ -154,7 +153,7 @@ export default function Home() {
           
           <div className="mt-12 bg-gray-50 p-8 rounded-3xl border border-gray-100 animate-scale-in" style={{animationDelay: '0.4s'}}>
             <Accordion type="single" collapsible className="w-full">
-              {faqs.map((faq, index) => (
+              {faqs.map((faq: any, index: any) => (
                 <AccordionItem key={faq.id} value={faq.id} className="border-b-gray-200 last:border-0 transition-smooth" style={{animationDelay: `${0.4 + (index * 0.05)}s`}}>
                   <AccordionTrigger className="text-lg font-medium text-gray-900 hover:text-primary transition-colors py-5">
                     {faq.question}
@@ -170,20 +169,6 @@ export default function Home() {
       </section>
 
       <Footer />
-    </div>
-  );
-}
-
-function FeatureItem({ icon: Icon, title, desc }: { icon: React.ElementType, title: string, desc: string }) {
-  return (
-    <div className="flex items-center gap-4 p-4 rounded-xl hover:bg-gray-50 transition-colors duration-300 group cursor-default">
-      <div className="w-12 h-12 rounded-full bg-green-50 text-green-600 flex items-center justify-center shrink-0 group-hover:bg-primary-gradient group-hover:text-white transition-all duration-300 shadow-sm">
-        <Icon className="w-6 h-6" />
-      </div>
-      <div>
-        <h4 className="font-bold text-gray-900">{title}</h4>
-        <p className="text-sm text-gray-500">{desc}</p>
-      </div>
     </div>
   );
 }
