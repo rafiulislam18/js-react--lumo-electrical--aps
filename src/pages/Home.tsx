@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { CategoryCard } from "@/components/CategoryCard";
@@ -48,12 +49,14 @@ export default function Home() {
               Premium electrical components, tools, and solutions for professionals and DIY enthusiasts. Everything you need for reliable installations and repairs inside Cape Town, SA.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
-              <Button size="lg" className="bg-primary-gradient border-0 hover:opacity-90 transition-opacity h-12 px-8 rounded-full text-base font-semibold shadow-lg shadow-green-900/20">
+              <Button size="lg" className="bg-primary-gradient border-0 hover:opacity-90 transition-smooth h-12 px-8 rounded-full text-base font-semibold shadow-lg shadow-green-900/20">
                 Shop Now
               </Button>
-              <Button size="lg" variant="outline" className="bg-white/10 backdrop-blur-sm border-white/30 text-white hover:bg-white hover:text-gray-900 h-12 px-8 rounded-full text-base font-semibold transition-all">
-                Our Store
-              </Button>
+              <Link to="/products">
+                <Button size="lg" variant="outline" className="bg-white/10 backdrop-blur-sm border-white/30 text-white hover:bg-white hover:text-gray-900 h-12 px-8 rounded-full text-base font-semibold transition-smooth">
+                  View All Products
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
@@ -88,23 +91,31 @@ export default function Home() {
       </section> */}
 
       {/* Categories Grid */}
-      <section className="py-20 container mx-auto px-4">
+      <section className="py-20 container mx-auto px-4 animate-fade-in" style={{animationDelay: '0.1s'}}>
         <SectionHeader title="Explore by Category" subtitle="Browse our diverse collection of high-quality products" center />
         
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 lg:gap-6 mt-12">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 lg:gap-6 mt-12 animate-stagger">
           {categories.map((cat) => (
-            <CategoryCard key={cat.id} category={cat} />
+            <div key={cat.id} className="animate-slide-in-up">
+              <CategoryCard category={cat} />
+            </div>
           ))}
         </div>
       </section>
 
       {/* Product Lists (3 Columns) */}
-      <section className="py-20 bg-gray-50 border-y border-gray-100">
+      <section className="py-20 bg-gray-50 border-y border-gray-100 animate-fade-in" style={{animationDelay: '0.2s'}}>
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-8">
-            <ProductListColumn title="Featured Products" products={featuredProducts} linkTo="/featured" />
-            <ProductListColumn title="Best Sellers" products={bestSellers} linkTo="/best-sellers" />
-            <ProductListColumn title="New Arrivals" products={latestProducts} linkTo="/new" />
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-8 animate-stagger">
+            <div className="animate-slide-in-up">
+              <ProductListColumn title="Featured Products" products={featuredProducts} linkTo="/products" />
+            </div>
+            <div className="animate-slide-in-up" style={{animationDelay: '0.1s'}}>
+              <ProductListColumn title="Best Sellers" products={bestSellers} linkTo="/products" />
+            </div>
+            <div className="animate-slide-in-up" style={{animationDelay: '0.2s'}}>
+              <ProductListColumn title="New Arrivals" products={latestProducts} linkTo="/products" />
+            </div>
           </div>
         </div>
       </section>
@@ -137,14 +148,14 @@ export default function Home() {
       </section> */}
 
       {/* FAQ Section */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-white animate-fade-in" style={{animationDelay: '0.3s'}}>
         <div className="container mx-auto px-4 max-w-4xl">
           <SectionHeader title="Frequently Asked Questions" subtitle="Got questions? We've got answers." center />
           
-          <div className="mt-12 bg-gray-50 p-8 rounded-3xl border border-gray-100">
+          <div className="mt-12 bg-gray-50 p-8 rounded-3xl border border-gray-100 animate-scale-in" style={{animationDelay: '0.4s'}}>
             <Accordion type="single" collapsible className="w-full">
-              {faqs.map((faq) => (
-                <AccordionItem key={faq.id} value={faq.id} className="border-b-gray-200 last:border-0">
+              {faqs.map((faq, index) => (
+                <AccordionItem key={faq.id} value={faq.id} className="border-b-gray-200 last:border-0 transition-smooth" style={{animationDelay: `${0.4 + (index * 0.05)}s`}}>
                   <AccordionTrigger className="text-lg font-medium text-gray-900 hover:text-primary transition-colors py-5">
                     {faq.question}
                   </AccordionTrigger>

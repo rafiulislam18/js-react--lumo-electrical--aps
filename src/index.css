@@ -39,6 +39,89 @@
   /* Dark mode colors would go here, defaulting to light mode for this e-com style */
 }
 
+/* Global Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 @layer base {
   * {
     @apply border-border;
@@ -64,5 +147,56 @@
   }
   .hover-lift {
     @apply transition-transform duration-300 hover:-translate-y-1;
+  }
+
+  /* Animation utilities */
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-out;
+  }
+
+  .animate-slide-in-up {
+    animation: slideInUp 0.5s ease-out;
+  }
+
+  .animate-slide-in-down {
+    animation: slideInDown 0.5s ease-out;
+  }
+
+  .animate-slide-in-left {
+    animation: slideInLeft 0.5s ease-out;
+  }
+
+  .animate-slide-in-right {
+    animation: slideInRight 0.5s ease-out;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.3s ease-out;
+  }
+
+  /* Staggered animation for children */
+  .animate-stagger > * {
+    animation: slideInUp 0.5s ease-out;
+  }
+
+  .animate-stagger > *:nth-child(1) { animation-delay: 0.05s; }
+  .animate-stagger > *:nth-child(2) { animation-delay: 0.1s; }
+  .animate-stagger > *:nth-child(3) { animation-delay: 0.15s; }
+  .animate-stagger > *:nth-child(4) { animation-delay: 0.2s; }
+  .animate-stagger > *:nth-child(5) { animation-delay: 0.25s; }
+  .animate-stagger > *:nth-child(6) { animation-delay: 0.3s; }
+  .animate-stagger > *:nth-child(n+7) { animation-delay: 0.35s; }
+
+  /* Smooth transitions */
+  .transition-smooth {
+    @apply transition-all duration-300 ease-out;
+  }
+
+  .transition-smooth-fast {
+    @apply transition-all duration-200 ease-out;
+  }
+
+  .transition-smooth-slow {
+    @apply transition-all duration-500 ease-out;
   }
 }
