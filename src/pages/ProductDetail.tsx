@@ -45,7 +45,7 @@ export default function ProductDetail() {
   const discountPercent = calculateDiscountPercentage(product.oldPrice, product.price);
   const relatedProducts = allProducts
     .filter(p => p.category === product.category && p.id !== product.id)
-    .slice(0, 3);
+    .slice(0, 6);
 
   return (
     <div className="min-h-screen bg-gray-50/30 flex flex-col font-sans">
@@ -85,8 +85,8 @@ export default function ProductDetail() {
             {/* Product Image & Info Row */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 bg-white rounded-lg border border-gray-100 p-4 sm:p-6">
               {/* Product Image */}
-              <div className="animate-slide-in-left">
-                <div className="relative bg-gray-50 rounded-lg overflow-hidden">
+              <div className="animate-slide-in-left flex items-center justify-center">
+                <div className="relative bg-gray-50 rounded-lg overflow-hidden max-w-[280px] sm:max-w-[360px] mx-auto">
                   <div className="aspect-square flex items-center justify-center">
                     <img
                       src={product.image}
@@ -211,13 +211,13 @@ export default function ProductDetail() {
 
           {/* Right: Related Products */}
           {relatedProducts.length > 0 && (
-            <div className="space-y-3 animate-fade-in">
+            <div className="hidden lg:block space-y-3 animate-fade-in">
               <h3 className="text-base font-bold text-gray-900">Related Items</h3>
               <div className="space-y-2">
                 {relatedProducts.map(relatedProduct => (
                   <button
                     key={relatedProduct.id}
-                    onClick={() => navigate(`/product/${relatedProduct.id}`)}
+                    onClick={() => navigate(`/product-details/${relatedProduct.id}`)}
                     className="w-full text-left group"
                   >
                     <div className="flex gap-2 bg-white rounded-lg border border-gray-100 overflow-hidden hover:border-green-200 hover:shadow-md transition-all">
@@ -440,6 +440,41 @@ export default function ProductDetail() {
             </TabsContent>
           </Tabs>
         </div>
+
+        {/* Related Items for mobile/tablet (below tabs) */}
+        {relatedProducts.length > 0 && (
+          <div className="block lg:hidden mt-8 animate-fade-in">
+            <h3 className="text-base font-bold text-gray-900 mb-2">Related Items</h3>
+            <div className="space-y-2">
+              {relatedProducts.map(relatedProduct => (
+                <button
+                  key={relatedProduct.id}
+                  onClick={() => navigate(`/product-details/${relatedProduct.id}`)}
+                  className="w-full text-left group"
+                >
+                  <div className="flex gap-2 bg-white rounded-lg border border-gray-100 overflow-hidden hover:border-green-200 hover:shadow-md transition-all">
+                    <div className="w-20 h-20 bg-gray-50 overflow-hidden shrink-0">
+                      <img
+                        src={relatedProduct.image}
+                        alt={relatedProduct.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    </div>
+                    <div className="p-2 flex-1 min-w-0">
+                      <p className="text-xs text-gray-500 font-semibold line-clamp-2 mb-1">{relatedProduct.name}</p>
+                      <div className="flex items-baseline gap-1">
+                        <span className="font-bold text-sm text-primary">${relatedProduct.price.toFixed(2)}</span>
+                        {relatedProduct.oldPrice && (
+                          <span className="text-xs text-gray-400 line-through">${relatedProduct.oldPrice.toFixed(2)}</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

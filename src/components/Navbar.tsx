@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { 
   Search, ShoppingCart, Heart, User, Menu, 
-  ChevronDown, LogIn, UserPlus, Package, LogOut 
+  ChevronDown, LogIn, UserPlus, Package, LogOut, Lock 
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -21,11 +21,14 @@ export function Navbar() {
   const navigate = useNavigate();
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [cartCount, setCartCount] = useState(0);
   const [wishlistCount, setWishlistCount] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [showSearchResults, setShowSearchResults] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
 
   useEffect(() => {
     const updateCounts = () => {
@@ -80,11 +83,11 @@ export function Navbar() {
       
       <nav className="sticky top-0 z-40 bg-white border-b border-gray-100 shadow-sm transition-all">
         {/* Top Row: Logo, Search, Actions */}
-        <div className="container mx-auto px-4 h-20 flex items-center justify-between gap-8">
+        <div className="container mx-auto px-4 h-16 sm:h-20 flex items-center justify-between gap-4 sm:gap-8">
           {/* Logo */}
           <Link to="/" className="flex-shrink-0">
             <div className="flex items-center gap-2 cursor-pointer group">
-              <img src="/images/logo.png" alt="logo" className="h-12" />
+              <img src="/images/logo.png" alt="logo" className="h-8 sm:h-10 md:h-12" />
             </div>
           </Link>
 
@@ -148,12 +151,20 @@ export function Navbar() {
           </div>
 
           {/* Action Icons */}
-          <div className="flex items-center gap-2 sm:gap-4">
+          <div className="flex items-center gap-1 sm:gap-3">
+            {/* Mobile Search Icon */}
+            <button 
+              onClick={() => setIsSearchModalOpen(true)}
+              className="md:hidden p-1.5 sm:p-2 rounded-full hover:bg-secondary transition-colors"
+            >
+              <Search className="w-4 h-4 sm:w-5 sm:h-5 text-foreground" />
+            </button>
+
             <button 
               onClick={() => setIsCartOpen(true)}
-              className="relative p-2 rounded-full hover:bg-secondary transition-colors"
+              className="relative p-1.5 sm:p-2 rounded-full hover:bg-secondary transition-colors"
             >
-              <ShoppingCart className="w-5 h-5 text-foreground" />
+              <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5 text-foreground" />
               {cartCount > 0 && (
                 <span className="absolute -top-1 -right-1 w-5 h-5 flex items-center justify-center text-xs font-bold text-white bg-primary-gradient rounded-full">
                   {cartCount}
@@ -161,8 +172,8 @@ export function Navbar() {
               )}
             </button>
 
-            <Link to="/wishlist" className="relative p-2 rounded-full hover:bg-secondary transition-colors">
-              <Heart className="w-5 h-5 text-foreground" />
+            <Link to="/wishlist" className="relative p-1.5 sm:p-2 rounded-full hover:bg-secondary transition-colors">
+              <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-foreground" />
               {wishlistCount > 0 && (
                 <span className="absolute -top-1 -right-1 w-5 h-5 flex items-center justify-center text-xs font-bold text-white bg-red-500 rounded-full">
                   {wishlistCount}
@@ -170,37 +181,43 @@ export function Navbar() {
               )}
             </Link>
 
-            <DropdownMenu modal={false}>
+            <DropdownMenu modal={false} open={openDropdown === 'user'} onOpenChange={(open) => setOpenDropdown(open ? 'user' : null)}>
               <DropdownMenuTrigger asChild>
-                <button className="p-2 rounded-full hover:bg-secondary transition-colors">
-                  <User className="w-5 h-5 text-foreground" />
+                <button className="p-1.5 sm:p-2 rounded-full hover:bg-secondary transition-colors" onMouseEnter={() => setOpenDropdown('user')}>
+                  <User className="w-4 h-4 sm:w-5 sm:h-5 text-foreground" />
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56 rounded-xl shadow-xl border-gray-100 p-2" onOpenAutoFocus={(e: any) => e.preventDefault()}>
+              <DropdownMenuContent align="end" className="w-56 rounded-xl shadow-xl border-gray-100 p-2" onOpenAutoFocus={(e: any) => e.preventDefault()} onMouseLeave={() => setOpenDropdown(null)}>
                 <DropdownMenuLabel className="px-2 py-2 text-sm text-gray-500 font-medium">My Account</DropdownMenuLabel>
-                <DropdownMenuItem className="rounded-lg cursor-pointer" asChild>
+                <DropdownMenuItem className="rounded-lg cursor-pointer text-gray-700 hover:text-primary hover:bg-gray-50 focus:text-primary focus:bg-gray-50" asChild>
                   <Link to="/login">
                     <LogIn className="mr-2 h-4 w-4" />
                     <span>Log In</span>
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem className="rounded-lg cursor-pointer" asChild>
+                <DropdownMenuItem className="rounded-lg cursor-pointer text-gray-700 hover:text-primary hover:bg-gray-50 focus:text-primary focus:bg-gray-50" asChild>
                   <Link to="/signup">
                     <UserPlus className="mr-2 h-4 w-4" />
                     <span>Sign Up</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="rounded-lg cursor-pointer" asChild>
+                <DropdownMenuItem className="rounded-lg cursor-pointer text-gray-700 hover:text-primary hover:bg-gray-50 focus:text-primary focus:bg-gray-50" asChild>
                   <Link to="/profile">
                     <User className="mr-2 h-4 w-4" />
                     <span>Profile</span>
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem className="rounded-lg cursor-pointer" asChild>
+                <DropdownMenuItem className="rounded-lg cursor-pointer text-gray-700 hover:text-primary hover:bg-gray-50 focus:text-primary focus:bg-gray-50" asChild>
                   <Link to="/orders">
                     <Package className="mr-2 h-4 w-4" />
                     <span>Orders</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem className="rounded-lg cursor-pointer text-gray-700 hover:text-primary hover:bg-gray-50 focus:text-primary focus:bg-gray-50" asChild>
+                  <Link to="/change-password">
+                    <Lock className="mr-2 h-4 w-4" />
+                    <span>Change Password</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
@@ -211,7 +228,12 @@ export function Navbar() {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <Button variant="ghost" size="icon" className="md:hidden">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="md:hidden"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
               <Menu className="w-6 h-6" />
             </Button>
           </div>
@@ -220,22 +242,23 @@ export function Navbar() {
       {/* Bottom Row: Categories Navigation */}
       <div className="hidden md:block border-t border-gray-100 bg-white/50">
         <div className="container mx-auto h-12 flex items-center gap-8">
-          <DropdownMenu modal={false}>
+          <DropdownMenu modal={false} open={openDropdown === 'categories'} onOpenChange={(open) => setOpenDropdown(open ? 'categories' : null)}>
             <DropdownMenuTrigger asChild>
               <Button 
                 variant="null" 
                 className="h-full rounded-none hover:text-primary hover:bg-transparent font-medium flex items-center gap-2 transition-all"
+                onMouseEnter={() => setOpenDropdown('categories')}
               >
                 <Menu className="w-4 h-4" />
                 All Categories
                 <ChevronDown className="w-3 h-3 ml-1" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-56 rounded-xl p-2 shadow-lg border-gray-100" onOpenAutoFocus={(e: any) => e.preventDefault()}>
+            <DropdownMenuContent align="start" className="w-56 rounded-xl p-2 shadow-lg border-gray-100" onOpenAutoFocus={(e: any) => e.preventDefault()} onMouseLeave={() => setOpenDropdown(null)}>
               {categories.map((cat: any) => (
-                <DropdownMenuItem key={cat.id} className="cursor-pointer rounded-lg py-2" asChild>
+                <DropdownMenuItem key={cat.id} className="cursor-pointer rounded-lg py-2 text-gray-700 hover:text-primary hover:bg-gray-50 focus:text-primary focus:bg-gray-50" asChild>
                   <a href={`/products/${cat.slug}`} className="flex items-center">
-                    <cat.icon className="w-4 h-4 mr-2 text-gray-500" />
+                    <cat.icon className="w-4 h-4 mr-2" />
                     {cat.name}
                   </a>
                 </DropdownMenuItem>
@@ -259,6 +282,102 @@ export function Navbar() {
           </div>
         </div>
       </div>
+
+      {/* Mobile Search Modal */}
+      {isSearchModalOpen && (
+        <div className="fixed inset-0 z-50 md:hidden bg-black/50 flex flex-col">
+          <div className="bg-white border-b border-gray-100 pt-4 pb-2 px-4">
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setIsSearchModalOpen(false)}
+                className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+              >
+                <Search className="w-5 h-5 text-gray-400" />
+              </button>
+              <Input 
+                autoFocus
+                className="flex-1 h-10 rounded-full border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary" 
+                placeholder="Search products..." 
+                value={searchQuery}
+                onChange={(e) => handleSearch(e.target.value)}
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter') {
+                    handleSearchSubmit();
+                    setIsSearchModalOpen(false);
+                  }
+                }}
+              />
+              <button
+                onClick={() => setIsSearchModalOpen(false)}
+                className="px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+
+            {/* Mobile Search Results */}
+            {showSearchResults && searchResults.length > 0 && (
+              <div className="mt-2 bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden max-h-64 overflow-y-auto">
+                {searchResults.map((product) => (
+                  <button
+                    key={product.id}
+                    onClick={() => {
+                      handleProductClick(product.id);
+                      setIsSearchModalOpen(false);
+                    }}
+                    className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 border-b border-gray-100 last:border-0 text-left transition-colors"
+                  >
+                    <img 
+                      src={product.image} 
+                      alt={product.name}
+                      className="w-10 h-10 object-cover rounded"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-gray-900 truncate">{product.name}</p>
+                      <p className="text-xs text-gray-500">{product.category}</p>
+                    </div>
+                    <p className="text-sm font-semibold text-primary">${product.price}</p>
+                  </button>
+                ))}
+                <button
+                  onClick={() => {
+                    handleSearchSubmit();
+                    setIsSearchModalOpen(false);
+                  }}
+                  className="w-full py-2 text-center text-sm text-primary hover:bg-primary/5 font-medium border-t border-gray-100"
+                >
+                  View all results
+                </button>
+              </div>
+            )}
+          </div>
+          <div className="flex-1" onClick={() => setIsSearchModalOpen(false)} />
+        </div>
+      )}
+
+      {/* Mobile Menu */}
+      {isMobileMenuOpen && (
+        <div className="md:hidden border-t border-gray-100 bg-white animate-slide-in-down">
+          <div className="container mx-auto px-4 py-4">
+
+            {/* Mobile Categories */}
+            <div className="space-y-1 pt-4">
+              <p className="text-xs font-bold text-gray-500 uppercase tracking-widest px-3 mb-2">Categories</p>
+              {categories.map((cat: any) => (
+                <a 
+                  key={cat.id} 
+                  href={`/products/${cat.slug}`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="flex items-center gap-2 px-3 py-2.5 text-sm font-medium text-gray-700 hover:text-primary hover:bg-gray-50 rounded-lg transition-colors"
+                >
+                  <cat.icon className="w-4 h-4" />
+                  {cat.name}
+                </a>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </nav>
     </>
   );

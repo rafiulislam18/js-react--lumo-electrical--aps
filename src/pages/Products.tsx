@@ -198,13 +198,13 @@ export default function Products() {
     <div className="min-h-screen bg-gray-50/30 flex flex-col font-sans">
       {/* Breadcrumb */}
       <section className="border-b border-gray-100 bg-white">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center gap-2 text-sm">
-            <a href="/" className="text-gray-600 hover:text-primary transition-colors">Home</a>
+        <div className="container mx-auto px-2 sm:px-4 py-3 sm:py-4">
+          <div className="flex items-center gap-2 text-xs sm:text-sm overflow-x-auto">
+            <a href="/" className="text-gray-600 hover:text-primary transition-colors whitespace-nowrap">Home</a>
             {searchQuery && (
               <>
                 <span className="text-gray-400">/</span>
-                <span className="text-primary font-semibold">Search - {searchQuery}</span>
+                <span className="text-primary font-semibold text-xs sm:text-sm truncate">Search - {searchQuery.substring(0, 15)}{searchQuery.length > 15 ? '...' : ''}</span>
               </>
             )}
             {selectedCategory && (
@@ -227,11 +227,11 @@ export default function Products() {
       </section>
 
       {/* Main Content */}
-      <div className="flex-1 container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+      <div className="flex-1 container mx-auto px-2 sm:px-4 py-6 sm:py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
           {/* Filters Sidebar */}
           <div className={`lg:col-span-1 animate-slide-in-left ${showFilters ? 'block' : 'hidden lg:block'}`}>
-            <div className="bg-white rounded-xl border border-gray-100 p-6 sticky top-24">
+            <div className="bg-white rounded-xl border border-gray-100 p-4 sm:p-6 sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto">
               <div className="flex items-center justify-between mb-6 lg:hidden">
                 <h3 className="font-bold text-lg">Filters</h3>
                 <button
@@ -472,24 +472,24 @@ export default function Products() {
           {/* Products Grid */}
           <div className="lg:col-span-3">
             {/* Header with Sort */}
-            <div className="flex items-center justify-between mb-8">
-              <div className="flex-1">
-                <h2 className="text-3xl font-bold text-gray-900 animate-fade-in">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8">
+              <div className="flex-1 min-w-0">
+                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 animate-fade-in line-clamp-2 sm:line-clamp-none">
                   {searchQuery ? `Search Results for "${searchQuery}"` : selectedCategory ? selectedCategory.name : specialSection ? specialSection.name : "All Products"}
                 </h2>
-                <p className="text-gray-600 mt-2 animate-fade-in" style={{animationDelay: '0.1s'}}>
+                <p className="text-xs sm:text-sm text-gray-600 mt-1 sm:mt-2 animate-fade-in" style={{animationDelay: '0.1s'}}>
                   Showing {paginatedProducts.length} of {sortedProducts.length} products
                 </p>
               </div>
 
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
                 {/* Sort Dropdown */}
-                <div className="w-48">
+                <div className="flex-1 sm:flex-none sm:w-48">
                   <Select value={sortBy} onValueChange={setSortBy}>
-                    <SelectTrigger className="border-gray-200">
+                    <SelectTrigger className="border-gray-200 h-10 text-xs sm:text-sm">
                       <SelectValue placeholder="Sort by" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-white">
                       <SelectItem value="newest">Newest</SelectItem>
                       <SelectItem value="price-low">Price: Low to High</SelectItem>
                       <SelectItem value="price-high">Price: High to Low</SelectItem>
@@ -512,7 +512,7 @@ export default function Products() {
 
             {/* Products Grid */}
             {paginatedProducts.length > 0 ? (
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5 lg:gap-6 animate-stagger mb-12">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4 lg:gap-6 animate-stagger mb-12">
                 {paginatedProducts.map(product => (
                   <div key={product.id} className="animate-slide-in-up">
                     <ProductCard product={product} />

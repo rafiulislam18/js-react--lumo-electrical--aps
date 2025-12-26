@@ -22,7 +22,7 @@ export function ProductCard({ product }: ProductCardProps) {
   };
 
   return (
-    <div className="group relative flex flex-col p-3 bg-white rounded-lg border border-transparent hover:border-green-200 hover:shadow-lg hover:shadow-green-900/5 transition-smooth">
+    <div className="group relative flex flex-col p-2 sm:p-3 bg-white rounded-lg border border-transparent hover:border-green-200 hover:shadow-lg hover:shadow-green-900/5 transition-smooth">
       {/* Top Left Badge */}
       {product.badge && (
         <div className={`absolute top-2 left-2 z-20 px-2 py-1 text-xs font-bold text-white rounded-md shadow-md backdrop-blur-sm
@@ -56,8 +56,8 @@ export function ProductCard({ product }: ProductCardProps) {
       </div>
 
       {/* Content */}
-      <div className="w-full flex flex-col gap-1.5">
-        <div className="text-xs text-gray-400 font-bold uppercase tracking-widest">{product.category}</div>
+      <div className="w-full flex flex-col gap-1">
+        <div className="text-xs text-gray-400 font-bold uppercase tracking-widest line-clamp-1">{product.category}</div>
         <h3 className="font-semibold text-gray-900 line-clamp-2 min-h-[2rem] group-hover:text-primary transition-smooth text-xs leading-tight cursor-pointer" onClick={handleProductClick}>
           {product.name}
         </h3>
