@@ -88,8 +88,8 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
               <p className="text-sm text-gray-500 mb-6">
                 Add items to get started with shopping
               </p>
-              <Link to="/products" onClick={onClose}>
-                <Button className="bg-primary-gradient border-0 text-white">
+              <Link to="/products/featured-products" onClick={onClose}>
+                <Button className="bg-primary-gradient border-0 text-white hover:opacity-90 transition-smooth">
                   Continue Shopping
                 </Button>
               </Link>

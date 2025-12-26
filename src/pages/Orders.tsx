@@ -85,8 +85,8 @@ export default function Orders() {
               <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
               <h3 className="text-xl font-bold text-gray-900 mb-2">No Orders Yet</h3>
               <p className="text-gray-500 mb-6">You haven't placed any orders yet. Start shopping!</p>
-              <Link to="/products">
-                <Button className="bg-gradient-to-r from-green-500 to-lime-400 border-0 text-white font-semibold hover:opacity-90">
+              <Link to="/products/featured-products">
+                <Button className="bg-primary-gradient border-0 text-white hover:opacity-90 transition-smooth">
                   Continue Shopping
                 </Button>
               </Link>

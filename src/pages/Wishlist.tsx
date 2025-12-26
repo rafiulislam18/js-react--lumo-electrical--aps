@@ -50,7 +50,7 @@ export default function Wishlist() {
   };
 
   return (
-    <div className="bg-gray-50/30 flex flex-col font-sans">
+    <div className="min-h-screen bg-gray-50/30 flex flex-col font-sans">
       <section className="flex-1 py-20 px-4">
         <div className="container mx-auto max-w-5xl">
           {/* Header */}
@@ -178,8 +178,8 @@ export default function Wishlist() {
               <Heart className="w-16 h-16 text-gray-300 mx-auto mb-4" />
               <h3 className="text-xl font-bold text-gray-900 mb-2">Wishlist Empty</h3>
               <p className="text-gray-500 mb-6">No items in your wishlist yet. Start adding your favorites!</p>
-              <Link to="/products">
-                <Button className="bg-primary-gradient border-0 text-white">
+              <Link to="/products/featured-products">
+                <Button className="bg-primary-gradient border-0 text-white hover:opacity-90 transition-smooth">
                   Continue Shopping
                 </Button>
               </Link>

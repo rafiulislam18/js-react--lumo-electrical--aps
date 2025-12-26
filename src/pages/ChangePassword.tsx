@@ -51,18 +51,8 @@ export default function ChangePassword() {
 
   return (
     <div className="min-h-screen bg-gray-50/30 flex flex-col font-sans">
-      <Navbar />
-
       <section className="flex-1 py-20 px-4">
         <div className="container mx-auto max-w-2xl">
-          <button
-            onClick={() => navigate("/profile")}
-            className="flex items-center gap-2 text-gray-600 hover:text-primary transition-colors mb-8"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Profile
-          </button>
-
           <div className="bg-white rounded-2xl border border-gray-100 shadow-lg overflow-hidden">
             {/* Header */}
             <div className="bg-gradient-to-r from-green-500 to-lime-400 px-8 py-12 text-white">
@@ -185,8 +175,6 @@ export default function ChangePassword() {
           </div>
         </div>
       </section>
-
-      <Footer />
     </div>
   );
 }

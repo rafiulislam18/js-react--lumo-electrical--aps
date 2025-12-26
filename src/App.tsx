@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useEffect } from "react";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -20,12 +21,23 @@ import ChangePassword from "@/pages/ChangePassword";
 import Profile from "@/pages/Profile";
 import NotFound from "@/pages/not-found";
 
+function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+}
+
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <TooltipProvider>
           <Toaster />
+          <ScrollToTop />
           <Routes>
             {/* Layout Routes */}
             <Route element={<Layout />}>
@@ -36,16 +48,17 @@ function App() {
               <Route path="/orders" element={<Orders />} />
               <Route path="/wishlist" element={<Wishlist />} />
               <Route path="/profile" element={<Profile />} />
+
+              {/* Auth Routes */}
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/change-password" element={<ChangePassword />} />
+
+              {/* Catch all undefined */}
+              <Route path="*" element={<Home />} />
             </Route>
-
-            {/* Auth Routes (without Layout) */}
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/change-password" element={<ChangePassword />} />
-
-            {/* 404 - Catch all */}
-            <Route path="*" element={<NotFound />} />
+            
           </Routes>
         </TooltipProvider>
       </BrowserRouter>

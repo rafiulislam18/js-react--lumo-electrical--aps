@@ -48,8 +48,6 @@ export default function Login() {
 
   return (
     <div className="min-h-screen bg-gray-50/30 flex flex-col font-sans">
-      <Navbar />
-
       <section className="flex-1 py-20 px-4">
         <div className="container mx-auto max-w-md">
           <div className="bg-white rounded-2xl border border-gray-100 shadow-lg overflow-hidden animate-in fade-in slide-in-from-bottom-10 duration-700">
@@ -199,8 +197,6 @@ export default function Login() {
           </div>
         </div>
       </section>
-
-      <Footer />
     </div>
   );
 }

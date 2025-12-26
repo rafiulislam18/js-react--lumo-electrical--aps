@@ -63,18 +63,8 @@ export default function ForgotPassword() {
 
   return (
     <div className="min-h-screen bg-gray-50/30 flex flex-col font-sans">
-      <Navbar />
-
       <section className="flex-1 py-20 px-4">
         <div className="container mx-auto max-w-md">
-          <button
-            onClick={() => navigate("/login")}
-            className="flex items-center gap-2 text-gray-600 hover:text-primary transition-colors mb-8"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Login
-          </button>
-
           <div className="bg-white rounded-2xl border border-gray-100 shadow-lg overflow-hidden animate-in fade-in slide-in-from-bottom-10 duration-700">
             {/* Header */}
             <div className="bg-gradient-to-r from-green-500 to-lime-400 px-8 py-12 text-white text-center">
@@ -223,8 +213,6 @@ export default function ForgotPassword() {
           </div>
         </div>
       </section>
-
-      <Footer />
     </div>
   );
 }
