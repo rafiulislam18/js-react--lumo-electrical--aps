@@ -20,13 +20,14 @@ export default function Home() {
       <section className="relative w-full h-[450px] lg:h-[400px] overflow-hidden">
         {/* Background Image with Overlay */}
         <div className="absolute inset-0 z-0">
+          {/* add fade in effect in this img below */}
           <img 
             src="/images/home/hero-bg3.jpeg" 
-            alt="Hero Background" 
-            className="w-full h-full object-cover"
+            alt="Hero Background"
+            className="w-full h-full object-cover animate-in fade-in duration-1000"
             loading="lazy"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/50 to-black/50" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/50 to-black/50 animate-in fade-in duration-1000" />
         </div>
 
         {/* Content */}
