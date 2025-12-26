@@ -24,6 +24,7 @@ export default function Home() {
             src="/images/home/hero-bg3.jpeg" 
             alt="Hero Background" 
             className="w-full h-full object-cover"
+            loading="lazy"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/50 to-black/50" />
         </div>
