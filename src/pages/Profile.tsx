@@ -1,263 +1,241 @@
-import { useState, useEffect } from "react";
-import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { User, Mail, Phone, MapPin, LogOut, Save } from "lucide-react";
+import { User, Lock, ShoppingBag, Heart, LogOut, Edit3, DollarSign, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export default function Profile() {
   const navigate = useNavigate();
-  const [isEditing, setIsEditing] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
-  const [user, setUser] = useState({
-    firstName: "John",
-    lastName: "Doe",
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "John Doe",
     email: "john@example.com",
-    phone: "+27 71 234 5678",
-    address: "123 Main Street, Cape Town, 8000"
+    phone: "+1 (555) 123-4567",
+    address: "123 Main Street, City, State 12345"
   });
 
-  const [editData, setEditData] = useState(user);
-
-  useEffect(() => {
-    const savedUser = localStorage.getItem("user");
-    if (savedUser) {
-      const parsedUser = JSON.parse(savedUser);
-      setUser(prev => ({ ...prev, ...parsedUser }));
-      setEditData(prev => ({ ...prev, ...parsedUser }));
-    }
-  }, []);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setEditData(prev => ({
+    setFormData(prev => ({
       ...prev,
       [name]: value
     }));
   };
 
-  const handleSave = () => {
-    setIsSaving(true);
-    setTimeout(() => {
-      setUser(editData);
-      localStorage.setItem("user", JSON.stringify(editData));
-      setIsEditing(false);
-      setIsSaving(false);
-      alert("Profile updated successfully!");
-    }, 1000);
+  const handleSaveProfile = () => {
+    console.log("Profile saved:", formData);
+    setIsEditingProfile(false);
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("user");
+    localStorage.removeItem("authToken");
     navigate("/login");
   };
 
+  const stats = [
+    { label: "Total Orders", value: "12", icon: ShoppingBag, color: "text-blue-600" },
+    { label: "Wishlist Items", value: "24", icon: Heart, color: "text-red-500" },
+    { label: "Total Spent", value: "$2,345.50", icon: DollarSign, color: "text-green-600" }
+  ];
+
+  const actionButtons = [
+    { label: "View Orders", icon: ShoppingBag, onClick: () => navigate("/orders") },
+    { label: "View Wishlist", icon: Heart, onClick: () => navigate("/wishlist") },
+    { label: "Change Password", icon: Lock, onClick: () => navigate("/change-password") }
+  ];
+
   return (
     <div className="min-h-screen bg-gray-50/30 flex flex-col font-sans">
-      <Navbar />
-
-      <section className="flex-1 py-20 px-4">
-        <div className="container mx-auto max-w-2xl">
-          {/* Header */}
-          <div className="mb-8 animate-in fade-in slide-in-from-top-10 duration-700">
-            <h1 className="text-4xl font-display font-bold text-gray-900 mb-2">
-              My Account
-            </h1>
-            <p className="text-gray-500">Manage your profile and preferences</p>
+      <section className="flex-1 py-12 px-4">
+        <div className="container mx-auto max-w-5xl">
+          {/* Page Header */}
+          <div className="mb-8">
+            <h1 className="text-4xl font-bold text-gray-900">My Account</h1>
+            <p className="text-gray-600 mt-2">Manage your profile and account settings</p>
           </div>
 
-          {/* Profile Card */}
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-lg overflow-hidden animate-in fade-in slide-in-from-bottom-10 duration-700">
-            {/* Header Bar */}
-            <div className="bg-gradient-to-r from-green-500 to-lime-400 h-32" />
-
-            {/* Content */}
-            <div className="px-8 py-8">
-              {/* Avatar and Basic Info */}
-              <div className="flex items-start gap-6 mb-8 pb-8 border-b border-gray-100">
-                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-green-400 to-lime-300 flex items-center justify-center -mt-12 border-4 border-white shadow-lg">
-                  <User className="w-12 h-12 text-white" />
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Right Content - Main Profile Section */}
+            <div className="lg:col-span-2 space-y-6">
+              {/* Profile Information Card */}
+              <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+                {/* Header */}
+                <div className="bg-gradient-to-r from-green-500 to-lime-400 px-8 py-8 text-white flex items-start justify-between">
+                  <div>
+                    <h2 className="text-2xl font-bold flex items-center gap-2">
+                      <User className="w-6 h-6" />
+                      Personal Information
+                    </h2>
+                    <p className="text-green-50 mt-1">Update your profile details</p>
+                  </div>
+                  {!isEditingProfile && (
+                    <button
+                      onClick={() => setIsEditingProfile(true)}
+                      className="p-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors"
+                    >
+                      <Edit3 className="w-5 h-5 text-white" />
+                    </button>
+                  )}
                 </div>
-                <div className="flex-1 pt-4">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-1">
-                    {user.firstName} {user.lastName}
-                  </h2>
-                  <p className="text-gray-500 mb-4">{user.email}</p>
-                  <div className="flex gap-3">
-                    {!isEditing ? (
-                      <>
+
+                {/* Content */}
+                <div className="p-8">
+                  {isEditingProfile ? (
+                    <div className="space-y-6">
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-900 mb-2">
+                          Full Name
+                        </label>
+                        <Input
+                          type="text"
+                          name="name"
+                          value={formData.name}
+                          onChange={handleInputChange}
+                          placeholder="Enter your full name"
+                          className="h-11 rounded-lg border-gray-200"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-900 mb-2">
+                          Email Address
+                        </label>
+                        <Input
+                          type="email"
+                          name="email"
+                          value={formData.email}
+                          onChange={handleInputChange}
+                          placeholder="Enter your email"
+                          className="h-11 rounded-lg border-gray-200"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-900 mb-2">
+                          Phone Number
+                        </label>
+                        <Input
+                          type="tel"
+                          name="phone"
+                          value={formData.phone}
+                          onChange={handleInputChange}
+                          placeholder="Enter your phone number"
+                          className="h-11 rounded-lg border-gray-200"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-900 mb-2">
+                          Address
+                        </label>
+                        <Input
+                          type="text"
+                          name="address"
+                          value={formData.address}
+                          onChange={handleInputChange}
+                          placeholder="Enter your address"
+                          className="h-11 rounded-lg border-gray-200"
+                        />
+                      </div>
+
+                      <div className="flex gap-3 pt-4">
                         <Button
-                          onClick={() => setIsEditing(true)}
-                          className="bg-green-600 hover:bg-green-700 text-white"
+                          onClick={handleSaveProfile}
+                          className="flex-1 h-11 bg-gradient-to-r from-green-500 to-lime-400 text-white font-semibold hover:opacity-90"
                         >
-                          Edit Profile
+                          Save Changes
                         </Button>
                         <Button
-                          onClick={handleLogout}
+                          onClick={() => setIsEditingProfile(false)}
                           variant="outline"
-                          className="border-red-200 text-red-600 hover:bg-red-50"
-                        >
-                          <LogOut className="w-4 h-4 mr-2" />
-                          Logout
-                        </Button>
-                      </>
-                    ) : (
-                      <>
-                        <Button
-                          onClick={handleSave}
-                          disabled={isSaving}
-                          className="bg-green-600 hover:bg-green-700 text-white"
-                        >
-                          <Save className="w-4 h-4 mr-2" />
-                          {isSaving ? "Saving..." : "Save Changes"}
-                        </Button>
-                        <Button
-                          onClick={() => {
-                            setIsEditing(false);
-                            setEditData(user);
-                          }}
-                          variant="outline"
+                          className="flex-1 h-11"
                         >
                           Cancel
                         </Button>
-                      </>
-                    )}
-                  </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                          <p className="text-sm font-medium text-gray-600 mb-1">Full Name</p>
+                          <p className="text-lg font-semibold text-gray-900">{formData.name}</p>
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-600 mb-1">Email Address</p>
+                          <p className="text-lg font-semibold text-gray-900">{formData.email}</p>
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-600 mb-1">Phone Number</p>
+                          <p className="text-lg font-semibold text-gray-900">{formData.phone}</p>
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-600 mb-1">Address</p>
+                          <p className="text-lg font-semibold text-gray-900">{formData.address}</p>
+                        </div>
+                      </div>
+                      <Button
+                        onClick={() => setIsEditingProfile(true)}
+                        className="w-full h-11 bg-green-600 text-white font-semibold hover:bg-green-700"
+                      >
+                        Edit Profile
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </div>
 
-              {/* Form Fields */}
-              <div className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* First Name */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      First Name
-                    </label>
-                    {isEditing ? (
-                      <div className="relative">
-                        <User className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-                        <Input
-                          type="text"
-                          name="firstName"
-                          value={editData.firstName}
-                          onChange={handleChange}
-                          className="pl-10 h-11 rounded-lg border-gray-200"
-                        />
+              {/* Stats Cards */}
+              <div className="grid grid-cols-3 gap-4">
+                {stats.map((stat) => {
+                  const Icon = stat.icon;
+                  return (
+                    <div key={stat.label} className="bg-white rounded-xl border border-gray-100 p-4 shadow-sm hover:shadow-md transition-shadow text-center">
+                      <div className={`${stat.color} mb-2 flex justify-center`}>
+                        <Icon className="w-6 h-6" />
                       </div>
-                    ) : (
-                      <p className="text-gray-900 font-medium">{user.firstName}</p>
-                    )}
-                  </div>
-
-                  {/* Last Name */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Last Name
-                    </label>
-                    {isEditing ? (
-                      <div className="relative">
-                        <User className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-                        <Input
-                          type="text"
-                          name="lastName"
-                          value={editData.lastName}
-                          onChange={handleChange}
-                          className="pl-10 h-11 rounded-lg border-gray-200"
-                        />
-                      </div>
-                    ) : (
-                      <p className="text-gray-900 font-medium">{user.lastName}</p>
-                    )}
-                  </div>
-                </div>
-
-                {/* Email */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Email Address
-                  </label>
-                  {isEditing ? (
-                    <div className="relative">
-                      <Mail className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-                      <Input
-                        type="email"
-                        name="email"
-                        value={editData.email}
-                        onChange={handleChange}
-                        className="pl-10 h-11 rounded-lg border-gray-200"
-                      />
+                      <p className="text-xs text-gray-600 font-medium mb-1">{stat.label}</p>
+                      <p className="text-xl font-bold text-gray-900">{stat.value}</p>
                     </div>
-                  ) : (
-                    <p className="text-gray-900 font-medium">{user.email}</p>
-                  )}
-                </div>
-
-                {/* Phone */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Phone Number
-                  </label>
-                  {isEditing ? (
-                    <div className="relative">
-                      <Phone className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-                      <Input
-                        type="tel"
-                        name="phone"
-                        value={editData.phone}
-                        onChange={handleChange}
-                        className="pl-10 h-11 rounded-lg border-gray-200"
-                      />
-                    </div>
-                  ) : (
-                    <p className="text-gray-900 font-medium">{user.phone}</p>
-                  )}
-                </div>
-
-                {/* Address */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Address
-                  </label>
-                  {isEditing ? (
-                    <div className="relative">
-                      <MapPin className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-                      <Input
-                        type="text"
-                        name="address"
-                        value={editData.address}
-                        onChange={handleChange}
-                        className="pl-10 h-11 rounded-lg border-gray-200"
-                      />
-                    </div>
-                  ) : (
-                    <p className="text-gray-900 font-medium">{user.address}</p>
-                  )}
-                </div>
+                  );
+                })}
               </div>
             </div>
-          </div>
 
-          {/* Quick Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8 animate-in fade-in" style={{animationDelay: '0.2s'}}>
-            <div className="bg-white rounded-xl border border-gray-100 p-6 text-center hover:shadow-lg transition-shadow">
-              <p className="text-3xl font-bold text-green-600 mb-2">0</p>
-              <p className="text-gray-600">Total Orders</p>
-            </div>
-            <div className="bg-white rounded-xl border border-gray-100 p-6 text-center hover:shadow-lg transition-shadow">
-              <p className="text-3xl font-bold text-blue-600 mb-2">0</p>
-              <p className="text-gray-600">Wishlist Items</p>
-            </div>
-            <div className="bg-white rounded-xl border border-gray-100 p-6 text-center hover:shadow-lg transition-shadow">
-              <p className="text-3xl font-bold text-purple-600 mb-2">$0</p>
-              <p className="text-gray-600">Total Spent</p>
+            {/* Left Sidebar - Action Buttons */}
+            <div className="lg:col-span-1 space-y-3">
+              {actionButtons.map((btn) => {
+                const Icon = btn.icon;
+                return (
+                  <button
+                    key={btn.label}
+                    onClick={btn.onClick}
+                    className="w-full flex items-center justify-between px-4 py-3 bg-white border border-gray-200 rounded-lg hover:border-green-400 hover:bg-green-50/30 transition-colors text-left group"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Icon className="w-5 h-5 text-gray-600 group-hover:text-green-600" />
+                      <span className="font-medium text-gray-700 group-hover:text-gray-900">{btn.label}</span>
+                    </div>
+                    <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-green-600" />
+                  </button>
+                );
+              })}
+
+              {/* Logout Button */}
+              <button
+                onClick={handleLogout}
+                className="w-full flex items-center justify-between px-4 py-3 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 transition-colors text-left group mt-4"
+              >
+                <div className="flex items-center gap-3">
+                  <LogOut className="w-5 h-5 text-red-600 group-hover:text-red-700" />
+                  <span className="font-medium text-red-600 group-hover:text-red-700">Logout</span>
+                </div>
+                <ArrowRight className="w-4 h-4 text-red-400 group-hover:text-red-600" />
+              </button>
             </div>
           </div>
         </div>
       </section>
-
-      <Footer />
     </div>
   );
 }

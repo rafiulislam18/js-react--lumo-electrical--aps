@@ -1,6 +1,4 @@
 import { useState, useEffect } from "react";
-import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Heart, ShoppingCart, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -52,9 +50,7 @@ export default function Wishlist() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50/30 flex flex-col font-sans">
-      <Navbar />
-
+    <div className="bg-gray-50/30 flex flex-col font-sans">
       <section className="flex-1 py-20 px-4">
         <div className="container mx-auto max-w-5xl">
           {/* Header */}
@@ -191,8 +187,6 @@ export default function Wishlist() {
           )}
         </div>
       </section>
-
-      <Footer />
     </div>
   );
 }

@@ -1,13 +1,20 @@
 import { type Category } from "@/data/dummyData";
 import { ArrowRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface CategoryCardProps {
   category: Category;
 }
 
 export function CategoryCard({ category }: CategoryCardProps) {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate(`/products/${category.slug}`);
+  };
+
   return (
-    <div className="group relative flex flex-col items-center justify-center p-3 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-xl hover:shadow-green-900/5 hover:-translate-y-1 transition-smooth cursor-pointer overflow-hidden">
+    <div onClick={handleClick} className="group relative flex flex-col items-center justify-center p-3 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-xl hover:shadow-green-900/5 hover:-translate-y-1 transition-smooth cursor-pointer overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-br from-green-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-smooth" />
       
       <div className="relative z-10 w-14 h-14 rounded-full bg-gray-50 flex items-center justify-center mb-4 text-gray-500 group-hover:bg-white group-hover:text-primary group-hover:scale-110 group-hover:shadow-md transition-smooth">

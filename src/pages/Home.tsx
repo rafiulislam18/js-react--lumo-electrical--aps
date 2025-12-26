@@ -1,6 +1,4 @@
 import { Link } from "react-router-dom";
-import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
 import { CategoryCard } from "@/components/CategoryCard";
 import { ProductListColumn } from "@/components/ProductListColumn";
 import { 
@@ -18,10 +16,8 @@ import {
 export default function Home() {
   return (
     <div className="min-h-screen bg-gray-50/30 flex flex-col font-sans">
-      <Navbar />
-
       {/* Hero Section */}
-      <section className="relative w-full h-[400px] lg:h-[400px] overflow-hidden">
+      <section className="relative w-full h-[450px] lg:h-[400px] overflow-hidden">
         {/* Background Image with Overlay */}
         <div className="absolute inset-0 z-0">
           <img 
@@ -38,24 +34,24 @@ export default function Home() {
             {/* <span className="inline-block py-1 px-3 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 text-white text-sm font-medium mb-6">
               New Collection 2024
             </span> */}
-            <h1 className="text-4xl lg:text-5xl font-display font-bold text-white leading-[1.1] mb-6 shadow-sm">
+            <h1 className="text-4xl lg:text-5xl font-display font-bold text-white leading-[1.1] mb-6 shadow-sm px-2">
               Power Your <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-lime-400">
                 Projects & Installations
               </span>
             </h1>
-            <p className="text-md lg:text-lg text-gray-200 mb-8 leading-relaxed max-w-lg">
+            <p className="text-md lg:text-lg text-gray-200 mb-8 leading-relaxed max-w-lg px-2">
               Premium electrical components, tools, and solutions for professionals and DIY enthusiasts. Everything you need for reliable installations and repairs inside Cape Town, SA.
             </p>
-            <div className="flex flex-wrap justify-center gap-4">
-              <Button size="lg" className="bg-primary-gradient border-0 hover:opacity-90 transition-smooth h-12 px-8 rounded-full text-base font-semibold shadow-lg shadow-green-900/20">
+            <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-3 sm:gap-4 px-4">
+              <Button size="lg" className="bg-primary-gradient border-0 hover:opacity-90 transition-smooth h-10 sm:h-12 px-6 sm:px-8 rounded-full text-sm sm:text-base font-semibold shadow-lg shadow-green-900/20 w-full sm:w-auto">
                 Shop Now
               </Button>
-              <Link to="/products">
-                <Button size="lg" variant="outline" className="bg-white/10 backdrop-blur-sm border-white/30 text-white hover:bg-white hover:text-gray-900 h-12 px-8 rounded-full text-base font-semibold transition-smooth">
-                  View All Products
+              <a href="https://maps.app.goo.gl/6bGNaMY9HfjoUy3M7" target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
+                <Button size="lg" variant="outline" className="bg-white/10 backdrop-blur-sm border-white/30 text-white hover:bg-white hover:text-gray-900 h-10 sm:h-12 px-6 sm:px-8 rounded-full text-sm sm:text-base font-semibold transition-smooth w-full">
+                  Our Store
                 </Button>
-              </Link>
+              </a>
             </div>
           </div>
         </div>
@@ -107,13 +103,13 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-8 animate-stagger">
             <div className="animate-slide-in-up">
-              <ProductListColumn title="Featured Products" products={featuredProducts} linkTo="/products" />
+              <ProductListColumn title="Featured Products" products={featuredProducts} linkTo="/products/featured-products" />
             </div>
             <div className="animate-slide-in-up" style={{animationDelay: '0.1s'}}>
-              <ProductListColumn title="Best Sellers" products={bestSellers} linkTo="/products" />
+              <ProductListColumn title="Best Sellers" products={bestSellers} linkTo="/products/best-sellers" />
             </div>
             <div className="animate-slide-in-up" style={{animationDelay: '0.2s'}}>
-              <ProductListColumn title="New Arrivals" products={latestProducts} linkTo="/products" />
+              <ProductListColumn title="New Arrivals" products={latestProducts} linkTo="/products/new-arrivals" />
             </div>
           </div>
         </div>
@@ -167,8 +163,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      <Footer />
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { 
   Search, ShoppingCart, Heart, User, Menu, 
   ChevronDown, LogIn, UserPlus, Package, LogOut 
@@ -15,13 +15,17 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { CartSidebar } from "@/components/CartSidebar";
-import { categories } from "@/data/dummyData";
+import { categories, allProducts } from "@/data/dummyData";
 
 export function Navbar() {
+  const navigate = useNavigate();
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [cartCount, setCartCount] = useState(0);
   const [wishlistCount, setWishlistCount] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [showSearchResults, setShowSearchResults] = useState(false);
 
   useEffect(() => {
     const updateCounts = () => {
@@ -37,6 +41,38 @@ export function Navbar() {
     window.addEventListener("storage", updateCounts);
     return () => window.removeEventListener("storage", updateCounts);
   }, [isCartOpen]);
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    
+    if (query.trim().length === 0) {
+      setSearchResults([]);
+      setShowSearchResults(false);
+      return;
+    }
+
+    const queryLower = query.toLowerCase();
+    const results = allProducts.filter(product =>
+      product.name.toLowerCase().includes(queryLower)
+    ).slice(0, 5);
+
+    setSearchResults(results);
+    setShowSearchResults(true);
+  };
+
+  const handleSearchSubmit = () => {
+    if (searchQuery.trim()) {
+      navigate(`/products?search=${encodeURIComponent(searchQuery)}`);
+      setSearchQuery("");
+      setShowSearchResults(false);
+    }
+  };
+
+  const handleProductClick = (productId: string) => {
+    navigate(`/product-details/${productId}`);
+    setSearchQuery("");
+    setShowSearchResults(false);
+  };
 
   return (
     <>
@@ -60,12 +96,55 @@ export function Navbar() {
             <Input 
               className="pl-10 pr-4 h-11 rounded-full border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-300" 
               placeholder="Search for products, brands and categories..." 
+              value={searchQuery}
+              onChange={(e) => handleSearch(e.target.value)}
               onFocus={() => setIsSearchFocused(true)}
-              onBlur={() => setIsSearchFocused(false)}
+              onBlur={() => {
+                setIsSearchFocused(false);
+                setTimeout(() => setShowSearchResults(false), 200);
+              }}
+              onKeyPress={(e) => {
+                if (e.key === 'Enter') {
+                  handleSearchSubmit();
+                }
+              }}
             />
-            <button className="absolute right-1.5 top-1.5 bottom-1.5 px-4 bg-primary-gradient text-white rounded-full text-sm font-medium hover:opacity-90 transition-opacity">
+            <button 
+              onClick={handleSearchSubmit}
+              className="absolute right-1.5 top-1.5 bottom-1.5 px-4 bg-primary-gradient text-white rounded-full text-sm font-medium hover:opacity-90 transition-opacity"
+            >
               Search
             </button>
+
+            {/* Search Results Dropdown */}
+            {showSearchResults && searchResults.length > 0 && (
+              <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg z-50 overflow-hidden">
+                {searchResults.map((product) => (
+                  <button
+                    key={product.id}
+                    onClick={() => handleProductClick(product.id)}
+                    className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 border-b border-gray-100 last:border-0 text-left transition-colors"
+                  >
+                    <img 
+                      src={product.image} 
+                      alt={product.name}
+                      className="w-10 h-10 object-cover rounded"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-gray-900 truncate">{product.name}</p>
+                      <p className="text-xs text-gray-500">{product.category}</p>
+                    </div>
+                    <p className="text-sm font-semibold text-primary">${product.price}</p>
+                  </button>
+                ))}
+                <button
+                  onClick={handleSearchSubmit}
+                  className="w-full py-2 text-center text-sm text-primary hover:bg-primary/5 font-medium"
+                >
+                  View all results
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Action Icons */}
@@ -154,9 +233,11 @@ export function Navbar() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-56 rounded-xl p-2 shadow-lg border-gray-100" onOpenAutoFocus={(e: any) => e.preventDefault()}>
               {categories.map((cat: any) => (
-                <DropdownMenuItem key={cat.id} className="cursor-pointer rounded-lg py-2">
-                  <cat.icon className="w-4 h-4 mr-2 text-gray-500" />
-                  {cat.name}
+                <DropdownMenuItem key={cat.id} className="cursor-pointer rounded-lg py-2" asChild>
+                  <a href={`/products/${cat.slug}`} className="flex items-center">
+                    <cat.icon className="w-4 h-4 mr-2 text-gray-500" />
+                    {cat.name}
+                  </a>
                 </DropdownMenuItem>
               ))}
             </DropdownMenuContent>
@@ -166,7 +247,7 @@ export function Navbar() {
             {categories.slice(0, 8).map((cat: any) => (
               <a 
                 key={cat.id} 
-                href={`/category/${cat.id}`} 
+                href={`/products/${cat.slug}`} 
                 className="text-sm font-medium text-gray-600 hover:text-primary transition-colors whitespace-nowrap"
               >
                 {cat.name}

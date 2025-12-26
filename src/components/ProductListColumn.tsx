@@ -31,19 +31,19 @@ export function ProductListColumn({ title, products, linkTo }: ProductListColumn
       </div>
 
       <div className="flex flex-col gap-3">
-        {products.map((product) => {
+        {products.slice(0, 4).map((product) => {
           const discountPercent = calculateDiscountPercentage(product.oldPrice, product.price);
 
           return (
             <div 
               key={product.id} 
-              className="group flex gap-4 p-4 rounded-xl hover:bg-white hover:shadow-lg hover:shadow-green-900/5 transition-smooth border border-transparent hover:border-green-200 cursor-pointer"
-              onClick={() => navigate(`/product/${product.id}`)}
+              className="group flex flex-col sm:flex-row gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl hover:bg-white hover:shadow-lg hover:shadow-green-900/5 transition-smooth border border-transparent hover:border-green-200 cursor-pointer"
+              onClick={() => navigate(`/product-details/${product.id}`)}
               role="button"
               tabIndex={0}
             >
               {/* Product Image */}
-              <div className="relative w-24 h-24 shrink-0 bg-gray-50 rounded-lg overflow-hidden">
+              <div className="relative w-full sm:w-24 h-32 sm:h-24 shrink-0 bg-gray-50 rounded-lg overflow-hidden">
                 <img 
                   src={product.image} 
                   alt={product.name} 
@@ -61,18 +61,18 @@ export function ProductListColumn({ title, products, linkTo }: ProductListColumn
               {/* Product Info */}
               <div className="flex flex-col justify-between flex-1 min-w-0">
                 {/* Top Section */}
-                <div className="flex flex-col gap-1.5">
+                <div className="flex flex-col gap-1">
                   <span className="text-xs text-gray-400 font-medium uppercase tracking-wider">{product.category}</span>
-                  <h4 className="font-semibold text-gray-900 text-sm line-clamp-2 group-hover:text-primary transition-colors">
+                  <h4 className="font-semibold text-gray-900 text-xs sm:text-sm line-clamp-2 group-hover:text-primary transition-colors">
                     {product.name}
                   </h4>
                 </div>
 
                 {/* Bottom Section - Price & Actions */}
-                <div className="flex items-center justify-between gap-2">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mt-2 sm:mt-0">
                   <div className="flex flex-col">
                     <div className="flex items-baseline gap-2">
-                      <span className="font-bold text-lg text-primary">${product.price.toFixed(2)}</span>
+                      <span className="font-bold text-base sm:text-lg text-primary">${product.price.toFixed(2)}</span>
                       {product.oldPrice && (
                         <span className="text-xs text-gray-400 line-through">${product.oldPrice.toFixed(2)}</span>
                       )}
@@ -87,7 +87,7 @@ export function ProductListColumn({ title, products, linkTo }: ProductListColumn
                     <Button
                       size="icon"
                       variant="ghost"
-                      className="h-9 w-9 rounded-full hover:bg-red-50 hover:text-red-500 transition-smooth shadow-sm border border-gray-200"
+                      className="h-8 w-8 sm:h-9 sm:w-9 rounded-full hover:bg-red-50 hover:text-red-500 transition-smooth shadow-sm border border-gray-200"
                       onClick={(e) => {
                         e.stopPropagation();
                         console.log('Add to wishlist', product.id);
@@ -98,7 +98,7 @@ export function ProductListColumn({ title, products, linkTo }: ProductListColumn
                     </Button>
                     <Button
                       size="icon"
-                      className="h-9 w-9 rounded-full bg-primary-gradient hover:shadow-lg hover:shadow-green-600/30 transition-smooth shadow-md"
+                      className="h-8 w-8 sm:h-9 sm:w-9 rounded-full bg-primary-gradient hover:shadow-lg hover:shadow-green-600/30 transition-smooth shadow-md"
                       onClick={(e) => {
                         e.stopPropagation();
                         console.log('Add to cart', product.id);

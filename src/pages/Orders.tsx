@@ -1,5 +1,3 @@
-import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Package, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -34,26 +32,21 @@ const sampleOrders = [
 export default function Orders() {
   return (
     <div className="min-h-screen bg-gray-50/30 flex flex-col font-sans">
-      <Navbar />
-
-      <section className="flex-1 py-20 px-4">
+      <section className="flex-1 py-12 px-4">
         <div className="container mx-auto max-w-4xl">
           {/* Header */}
-          <div className="mb-12 animate-in fade-in slide-in-from-top-10 duration-700">
-            <h1 className="text-4xl font-display font-bold text-gray-900 mb-2">
-              My Orders
-            </h1>
-            <p className="text-gray-500">Track and manage your orders</p>
+          <div className="mb-8">
+            <h1 className="text-4xl font-bold text-gray-900">My Orders</h1>
+            <p className="text-gray-600 mt-2">Track and manage your orders</p>
           </div>
 
           {/* Orders List */}
           {sampleOrders.length > 0 ? (
-            <div className="space-y-4 animate-in fade-in" style={{animationDelay: '0.1s'}}>
+            <div className="space-y-4">
               {sampleOrders.map((order, index) => (
                 <div
                   key={order.id}
-                  className="bg-white rounded-xl border border-gray-100 p-6 hover:shadow-lg transition-shadow animate-in fade-in slide-in-from-bottom-5"
-                  style={{animationDelay: `${0.15 + (index * 0.05)}s`}}
+                  className="bg-white rounded-xl border border-gray-100 p-6 hover:shadow-lg transition-shadow hover:border-green-200"
                 >
                   <div className="flex items-center justify-between mb-4">
                     <div>
@@ -77,7 +70,7 @@ export default function Orders() {
                     <div className="text-right">
                       <Button
                         variant="outline"
-                        className="border-gray-200 text-gray-700 hover:bg-gray-50"
+                        className="border-gray-200 text-gray-700 hover:bg-green-50 hover:border-green-400 hover:text-green-700"
                       >
                         View Details
                         <ArrowRight className="w-4 h-4 ml-2" />
@@ -88,12 +81,12 @@ export default function Orders() {
               ))}
             </div>
           ) : (
-            <div className="bg-white rounded-2xl border border-gray-100 p-16 text-center">
+            <div className="bg-white rounded-xl border border-gray-100 p-16 text-center">
               <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
               <h3 className="text-xl font-bold text-gray-900 mb-2">No Orders Yet</h3>
               <p className="text-gray-500 mb-6">You haven't placed any orders yet. Start shopping!</p>
               <Link to="/products">
-                <Button className="bg-primary-gradient border-0 text-white">
+                <Button className="bg-gradient-to-r from-green-500 to-lime-400 border-0 text-white font-semibold hover:opacity-90">
                   Continue Shopping
                 </Button>
               </Link>
@@ -101,8 +94,6 @@ export default function Orders() {
           )}
         </div>
       </section>
-
-      <Footer />
     </div>
   );
 }
