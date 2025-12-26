@@ -47,7 +47,7 @@ export default function Home() {
             </p>
             <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-3 sm:gap-4 px-4">
               <Button size="lg" className="bg-primary-gradient border-0 hover:opacity-90 transition-smooth h-10 sm:h-12 px-6 sm:px-8 rounded-full text-sm sm:text-base font-semibold shadow-lg shadow-green-900/20 w-full sm:w-auto">
-                Shop Now
+                <a href="/products/featured-products">Shop Now</a>
               </Button>
               <a href="https://maps.app.goo.gl/6bGNaMY9HfjoUy3M7" target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
                 <Button size="lg" variant="outline" className="bg-white/10 backdrop-blur-sm border-white/30 text-white hover:bg-white hover:text-gray-900 h-10 sm:h-12 px-6 sm:px-8 rounded-full text-sm sm:text-base font-semibold transition-smooth w-full">
