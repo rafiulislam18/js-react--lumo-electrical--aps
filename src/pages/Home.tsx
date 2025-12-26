@@ -1,13 +1,11 @@
-import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
+import { Link } from "react-router-dom";
 import { CategoryCard } from "@/components/CategoryCard";
 import { ProductListColumn } from "@/components/ProductListColumn";
 import { 
   categories, featuredProducts, bestSellers, latestProducts, 
-  heroBanner, faqs 
+  faqs 
 } from "@/data/dummyData";
 import { Button } from "@/components/ui/button";
-import { Truck, ShieldCheck, RefreshCw, Headset } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
@@ -18,14 +16,12 @@ import {
 export default function Home() {
   return (
     <div className="min-h-screen bg-gray-50/30 flex flex-col font-sans">
-      <Navbar />
-
       {/* Hero Section */}
-      <section className="relative w-full h-[400px] lg:h-[400px] overflow-hidden">
+      <section className="relative w-full h-[450px] lg:h-[400px] overflow-hidden">
         {/* Background Image with Overlay */}
         <div className="absolute inset-0 z-0">
           <img 
-            src={heroBanner} 
+            src="/images/home/hero-bg3.jpeg" 
             alt="Hero Background" 
             className="w-full h-full object-cover"
           />
@@ -38,22 +34,24 @@ export default function Home() {
             {/* <span className="inline-block py-1 px-3 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 text-white text-sm font-medium mb-6">
               New Collection 2024
             </span> */}
-            <h1 className="text-4xl lg:text-5xl font-display font-bold text-white leading-[1.1] mb-6 shadow-sm">
+            <h1 className="text-4xl lg:text-5xl font-display font-bold text-white leading-[1.1] mb-6 shadow-sm px-2">
               Power Your <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-lime-400">
                 Projects & Installations
               </span>
             </h1>
-            <p className="text-md lg:text-lg text-gray-200 mb-8 leading-relaxed max-w-lg">
+            <p className="text-md lg:text-lg text-gray-200 mb-8 leading-relaxed max-w-lg px-2">
               Premium electrical components, tools, and solutions for professionals and DIY enthusiasts. Everything you need for reliable installations and repairs inside Cape Town, SA.
             </p>
-            <div className="flex flex-wrap justify-center gap-4">
-              <Button size="lg" className="bg-primary-gradient border-0 hover:opacity-90 transition-opacity h-12 px-8 rounded-full text-base font-semibold shadow-lg shadow-green-900/20">
+            <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-3 sm:gap-4 px-4">
+              <Button size="lg" className="bg-primary-gradient border-0 hover:opacity-90 transition-smooth h-10 sm:h-12 px-6 sm:px-8 rounded-full text-sm sm:text-base font-semibold shadow-lg shadow-green-900/20 w-full sm:w-auto">
                 Shop Now
               </Button>
-              <Button size="lg" variant="outline" className="bg-white/10 backdrop-blur-sm border-white/30 text-white hover:bg-white hover:text-gray-900 h-12 px-8 rounded-full text-base font-semibold transition-all">
-                Our Store
-              </Button>
+              <a href="https://maps.app.goo.gl/6bGNaMY9HfjoUy3M7" target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
+                <Button size="lg" variant="outline" className="bg-white/10 backdrop-blur-sm border-white/30 text-white hover:bg-white hover:text-gray-900 h-10 sm:h-12 px-6 sm:px-8 rounded-full text-sm sm:text-base font-semibold transition-smooth w-full">
+                  Our Store
+                </Button>
+              </a>
             </div>
           </div>
         </div>
@@ -88,23 +86,31 @@ export default function Home() {
       </section> */}
 
       {/* Categories Grid */}
-      <section className="pb-12 container mx-auto px-4">
-        {/* <SectionHeader title="Shop by Category" subtitle="Browse our diverse collection of premium products" /> */}
+      <section className="py-20 container mx-auto px-4 animate-fade-in" style={{animationDelay: '0.1s'}}>
+        <SectionHeader title="Explore by Category" subtitle="Browse our diverse collection of high-quality products" center />
         
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 lg:gap-6 mt-12">
-          {categories.map((cat) => (
-            <CategoryCard key={cat.id} category={cat} />
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 lg:gap-6 mt-12 animate-stagger">
+          {categories.map((cat: any) => (
+            <div key={cat.id} className="animate-slide-in-up">
+              <CategoryCard category={cat} />
+            </div>
           ))}
         </div>
       </section>
 
       {/* Product Lists (3 Columns) */}
-      <section className="py-20 bg-gray-50 border-y border-gray-100">
+      <section className="py-20 bg-gray-50 border-y border-gray-100 animate-fade-in" style={{animationDelay: '0.2s'}}>
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-8">
-            <ProductListColumn title="Featured Products" products={featuredProducts} linkTo="/featured" />
-            <ProductListColumn title="Best Sellers" products={bestSellers} linkTo="/best-sellers" />
-            <ProductListColumn title="New Arrivals" products={latestProducts} linkTo="/new" />
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-8 animate-stagger">
+            <div className="animate-slide-in-up">
+              <ProductListColumn title="Featured Products" products={featuredProducts} linkTo="/products/featured-products" />
+            </div>
+            <div className="animate-slide-in-up" style={{animationDelay: '0.1s'}}>
+              <ProductListColumn title="Best Sellers" products={bestSellers} linkTo="/products/best-sellers" />
+            </div>
+            <div className="animate-slide-in-up" style={{animationDelay: '0.2s'}}>
+              <ProductListColumn title="New Arrivals" products={latestProducts} linkTo="/products/new-arrivals" />
+            </div>
           </div>
         </div>
       </section>
@@ -137,14 +143,14 @@ export default function Home() {
       </section> */}
 
       {/* FAQ Section */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-white animate-fade-in" style={{animationDelay: '0.3s'}}>
         <div className="container mx-auto px-4 max-w-4xl">
           <SectionHeader title="Frequently Asked Questions" subtitle="Got questions? We've got answers." center />
           
-          <div className="mt-12 bg-gray-50 p-8 rounded-3xl border border-gray-100">
+          <div className="mt-12 bg-gray-50 p-8 rounded-3xl border border-gray-100 animate-scale-in" style={{animationDelay: '0.4s'}}>
             <Accordion type="single" collapsible className="w-full">
-              {faqs.map((faq) => (
-                <AccordionItem key={faq.id} value={faq.id} className="border-b-gray-200 last:border-0">
+              {faqs.map((faq: any, index: any) => (
+                <AccordionItem key={faq.id} value={faq.id} className="border-b-gray-200 last:border-0 transition-smooth" style={{animationDelay: `${0.4 + (index * 0.05)}s`}}>
                   <AccordionTrigger className="text-lg font-medium text-gray-900 hover:text-primary transition-colors py-5">
                     {faq.question}
                   </AccordionTrigger>
@@ -157,22 +163,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      <Footer />
-    </div>
-  );
-}
-
-function FeatureItem({ icon: Icon, title, desc }: { icon: React.ElementType, title: string, desc: string }) {
-  return (
-    <div className="flex items-center gap-4 p-4 rounded-xl hover:bg-gray-50 transition-colors duration-300 group cursor-default">
-      <div className="w-12 h-12 rounded-full bg-green-50 text-green-600 flex items-center justify-center shrink-0 group-hover:bg-primary-gradient group-hover:text-white transition-all duration-300 shadow-sm">
-        <Icon className="w-6 h-6" />
-      </div>
-      <div>
-        <h4 className="font-bold text-gray-900">{title}</h4>
-        <p className="text-sm text-gray-500">{desc}</p>
-      </div>
     </div>
   );
 }

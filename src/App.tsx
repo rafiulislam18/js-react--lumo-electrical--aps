@@ -3,23 +3,22 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import NotFound from "@/pages/not-found";
-import Home from "@/pages/Home";
+import { Layout } from "@/components/Layout";
 
-function Router() {
-  return (
-    <Routes>
-      <Route path="/" element={<Home />} />
-      {/* 
-        In a real app, you would add routes here:
-        <Route path="/products/:id" element={<ProductDetail />} />
-        <Route path="/category/:id" element={<CategoryPage />} />
-        <Route path="/cart" element={<Cart />} />
-      */}
-      <Route path="*" element={<NotFound />} />
-    </Routes>
-  );
-}
+// Pages that use Layout
+import Home from "@/pages/Home";
+import Products from "@/pages/Products";
+import ProductDetail from "@/pages/ProductDetail";
+import Orders from "@/pages/Orders";
+import Wishlist from "@/pages/Wishlist";
+
+// Pages without Layout (Auth pages, etc.)
+import Login from "@/pages/Login";
+import Signup from "@/pages/Signup";
+import ForgotPassword from "@/pages/ForgotPassword";
+import ChangePassword from "@/pages/ChangePassword";
+import Profile from "@/pages/Profile";
+import NotFound from "@/pages/not-found";
 
 function App() {
   return (
@@ -27,7 +26,27 @@ function App() {
       <BrowserRouter>
         <TooltipProvider>
           <Toaster />
-          <Router />
+          <Routes>
+            {/* Layout Routes */}
+            <Route element={<Layout />}>
+              <Route index path="/" element={<Home />} />
+              <Route path="/products" element={<Products />} />
+              <Route path="/products/:categorySlug" element={<Products />} />
+              <Route path="/product-details/:id" element={<ProductDetail />} />
+              <Route path="/orders" element={<Orders />} />
+              <Route path="/wishlist" element={<Wishlist />} />
+              <Route path="/profile" element={<Profile />} />
+            </Route>
+
+            {/* Auth Routes (without Layout) */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/change-password" element={<ChangePassword />} />
+
+            {/* 404 - Catch all */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
         </TooltipProvider>
       </BrowserRouter>
     </QueryClientProvider>

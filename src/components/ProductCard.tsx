@@ -1,17 +1,31 @@
 import { ShoppingCart, Heart, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { type Product } from "@/data/dummyData";
+import { useNavigate } from "react-router-dom";
 
 interface ProductCardProps {
   product: Product;
 }
 
+// Helper function to calculate discount percentage
+const calculateDiscountPercentage = (oldPrice: number | undefined, currentPrice: number): number | null => {
+  if (!oldPrice || oldPrice <= currentPrice) return null;
+  return Math.round(((oldPrice - currentPrice) / oldPrice) * 100);
+};
+
 export function ProductCard({ product }: ProductCardProps) {
+  const discountPercent = calculateDiscountPercentage(product.oldPrice, product.price);
+  const navigate = useNavigate();
+
+  const handleProductClick = () => {
+    navigate(`/product-details/${product.id}`);
+  };
+
   return (
-    <div className="group relative flex flex-col items-center p-3 bg-white rounded-xl border border-transparent hover:border-green-100 hover:shadow-xl hover:shadow-green-900/5 transition-all duration-300">
-      {/* Badge */}
+    <div className="group relative flex flex-col p-2 sm:p-3 bg-white rounded-lg border border-transparent hover:border-green-200 hover:shadow-lg hover:shadow-green-900/5 transition-smooth">
+      {/* Top Left Badge */}
       {product.badge && (
-        <div className={`absolute top-3 left-3 z-10 px-2 py-1 text-xs font-bold text-white rounded-md shadow-sm
+        <div className={`absolute top-2 left-2 z-20 px-2 py-1 text-xs font-bold text-white rounded-md shadow-md backdrop-blur-sm
           ${product.badge === 'New' ? 'bg-blue-500' : ''}
           ${product.badge === 'Sale' ? 'bg-red-500' : ''}
           ${product.badge === 'Hot' ? 'bg-orange-500' : ''}
@@ -20,40 +34,36 @@ export function ProductCard({ product }: ProductCardProps) {
         </div>
       )}
 
+      {/* Discount Badge - Top Right */}
+      {discountPercent !== null && (
+        <div className="absolute top-2 right-2 z-20 bg-red-500 text-white px-2 py-1 rounded-md text-xs font-bold shadow-md">
+          -{discountPercent}%
+        </div>
+      )}
+
       {/* Wishlist Button - Hidden until hover */}
-      <button className="absolute top-3 right-3 z-10 p-2 bg-white rounded-full shadow-md text-gray-400 opacity-0 group-hover:opacity-100 translate-x-2 group-hover:translate-x-0 transition-all duration-300 hover:text-red-500 hover:bg-red-50">
-        <Heart className="w-4 h-4" />
+      <button className="absolute top-12 right-2 z-10 p-2 bg-white rounded-full shadow-md text-gray-400 opacity-0 group-hover:opacity-100 translate-x-2 group-hover:translate-x-0 transition-smooth hover:text-red-500 hover:bg-red-50 border border-gray-100 hover:border-red-200" title="Add to Wishlist">
+        <Heart className="w-3.5 h-3.5" />
       </button>
 
       {/* Image Container */}
-      <div className="relative w-full aspect-square mb-3 overflow-hidden rounded-lg bg-gray-50">
+      <div className="relative w-full aspect-square mb-2 overflow-hidden rounded-lg bg-gray-50 border border-gray-100 cursor-pointer" onClick={handleProductClick}>
         <img 
           src={product.image} 
           alt={product.name} 
-          className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 ease-out"
+          className="w-full h-full object-cover object-center group-hover:scale-110 transition-smooth ease-out"
         />
-        
-        {/* Quick Add Overlay */}
-        <div className="absolute inset-x-0 bottom-0 p-4 opacity-0 group-hover:opacity-100 translate-y-full group-hover:translate-y-0 transition-all duration-300 flex justify-center">
-          <Button 
-            size="sm" 
-            className="w-full bg-white/90 backdrop-blur text-foreground hover:bg-white hover:text-primary shadow-lg"
-            onClick={() => console.log('Quick view', product.id)}
-          >
-            Quick View
-          </Button>
-        </div>
       </div>
 
       {/* Content */}
       <div className="w-full flex flex-col gap-1">
-        <div className="text-xs text-gray-400 font-medium uppercase tracking-wider">{product.category}</div>
-        <h3 className="font-medium text-gray-900 line-clamp-2 min-h-[2.5rem] group-hover:text-primary transition-colors">
+        <div className="text-xs text-gray-400 font-bold uppercase tracking-widest line-clamp-1">{product.category}</div>
+        <h3 className="font-semibold text-gray-900 line-clamp-2 min-h-[2rem] group-hover:text-primary transition-smooth text-xs leading-tight cursor-pointer" onClick={handleProductClick}>
           {product.name}
         </h3>
         
         {/* Rating */}
-        <div className="flex items-center gap-1 mt-1">
+        <div className="flex items-center gap-1">
           <div className="flex text-yellow-400">
             {[...Array(5)].map((_, i) => (
               <Star 
@@ -62,24 +72,43 @@ export function ProductCard({ product }: ProductCardProps) {
               />
             ))}
           </div>
-          <span className="text-xs text-gray-400">({product.reviews})</span>
+          <span className="text-xs text-gray-500 font-medium">({product.reviews})</span>
         </div>
 
-        {/* Price & Add to Cart */}
-        <div className="flex items-center justify-between mt-3">
-          <div className="flex flex-col">
+        {/* Price Section */}
+        <div className="flex flex-col gap-0.5 py-1.5 border-t border-b border-gray-100">
+          <div className="flex items-baseline gap-1.5">
+            <span className="font-bold text-sm text-primary">${product.price.toFixed(2)}</span>
             {product.oldPrice && (
               <span className="text-xs text-gray-400 line-through">${product.oldPrice.toFixed(2)}</span>
             )}
-            <span className="font-bold text-lg text-gray-900">${product.price.toFixed(2)}</span>
           </div>
-          
+          {discountPercent !== null && (
+            <span className="text-xs text-green-600 font-semibold">
+              Save ${(product.oldPrice! - product.price).toFixed(2)}
+            </span>
+          )}
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex gap-1.5 pt-1.5">
           <Button 
-            size="icon" 
-            className="rounded-full bg-primary-gradient shadow-lg shadow-green-600/20 hover:shadow-green-600/40 hover:-translate-y-0.5 transition-all duration-300"
-            onClick={() => console.log('Add to cart', product.id)}
+            size="sm"
+            variant="outline"
+            className="flex-1 rounded-lg border-gray-200 hover:border-red-300 hover:bg-red-50 hover:text-red-500 transition-smooth text-xs font-medium h-8"
+            onClick={() => console.log('Add to wishlist', product.id)}
+            title="Add to Wishlist"
           >
-            <ShoppingCart className="w-4 h-4 text-white" />
+            <Heart className="w-3 h-3" />
+          </Button>
+          <Button 
+            size="sm"
+            className="flex-1 rounded-lg bg-primary-gradient shadow-lg shadow-green-600/20 hover:shadow-green-600/40 transition-smooth font-medium text-white h-8 text-xs"
+            onClick={() => console.log('Add to cart', product.id)}
+            title="Add to Cart"
+          >
+            <ShoppingCart className="w-3 h-3" />
+            <span>Add</span>
           </Button>
         </div>
       </div>
