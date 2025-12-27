@@ -12,8 +12,7 @@ import Products from "@/pages/Products";
 import ProductDetail from "@/pages/ProductDetail";
 import Orders from "@/pages/Orders";
 import Wishlist from "@/pages/Wishlist";
-
-// Pages without Layout (Auth pages, etc.)
+import Checkout from "@/pages/Checkout";
 import Login from "@/pages/Login";
 import Signup from "@/pages/Signup";
 import ForgotPassword from "@/pages/ForgotPassword";
@@ -45,6 +44,7 @@ function App() {
               <Route path="/products" element={<Products />} />
               <Route path="/products/:categorySlug" element={<Products />} />
               <Route path="/product-details/:id" element={<ProductDetail />} />
+              <Route path="/checkout" element={<Checkout />} />
               <Route path="/orders" element={<Orders />} />
               <Route path="/wishlist" element={<Wishlist />} />
               <Route path="/profile" element={<Profile />} />

@@ -36,6 +36,14 @@ export interface FAQItem {
   answer: string;
 }
 
+export interface CartItem {
+  id: string;
+  name: string;
+  price: number;
+  image: string;
+  quantity: number;
+}
+
 export const categories: Category[] = [
   { id: "1", name: "Circuit Breakers", slug: "circuit-breakers", icon: Zap },
   { id: "2", name: "Wire & Cables", slug: "wire-cables", icon: Cable },
@@ -430,6 +438,38 @@ export const allProducts: Product[] = [
   { id: "p10-4", name: "Pendant Light Fixture", price: 55.00, image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=500&q=80", category: "Indoor Fittings", categoryId: "10", rating: 4.9, reviews: 112, badge: "Hot", inStock: true, isFeatured: true },
   { id: "p10-5", name: "Wall Sconce Light Pair", price: 67.50, oldPrice: 85.00, image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=500&q=80", category: "Indoor Fittings", categoryId: "10", rating: 4.7, reviews: 89, inStock: true },
   { id: "p10-6", name: "Track Light System 4-Head", price: 89.99, image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=500&q=80", category: "Indoor Fittings", categoryId: "10", rating: 4.8, reviews: 134, inStock: true }
+];
+
+// Dummy cart data for testing checkout
+export const dummyCartItems: CartItem[] = [
+  {
+    id: "f1",
+    name: "MCB Circuit Breaker 32A",
+    price: 18.99,
+    image: "https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=500&q=80",
+    quantity: 2
+  },
+  {
+    id: "f2",
+    name: "Copper Electrical Wire 2.5mm (90m)",
+    price: 79.00,
+    image: "https://images.unsplash.com/photo-1600489000022-c2086d79f9d4?w=500&q=80",
+    quantity: 1
+  },
+  {
+    id: "f5",
+    name: "Circuit Breaker RCCB 63A",
+    price: 45.99,
+    image: "https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=500&q=80",
+    quantity: 3
+  },
+  {
+    id: "f7",
+    name: "LED Downlight 12W White",
+    price: 16.50,
+    image: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=500&q=80",
+    quantity: 1
+  }
 ];
 
 // Helper functions to get products by their one-to-one relationships

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { X, ShoppingCart, Trash2, Plus, Minus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 interface CartItem {
   id: string;
@@ -17,6 +17,7 @@ interface CartSidebarProps {
 }
 
 export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
+  const navigate = useNavigate();
   const [items, setItems] = useState<CartItem[]>([]);
 
   useEffect(() => {
@@ -180,7 +181,10 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
             {/* Buttons */}
             <div className="space-y-2">
               <Button
-                onClick={onClose}
+                onClick={() => {
+                  navigate("/checkout");
+                  onClose();
+                }}
                 className="w-full bg-primary-gradient border-0 text-white font-semibold h-11 rounded-lg hover:opacity-90 transition-smooth"
               >
                 Proceed to Checkout

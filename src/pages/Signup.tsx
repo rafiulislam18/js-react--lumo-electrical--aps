@@ -78,7 +78,7 @@ export default function Signup() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    First Name
+                    First Name <span className="text-red-600">*</span>
                   </label>
                   <div className="relative">
                     <User className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
@@ -95,7 +95,7 @@ export default function Signup() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Last Name
+                    Last Name <span className="text-red-600">*</span>
                   </label>
                   <div className="relative">
                     <User className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
@@ -115,7 +115,7 @@ export default function Signup() {
               {/* Email */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Email Address
+                  Email Address <span className="text-red-600">*</span>
                 </label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
@@ -134,7 +134,7 @@ export default function Signup() {
               {/* Phone */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Phone Number
+                  Phone Number <span className="text-red-600">*</span>
                 </label>
                 <div className="relative">
                   <Phone className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
@@ -153,7 +153,7 @@ export default function Signup() {
               {/* Address */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Address
+                  Address <span className="text-red-600">*</span>
                 </label>
                 <div className="relative">
                   <MapPin className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
@@ -172,7 +172,7 @@ export default function Signup() {
               {/* Password */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Password
+                  Password <span className="text-red-600">*</span>
                 </label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
@@ -202,7 +202,7 @@ export default function Signup() {
               {/* Confirm Password */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Confirm Password
+                  Confirm Password <span className="text-red-600">*</span>
                 </label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
