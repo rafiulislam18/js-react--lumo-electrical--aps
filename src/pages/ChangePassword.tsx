@@ -1,9 +1,7 @@
 import { useState } from "react";
-import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Eye, EyeOff, Lock, ArrowLeft } from "lucide-react";
+import { Eye, EyeOff, Lock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export default function ChangePassword() {
@@ -155,14 +153,6 @@ export default function ChangePassword() {
 
               {/* Actions */}
               <div className="flex gap-3 pt-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => navigate("/profile")}
-                  className="flex-1"
-                >
-                  Cancel
-                </Button>
                 <Button
                   type="submit"
                   disabled={isLoading || !passwords.current || !passwords.new || !passwords.confirm}

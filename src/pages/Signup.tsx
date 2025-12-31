@@ -1,7 +1,5 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Eye, EyeOff, Mail, Lock, User, Phone, MapPin } from "lucide-react";
@@ -257,7 +255,6 @@ export default function Signup() {
               </Button>
             </form>
 
-            {/* Footer */}
             <div className="px-8 py-6 bg-gray-50 border-t border-gray-100 text-center">
               <p className="text-gray-600 text-sm">
                 Already have an account?{" "}
