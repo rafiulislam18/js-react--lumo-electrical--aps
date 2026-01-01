@@ -1,7 +1,8 @@
 import { useState, useMemo, useEffect } from "react";
 import { useSearchParams, useParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { ProductCard } from "@/components/ProductCard";
-import { allProducts, categories, MIN_PRODUCT_PRICE, MAX_PRODUCT_PRICE } from "@/data/dummyData";
+import { categories } from "@/data/dummyData";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ChevronLeft, ChevronRight, SlidersHorizontal } from "lucide-react";
@@ -13,17 +14,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-// Combine all products and remove duplicates
-const productsData = [...allProducts].reduce((acc: any, product: any) => {
-  if (!acc.find((p: any) => p.id === product.id)) {
-    acc.push(product);
-  }
-  return acc;
-}, []);
-
 const ITEMS_PER_PAGE = 12;
-const MIN_PRICE = MIN_PRODUCT_PRICE;
-const MAX_PRICE = MAX_PRODUCT_PRICE;
+const MIN_PRICE = 0;
+const MAX_PRICE = 1000;
 
 // Map special section types to their display names
 const SPECIAL_SECTIONS: Record<string, { name: string; filterFn: (p: any) => boolean }> = {
@@ -41,15 +34,28 @@ const SPECIAL_SECTIONS: Record<string, { name: string; filterFn: (p: any) => boo
   },
 };
 
+// Transform backend API response to match ProductCard format
+const transformBackendProduct = (product: any) => ({
+  id: product.id.toString(),
+  name: product.name,
+  price: parseFloat(product.price),
+  oldPrice: product.old_price ? parseFloat(product.old_price) : undefined,
+  image: product.image,
+  category: "",
+  categoryId: "",
+  rating: parseFloat(product.rating),
+  reviews: product.reviews_count,
+  badge: product.badge || undefined,
+  inStock: product.in_stock,
+  isFeatured: false,
+  isNewArrival: product.badge === "New",
+  isBestSeller: false,
+});
+
 export default function Products() {
   const [searchParams] = useSearchParams();
   const { categorySlug } = useParams();
   const searchQuery = searchParams.get("search") || "";
-  
-  // Determine if this is a special section or regular category
-  const isSpecialSection = categorySlug && categorySlug in SPECIAL_SECTIONS;
-  const selectedCategory = !isSpecialSection && categorySlug ? categories.find(cat => cat.slug === categorySlug) : null;
-  const specialSection = isSpecialSection && categorySlug ? SPECIAL_SECTIONS[categorySlug] : null;
   
   const [sortBy, setSortBy] = useState("newest");
   const [minPrice, setMinPrice] = useState(MIN_PRICE);
@@ -59,6 +65,18 @@ export default function Products() {
   const [currentPage, setCurrentPage] = useState(1);
   const [showFilters, setShowFilters] = useState(false);
   const [activeSlider, setActiveSlider] = useState<"min" | "max">("min");
+
+  // Fetch all products from backend
+  const { data: backendProducts = [], isLoading, isError } = useQuery({
+    queryKey: ['products'],
+    queryFn: async () => {
+      const apiUrl = import.meta.env.VITE_API_URL;
+      const response = await fetch(`${apiUrl}/products/`);
+      if (!response.ok) throw new Error('Failed to fetch products');
+      const data = await response.json();
+      return data.map(transformBackendProduct);
+    },
+  });
 
   // Reset filters and page when search query or category changes
   useEffect(() => {
@@ -70,50 +88,22 @@ export default function Products() {
     setSortBy("newest");
   }, [searchQuery, categorySlug]);
 
-  // Filter products
+  // Filter products - currently ignoring filters (dummy display only)
+  // Will always show all backend products for now
   const filteredProducts = useMemo(() => {
-    let filtered = productsData;
+    let filtered = [...backendProducts];
 
-    // Filter by special section if applicable
-    if (isSpecialSection && specialSection) {
-      filtered = filtered.filter(specialSection.filterFn);
-    }
-    
-    // Filter by category if categorySlug is provided and not a special section
-    if (categorySlug && selectedCategory) {
-      filtered = filtered.filter((p: any) => p.categoryId === selectedCategory.id);
-    }
-
-    // Filter by search query - search only by product name
-    if (searchQuery.trim()) {
-      const queryLower = searchQuery.toLowerCase();
-      filtered = filtered.filter(
-        (p: any) => p.name.toLowerCase().includes(queryLower)
-      );
-    }
-
-    // Filter by price range
-    filtered = filtered.filter((p: any) => p.price >= minPrice && p.price <= maxPrice);
-
-    // Filter by availability
-    if (availability === "in-stock") {
-      filtered = filtered.filter((p: any) => p.inStock === true);
-    } else if (availability === "out-of-stock") {
-      filtered = filtered.filter((p: any) => p.inStock === false);
-    }
-
-    // Filter by rating
-    if (rating !== "all") {
-      if (rating === "below3") {
-        filtered = filtered.filter((p: any) => p.rating < 3);
-      } else {
-        const ratingValue = parseInt(rating);
-        filtered = filtered.filter((p: any) => p.rating >= ratingValue);
-      }
-    }
+    // TODO: Implement actual filtering later
+    // For now, we ignore:
+    // - Category slug (special sections and categories)
+    // - Price range filter
+    // - Availability filter
+    // - Rating filter
+    // - Search query
+    // and just show all products from backend
 
     return filtered;
-  }, [minPrice, maxPrice, availability, rating, searchQuery, categorySlug, selectedCategory, isSpecialSection, specialSection]);
+  }, [backendProducts]);
 
   // Sort products
   const sortedProducts = useMemo(() => {
@@ -201,30 +191,10 @@ export default function Products() {
         <div className="container mx-auto px-2 sm:px-4 py-3 sm:py-4">
           <div className="flex items-center gap-2 text-xs sm:text-sm overflow-x-auto">
             <a href="/" className="text-gray-600 hover:text-primary transition-colors whitespace-nowrap">Home</a>
-            {searchQuery && (
-              <>
-                <span className="text-gray-400">/</span>
-                <span className="text-primary font-semibold text-xs sm:text-sm truncate">Search - {searchQuery.substring(0, 15)}{searchQuery.length > 15 ? '...' : ''}</span>
-              </>
-            )}
-            {selectedCategory && (
-              <>
-                <span className="text-gray-400">/</span>
-                <span className="text-primary font-semibold">{selectedCategory.name}</span>
-              </>
-            )}
-            {specialSection && (
-              <>
-                <span className="text-gray-400">/</span>
-                <span className="text-primary font-semibold">{specialSection.name}</span>
-              </>
-            )}
-            {!selectedCategory && !specialSection && !searchQuery && (
-              <>
-                <span className="text-gray-400">/</span>
-                <span className="text-primary font-semibold">All Products</span>
-              </>
-            )}
+            <span className="text-gray-400">/</span>
+            {/* NOTE: Category slugs, search, and special sections are ignored for now */}
+            {/* Only showing all products from backend */}
+            <span className="text-primary font-semibold">All Products</span>
           </div>
         </div>
       </section>
@@ -478,10 +448,10 @@ export default function Products() {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8">
               <div className="flex-1 min-w-0">
                 <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 animate-fade-in line-clamp-2 sm:line-clamp-none">
-                  {searchQuery ? `Search Results for "${searchQuery}"` : selectedCategory ? selectedCategory.name : specialSection ? specialSection.name : "All Products"}
+                  All Products
                 </h2>
                 <p className="text-xs sm:text-sm text-gray-600 mt-1 sm:mt-2 animate-fade-in" style={{animationDelay: '0.1s'}}>
-                  Showing {paginatedProducts.length} of {sortedProducts.length} products
+                  {isLoading ? 'Loading products...' : `Showing ${paginatedProducts.length} of ${sortedProducts.length} products`}
                 </p>
               </div>
 
@@ -514,7 +484,15 @@ export default function Products() {
             </div>
 
             {/* Products Grid */}
-            {paginatedProducts.length > 0 ? (
+            {isLoading ? (
+              <div className="text-center py-16 animate-fade-in">
+                <p className="text-gray-600 text-lg mb-4">Loading products...</p>
+              </div>
+            ) : isError ? (
+              <div className="text-center py-16 animate-fade-in">
+                <p className="text-red-600 text-lg mb-4">Failed to load products. Please try again later.</p>
+              </div>
+            ) : paginatedProducts.length > 0 ? (
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4 lg:gap-6 animate-stagger mb-12">
                 {paginatedProducts.map(product => (
                   <div key={product.id} className="animate-slide-in-up">
