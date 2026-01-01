@@ -16,9 +16,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { CartSidebar } from "@/components/CartSidebar";
 import { categories, allProducts } from "@/data/dummyData";
+import { useAuth } from "@/context/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 
 export function Navbar() {
   const navigate = useNavigate();
+  const { isAuthenticated, user, logout } = useAuth();
+  const { toast } = useToast();
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -188,43 +192,64 @@ export function Navbar() {
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56 rounded-xl shadow-xl border-gray-100 p-2" onOpenAutoFocus={(e: any) => e.preventDefault()} onMouseLeave={() => setOpenDropdown(null)}>
-                <DropdownMenuLabel className="px-2 py-2 text-sm text-gray-500 font-medium">My Account</DropdownMenuLabel>
-                <DropdownMenuItem className="rounded-lg cursor-pointer text-gray-700 hover:text-primary hover:bg-gray-50 focus:text-primary focus:bg-gray-50" asChild>
-                  <Link to="/login">
-                    <LogIn className="mr-2 h-4 w-4" />
-                    <span>Log In</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem className="rounded-lg cursor-pointer text-gray-700 hover:text-primary hover:bg-gray-50 focus:text-primary focus:bg-gray-50" asChild>
-                  <Link to="/signup">
-                    <UserPlus className="mr-2 h-4 w-4" />
-                    <span>Sign Up</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem className="rounded-lg cursor-pointer text-gray-700 hover:text-primary hover:bg-gray-50 focus:text-primary focus:bg-gray-50" asChild>
-                  <Link to="/profile">
-                    <User className="mr-2 h-4 w-4" />
-                    <span>Profile</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem className="rounded-lg cursor-pointer text-gray-700 hover:text-primary hover:bg-gray-50 focus:text-primary focus:bg-gray-50" asChild>
-                  <Link to="/orders">
-                    <Package className="mr-2 h-4 w-4" />
-                    <span>Orders</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem className="rounded-lg cursor-pointer text-gray-700 hover:text-primary hover:bg-gray-50 focus:text-primary focus:bg-gray-50" asChild>
-                  <Link to="/change-password">
-                    <Lock className="mr-2 h-4 w-4" />
-                    <span>Change Password</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem className="text-red-600 focus:text-red-600 focus:bg-red-50 rounded-lg cursor-pointer">
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>Log out</span>
-                </DropdownMenuItem>
+                {isAuthenticated ? (
+                  <>
+                    <DropdownMenuLabel className="px-2 py-2 text-sm text-gray-500 font-medium">
+                      {user?.first_name} {user?.last_name}
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem className="rounded-lg cursor-pointer text-gray-700 hover:text-primary hover:bg-gray-50 focus:text-primary focus:bg-gray-50" asChild>
+                      <Link to="/profile">
+                        <User className="mr-2 h-4 w-4" />
+                        <span>Profile</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="rounded-lg cursor-pointer text-gray-700 hover:text-primary hover:bg-gray-50 focus:text-primary focus:bg-gray-50" asChild>
+                      <Link to="/orders">
+                        <Package className="mr-2 h-4 w-4" />
+                        <span>Orders</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="rounded-lg cursor-pointer text-gray-700 hover:text-primary hover:bg-gray-50 focus:text-primary focus:bg-gray-50" asChild>
+                      <Link to="/change-password">
+                        <Lock className="mr-2 h-4 w-4" />
+                        <span>Change Password</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem 
+                      className="text-red-600 focus:text-red-600 focus:bg-red-50 rounded-lg cursor-pointer"
+                      onClick={() => {
+                        logout();
+                        navigate("/");
+                        toast({
+                          title: "Logged Out",
+                          description: "You have been logged out successfully.",
+                          className: "bg-green-600 text-white border-green-700",
+                        });
+                      }}
+                    >
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span>Log out</span>
+                    </DropdownMenuItem>
+                  </>
+                ) : (
+                  <>
+                    <DropdownMenuLabel className="px-2 py-2 text-sm text-gray-500 font-medium">My Account</DropdownMenuLabel>
+                    <DropdownMenuItem className="rounded-lg cursor-pointer text-gray-700 hover:text-primary hover:bg-gray-50 focus:text-primary focus:bg-gray-50" asChild>
+                      <Link to="/login">
+                        <LogIn className="mr-2 h-4 w-4" />
+                        <span>Log In</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="rounded-lg cursor-pointer text-gray-700 hover:text-primary hover:bg-gray-50 focus:text-primary focus:bg-gray-50" asChild>
+                      <Link to="/signup">
+                        <UserPlus className="mr-2 h-4 w-4" />
+                        <span>Sign Up</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  </>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
 

@@ -4,6 +4,7 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { AuthProvider } from "@/context/AuthContext";
 import { Layout } from "@/components/Layout";
 
 // Pages that use Layout
@@ -12,8 +13,7 @@ import Products from "@/pages/Products";
 import ProductDetail from "@/pages/ProductDetail";
 import Orders from "@/pages/Orders";
 import Wishlist from "@/pages/Wishlist";
-
-// Pages without Layout (Auth pages, etc.)
+import Checkout from "@/pages/Checkout";
 import Login from "@/pages/Login";
 import Signup from "@/pages/Signup";
 import ForgotPassword from "@/pages/ForgotPassword";
@@ -34,10 +34,11 @@ function ScrollToTop() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <TooltipProvider>
-          <Toaster />
-          <ScrollToTop />
+      <AuthProvider>
+        <BrowserRouter>
+          <TooltipProvider>
+            <Toaster />
+            <ScrollToTop />
           <Routes>
             {/* Layout Routes */}
             <Route element={<Layout />}>
@@ -45,6 +46,7 @@ function App() {
               <Route path="/products" element={<Products />} />
               <Route path="/products/:categorySlug" element={<Products />} />
               <Route path="/product-details/:id" element={<ProductDetail />} />
+              <Route path="/checkout" element={<Checkout />} />
               <Route path="/orders" element={<Orders />} />
               <Route path="/wishlist" element={<Wishlist />} />
               <Route path="/profile" element={<Profile />} />
@@ -62,6 +64,7 @@ function App() {
           </Routes>
         </TooltipProvider>
       </BrowserRouter>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }

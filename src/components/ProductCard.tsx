@@ -2,6 +2,11 @@ import { ShoppingCart, Heart, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { type Product } from "@/data/dummyData";
 import { useNavigate } from "react-router-dom";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/context/AuthContext";
+import { useState } from "react";
+import { apiPost } from "@/lib/api";
 
 interface ProductCardProps {
   product: Product;
@@ -16,9 +21,58 @@ const calculateDiscountPercentage = (oldPrice: number | undefined, currentPrice:
 export function ProductCard({ product }: ProductCardProps) {
   const discountPercent = calculateDiscountPercentage(product.oldPrice, product.price);
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const { isAuthenticated } = useAuth();
+  const queryClient = useQueryClient();
+  const [isAdding, setIsAdding] = useState(false);
 
   const handleProductClick = () => {
     navigate(`/product-details/${product.id}`);
+  };
+
+  // Add to cart mutation
+  const addToCartMutation = useMutation({
+    mutationFn: async () => {
+      return apiPost('/cart/add/', {
+        product_id: parseInt(product.id),
+        quantity: 1,
+      });
+    },
+    onSuccess: () => {
+      toast({
+        title: 'Added to cart',
+        description: `${product.name} has been added to your cart.`,
+        className: "bg-green-600 text-white border-green-700",
+        duration: 2000,
+      });
+      setIsAdding(false);
+      // Invalidate the cart query to refetch updated data
+      queryClient.invalidateQueries({ queryKey: ['cart'] });
+    },
+    onError: (error: Error) => {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: error.message,
+        duration: 3000,
+      });
+      setIsAdding(false);
+    },
+  });
+
+  const handleAddToCart = () => {
+    if (!isAuthenticated) {
+      toast({
+        title: 'Authentication required',
+        description: 'Please log in to add items to your cart.',
+        duration: 3000,
+      });
+      navigate('/login');
+      return;
+    }
+
+    setIsAdding(true);
+    addToCartMutation.mutate();
   };
 
   return (
@@ -103,12 +157,13 @@ export function ProductCard({ product }: ProductCardProps) {
           </Button>
           <Button 
             size="sm"
-            className="flex-1 rounded-lg bg-primary-gradient shadow-lg shadow-green-600/20 hover:shadow-green-600/40 transition-smooth font-medium text-white h-8 text-xs"
-            onClick={() => console.log('Add to cart', product.id)}
+            className="flex-1 rounded-lg bg-primary-gradient shadow-lg shadow-green-600/20 hover:shadow-green-600/40 transition-smooth font-medium text-white h-8 text-xs disabled:opacity-50 disabled:cursor-not-allowed"
+            onClick={handleAddToCart}
+            disabled={isAdding}
             title="Add to Cart"
           >
             <ShoppingCart className="w-3 h-3" />
-            <span>Add</span>
+            <span>{isAdding ? 'Adding...' : 'Add'}</span>
           </Button>
         </div>
       </div>
