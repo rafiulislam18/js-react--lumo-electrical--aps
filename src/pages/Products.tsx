@@ -220,7 +220,10 @@ export default function Products() {
               </>
             )}
             {!selectedCategory && !specialSection && !searchQuery && (
-              <span className="text-primary font-semibold">All Products</span>
+              <>
+                <span className="text-gray-400">/</span>
+                <span className="text-primary font-semibold">All Products</span>
+              </>
             )}
           </div>
         </div>
