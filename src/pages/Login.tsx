@@ -4,9 +4,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/context/AuthContext";
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 
 export default function Login() {
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
@@ -27,21 +33,93 @@ export default function Login() {
     e.preventDefault();
     setIsLoading(true);
 
-    // Simulate API call
-    setTimeout(() => {
-      localStorage.setItem("user", JSON.stringify({
-        email: formData.email,
-        isLoggedIn: true
-      }));
-      
-      if (rememberMe) {
-        localStorage.setItem("rememberMe", "true");
+    try {
+      const response = await fetch(`${API_URL}/users/login/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: formData.email, // Backend expects 'username' field with email
+          password: formData.password
+        })
+      });
+
+      let data;
+      try {
+        data = await response.json();
+      } catch (e) {
+        console.error('Failed to parse response:', e);
+        throw new Error('Invalid response from server');
       }
+
+      console.log('Login Response:', { status: response.status, data });
+
+      if (!response.ok) {
+        // Handle multiple error formats
+        let errorMessage = 'Login failed. Please try again.';
+        
+        if (data?.detail) {
+          errorMessage = String(data.detail);
+        } else if (data?.error) {
+          errorMessage = String(data.error);
+        } else if (data?.errors && typeof data.errors === 'object') {
+          const errorMessages: string[] = [];
+          for (const [field, messages] of Object.entries(data.errors)) {
+            if (Array.isArray(messages)) {
+              errorMessages.push(...messages.map(m => String(m)));
+            } else if (typeof messages === 'string') {
+              errorMessages.push(messages);
+            }
+          }
+          if (errorMessages.length > 0) {
+            errorMessage = errorMessages.join(' | ');
+          }
+        }
+
+        console.error('Login error:', { status: response.status, errorMessage, data });
+
+        toast({
+          variant: "destructive",
+          title: "Login Error",
+          description: errorMessage,
+        });
+        setIsLoading(false);
+        return;
+      }
+
+      // Store tokens
+      localStorage.setItem('access_token', data.access);
+      localStorage.setItem('refresh_token', data.refresh);
+      localStorage.setItem('user', JSON.stringify(data.user));
+
+      // Use auth context to update auth state
+      login(data.user, data.access, data.refresh);
+
+      if (rememberMe) {
+        localStorage.setItem('rememberMe', 'true');
+        localStorage.setItem('rememberEmail', formData.email);
+      }
+
+      toast({
+        title: "Success",
+        description: "You have been logged in successfully!",
+        className: "bg-green-600 text-white border-green-700",
+      });
 
       setIsLoading(false);
       navigate("/");
-      alert("Login successful! Welcome back!");
-    }, 1500);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred';
+      console.error('Login error:', err);
+      
+      toast({
+        variant: "destructive",
+        title: "Network Error",
+        description: errorMessage || "Please check your connection and try again.",
+      });
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -57,6 +135,7 @@ export default function Login() {
 
             {/* Form */}
             <form onSubmit={handleSubmit} className="p-8 space-y-5">
+
               {/* Email */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">

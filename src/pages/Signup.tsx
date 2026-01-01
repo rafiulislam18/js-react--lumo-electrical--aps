@@ -2,14 +2,24 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Eye, EyeOff, Mail, Lock, User, Phone, MapPin } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, User, Phone, MapPin, AlertCircle } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
+import EmailVerificationModal from "@/components/EmailVerificationModal";
+import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/context/AuthContext";
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 
 export default function Signup() {
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [showVerification, setShowVerification] = useState(false);
+  const [verificationEmail, setVerificationEmail] = useState("");
   const [formData, setFormData] = useState({
     // Customer Type
     customerType: "Retail",
@@ -64,64 +74,193 @@ export default function Signup() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
     
     if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match!");
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Passwords do not match!",
+      });
       return;
     }
 
     if (!formData.agreeTerms) {
-      alert("Please agree to terms and conditions");
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Please agree to terms and conditions",
+      });
       return;
     }
 
     setIsLoading(true);
     
-    // Build submission object based on customer type
-    const submissionData: any = {
-      customerType: formData.customerType,
-      // Personal Details
-      firstName: formData.firstName,
-      lastName: formData.lastName,
-      email: formData.email,
-      phone: formData.phone,
-      // Billing Address
-      billingAddress: formData.billingAddress,
-      billingCity: formData.billingCity,
-      billingProvince: formData.billingProvince,
-      billingPostalCode: formData.billingPostalCode,
-    };
-
-    // Add delivery address only if different from billing
-    if (!formData.sameAsDelivery && formData.deliveryAddress) {
-      submissionData.deliveryAddress = formData.deliveryAddress;
-      submissionData.deliveryCity = formData.deliveryCity;
-      submissionData.deliveryProvince = formData.deliveryProvince;
-      submissionData.deliveryPostalCode = formData.deliveryPostalCode;
-    }
-
-    // Add business details for Trade customers
+    // Build FormData for multipart submission (includes file upload)
+    const formDataToSend = new FormData();
+    
+    // Personal Details
+    formDataToSend.append('first_name', formData.firstName);
+    formDataToSend.append('last_name', formData.lastName);
+    formDataToSend.append('email', formData.email);
+    formDataToSend.append('phone', formData.phone);
+    formDataToSend.append('password', formData.password);
+    formDataToSend.append('confirm_password', formData.confirmPassword);
+    
+    // Customer Type
+    formDataToSend.append('customer_type', formData.customerType);
+    
+    // Billing Address (only required for Trade)
     if (formData.customerType === "Trade") {
-      submissionData.business = {
-        companyName: formData.companyName,
-        vatNumber: formData.vatNumber,
-        companyRegistration: formData.companyRegistration,
-        businessType: formData.businessType,
-      };
-      submissionData.procurement = {
-        poNumber: formData.poNumber,
-        procurementContact: formData.procurementContact,
-        monthlyStatementPreference: formData.monthlyStatementPreference,
-      };
+      formDataToSend.append('billing_address', formData.billingAddress);
+      formDataToSend.append('billing_city', formData.billingCity);
+      formDataToSend.append('billing_province', formData.billingProvince);
+      formDataToSend.append('billing_postal_code', formData.billingPostalCode);
+    } else {
+      // Optional for Retail
+      if (formData.billingAddress) {
+        formDataToSend.append('billing_address', formData.billingAddress);
+        formDataToSend.append('billing_city', formData.billingCity);
+        formDataToSend.append('billing_province', formData.billingProvince);
+        formDataToSend.append('billing_postal_code', formData.billingPostalCode);
+      }
     }
 
-    // Simulate API call
-    setTimeout(() => {
-      localStorage.setItem("user", JSON.stringify(submissionData));
+    // Delivery Address
+    formDataToSend.append('same_as_billing', String(formData.sameAsDelivery));
+    // Only send delivery address fields if NOT same as billing
+    if (!formData.sameAsDelivery) {
+      formDataToSend.append('delivery_address', formData.deliveryAddress);
+      formDataToSend.append('delivery_city', formData.deliveryCity);
+      formDataToSend.append('delivery_province', formData.deliveryProvince);
+      formDataToSend.append('delivery_postal_code', formData.deliveryPostalCode);
+    }
+
+    // Business Details (Trade Only)
+    if (formData.customerType === "Trade") {
+      formDataToSend.append('company_name', formData.companyName);
+      formDataToSend.append('vat_number', formData.vatNumber);
+      formDataToSend.append('company_registration', formData.companyRegistration);
+      formDataToSend.append('business_type', formData.businessType);
+      
+      // Trade Documents (optional)
+      if (formData.tradeDocs) {
+        formDataToSend.append('trade_docs', formData.tradeDocs);
+      }
+      
+      // Procurement Details
+      formDataToSend.append('po_number', formData.poNumber);
+      formDataToSend.append('procurement_contact', formData.procurementContact);
+      formDataToSend.append('monthly_statement_preference', formData.monthlyStatementPreference ? 'true' : 'false');
+    } else {
+      // For Retail, still send the preference
+      formDataToSend.append('monthly_statement_preference', formData.monthlyStatementPreference ? 'true' : 'false');
+    }
+
+    try {
+      const response = await fetch(`${API_URL}/users/register/`, {
+        method: 'POST',
+        body: formDataToSend
+      });
+
+      let data;
+      try {
+        data = await response.json();
+      } catch (e) {
+        console.error('Failed to parse response:', e);
+        throw new Error('Invalid response from server');
+      }
+
+      console.log('Backend Response:', { status: response.status, data });
+
+      if (!response.ok) {
+        // Handle field-specific errors
+        let errorMessage = 'Registration failed. Please check your information.';
+        
+        // Check for errors object (field validation errors)
+        if (data?.errors && typeof data.errors === 'object') {
+          const errorMessages: string[] = [];
+          for (const [field, messages] of Object.entries(data.errors)) {
+            if (Array.isArray(messages)) {
+              errorMessages.push(...messages.map(m => String(m)));
+            } else if (typeof messages === 'string') {
+              errorMessages.push(messages);
+            } else if (messages && typeof messages === 'object') {
+              // Handle nested error objects
+              const msg = String(Object.values(messages)[0]);
+              if (msg) errorMessages.push(msg);
+            }
+          }
+          if (errorMessages.length > 0) {
+            errorMessage = errorMessages.join(' | ');
+          }
+        }
+        
+        // Check for detail field (general error message)
+        if (data?.detail && errorMessage === 'Registration failed. Please check your information.') {
+          errorMessage = String(data.detail);
+        }
+        
+        // Check for non-field errors array
+        if (data?.non_field_errors && Array.isArray(data.non_field_errors)) {
+          const nonFieldErrors = data.non_field_errors.map((e: any) => String(e)).join(' | ');
+          if (nonFieldErrors) {
+            errorMessage = nonFieldErrors;
+          }
+        }
+
+        console.error('Error details:', { 
+          status: response.status, 
+          errorMessage, 
+          fullData: data 
+        });
+        
+        toast({
+          variant: "destructive",
+          title: "Registration Error",
+          description: errorMessage,
+        });
+        setIsLoading(false);
+        return;
+      }
+
+      // Success - show verification modal
+      setVerificationEmail(formData.email);
+      setShowVerification(true);
+      toast({
+        title: "Verify Your Email",
+        description: "Please verify your email to complete your registration.",
+        className: "bg-green-600 text-white border-green-700",
+      });
       setIsLoading(false);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred';
+      console.error('Registration error:', err);
+      
+      toast({
+        variant: "destructive",
+        title: "Network Error",
+        description: errorMessage || "Please check your connection and try again.",
+      });
+      setIsLoading(false);
+    }
+  };
+
+  const handleVerificationSuccess = (tokens?: { access: string; refresh: string; user: any }) => {
+    setShowVerification(false);
+    
+    if (tokens) {
+      // Auto-login for registration verification
+      login(tokens.user, tokens.access, tokens.refresh);
       navigate("/");
-      alert("Signup successful! Welcome " + formData.firstName);
-    }, 1500);
+    } else {
+      // For other flows, navigate as needed
+      navigate("/");
+    }
+  };
+
+  const handleVerificationCancel = () => {
+    setShowVerification(false);
   };
 
   return (
@@ -697,6 +836,16 @@ export default function Signup() {
           </div>
         </div>
       </section>
+
+      {/* Email Verification Modal */}
+      {showVerification && (
+        <EmailVerificationModal
+          email={verificationEmail}
+          tokenType="registration"
+          onSuccess={handleVerificationSuccess}
+          onCancel={handleVerificationCancel}
+        />
+      )}
     </div>
   );
 }

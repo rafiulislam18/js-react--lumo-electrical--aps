@@ -4,6 +4,7 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { AuthProvider } from "@/context/AuthContext";
 import { Layout } from "@/components/Layout";
 
 // Pages that use Layout
@@ -33,10 +34,11 @@ function ScrollToTop() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <TooltipProvider>
-          <Toaster />
-          <ScrollToTop />
+      <AuthProvider>
+        <BrowserRouter>
+          <TooltipProvider>
+            <Toaster />
+            <ScrollToTop />
           <Routes>
             {/* Layout Routes */}
             <Route element={<Layout />}>
@@ -62,6 +64,7 @@ function App() {
           </Routes>
         </TooltipProvider>
       </BrowserRouter>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }
