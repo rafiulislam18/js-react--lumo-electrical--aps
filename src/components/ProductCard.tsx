@@ -2,7 +2,7 @@ import { ShoppingCart, Heart, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { type Product } from "@/data/dummyData";
 import { useNavigate } from "react-router-dom";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/context/AuthContext";
 import { useState } from "react";
@@ -23,6 +23,7 @@ export function ProductCard({ product }: ProductCardProps) {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { isAuthenticated } = useAuth();
+  const queryClient = useQueryClient();
   const [isAdding, setIsAdding] = useState(false);
 
   const handleProductClick = () => {
@@ -41,9 +42,12 @@ export function ProductCard({ product }: ProductCardProps) {
       toast({
         title: 'Added to cart',
         description: `${product.name} has been added to your cart.`,
+        className: "bg-green-600 text-white border-green-700",
         duration: 2000,
       });
       setIsAdding(false);
+      // Invalidate the cart query to refetch updated data
+      queryClient.invalidateQueries({ queryKey: ['cart'] });
     },
     onError: (error: Error) => {
       toast({
