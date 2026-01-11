@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { 
   Search, ShoppingCart, Heart, User, Menu, 
   ChevronDown, LogIn, UserPlus, Package, LogOut, Lock 
@@ -15,9 +16,22 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { CartSidebar } from "@/components/CartSidebar";
-import { categories, allProducts } from "@/data/dummyData";
+import { allProducts } from "@/data/dummyData";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import { apiGet } from "@/lib/api";
+
+interface Category {
+  id: number;
+  name: string;
+  slug: string;
+  is_leaf: boolean;
+  children: Category[];
+}
+
+interface CategoriesResponse {
+  categories: Category[];
+}
 
 export function Navbar() {
   const navigate = useNavigate();
@@ -33,6 +47,15 @@ export function Navbar() {
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+
+  // Fetch categories from backend
+  const { data: categoriesData } = useQuery<CategoriesResponse>({
+    queryKey: ['categories-tree'],
+    queryFn: () => apiGet<CategoriesResponse>('/categories/tree/'),
+  });
+
+  const allCategories = categoriesData?.categories || [];
+  const firstEightCategories = allCategories.slice(0, 8);
 
   useEffect(() => {
     const updateCounts = () => {
@@ -279,10 +302,9 @@ export function Navbar() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-56 rounded-xl p-2 shadow-lg border-gray-100" onOpenAutoFocus={(e: any) => e.preventDefault()} onMouseLeave={() => setOpenDropdown(null)}>
-              {categories.map((cat: any) => (
+              {allCategories.map((cat: Category) => (
                 <DropdownMenuItem key={cat.id} className="cursor-pointer rounded-lg py-2 text-gray-700 hover:text-primary hover:bg-gray-50 focus:text-primary focus:bg-gray-50" asChild>
                   <a href={`/products/${cat.slug}`} className="flex items-center">
-                    <cat.icon className="w-4 h-4 mr-2" />
                     {cat.name}
                   </a>
                 </DropdownMenuItem>
@@ -291,7 +313,7 @@ export function Navbar() {
           </DropdownMenu>
 
           <div className="flex items-center gap-6 overflow-x-auto no-scrollbar">
-            {categories.slice(0, 8).map((cat: any) => (
+            {firstEightCategories.map((cat: Category) => (
               <a 
                 key={cat.id} 
                 href={`/products/${cat.slug}`} 
@@ -300,9 +322,6 @@ export function Navbar() {
                 {cat.name}
               </a>
             ))}
-            {/* <a href="/deals" className="text-sm font-medium text-red-500 hover:text-red-600 transition-colors whitespace-nowrap">
-              Hot Deals
-            </a> */}
           </div>
         </div>
       </div>
