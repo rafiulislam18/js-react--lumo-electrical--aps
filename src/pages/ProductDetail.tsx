@@ -165,11 +165,10 @@ export default function ProductDetail() {
     mutationFn: async () => {
       if (!product) throw new Error('Product not loaded');
       if (selectedReviewRating === 0) throw new Error('Please select a rating');
-      if (reviewComment.trim().length === 0) throw new Error('Please enter a comment');
       
       return apiPost(`/reviews/create/${product.id}/`, {
         rating: selectedReviewRating,
-        comment: reviewComment.trim(),
+        comment: reviewComment.trim() || null,
       });
     },
     onSuccess: (data) => {
@@ -634,7 +633,7 @@ export default function ProductDetail() {
                       <Button
                         size="sm"
                         className="bg-primary-gradient text-white font-semibold hover:shadow-lg"
-                        disabled={createReviewMutation.isPending || selectedReviewRating === 0 || reviewComment.trim().length === 0}
+                        disabled={createReviewMutation.isPending || selectedReviewRating === 0}
                         onClick={() => createReviewMutation.mutate()}
                       >
                         {createReviewMutation.isPending ? (
