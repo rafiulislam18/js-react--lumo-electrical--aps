@@ -126,7 +126,7 @@ export function ProductCard({ product }: ProductCardProps) {
               />
             ))}
           </div>
-          <span className="text-xs text-gray-500 font-medium">({product.reviews})</span>
+          <span className="text-xs text-gray-500 font-medium">({product.reviews ?? 0})</span>
         </div>
 
         {/* Price Section */}
