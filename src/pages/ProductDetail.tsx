@@ -119,6 +119,8 @@ export default function ProductDetail() {
   const [quantity, setQuantity] = useState(1);
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [selectedReviewRating, setSelectedReviewRating] = useState(0);
+  const [reviewComment, setReviewComment] = useState('');
+  const [showReviewForm, setShowReviewForm] = useState(false);
 
   // Fetch product details with all related data
   const { data: product, isLoading: productLoading, isError: productError } = useQuery<ProductData>({
@@ -153,6 +155,42 @@ export default function ProductDetail() {
         variant: 'destructive',
         title: 'Error',
         description: error.message,
+        duration: 3000,
+      });
+    },
+  });
+
+  // Create review mutation
+  const createReviewMutation = useMutation({
+    mutationFn: async () => {
+      if (!product) throw new Error('Product not loaded');
+      if (selectedReviewRating === 0) throw new Error('Please select a rating');
+      if (reviewComment.trim().length === 0) throw new Error('Please enter a comment');
+      
+      return apiPost(`/reviews/create/${product.id}/`, {
+        rating: selectedReviewRating,
+        comment: reviewComment.trim(),
+      });
+    },
+    onSuccess: (data) => {
+      toast({
+        title: 'Review submitted',
+        description: 'Thank you for your review!',
+        className: "bg-green-600 text-white border-green-700",
+        duration: 2000,
+      });
+      setReviewComment('');
+      setSelectedReviewRating(0);
+      setShowReviewForm(false);
+      // Refresh product data to get updated reviews
+      queryClient.invalidateQueries({ queryKey: ['product', id] });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.detail || error?.response?.data?.non_field_errors?.[0] || error.message || 'Failed to submit review';
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: errorMessage,
         duration: 3000,
       });
     },
@@ -525,24 +563,103 @@ export default function ProductDetail() {
                   </div>
                 </div>
 
-                {/* Add Review Button */}
-                <Button 
-                  className="w-full bg-primary-gradient text-white font-semibold hover:shadow-lg" 
-                  size="sm"
-                  onClick={() => {
-                    if (!isAuthenticated) {
-                      navigate('/login');
-                      return;
-                    }
-                    toast({
-                      title: "Coming Soon",
-                      description: "Review form will be available soon",
-                      duration: 2000,
-                    });
-                  }}
-                >
-                  + Add Review
-                </Button>
+                {/* Review Form Toggle */}
+                {!showReviewForm ? (
+                  <Button 
+                    className="w-full bg-primary-gradient text-white font-semibold hover:shadow-lg" 
+                    size="sm"
+                    onClick={() => {
+                      if (!isAuthenticated) {
+                        toast({
+                          title: 'Authentication required',
+                          description: 'Please log in to submit a review.',
+                          duration: 3000,
+                        });
+                        navigate('/login');
+                        return;
+                      }
+                      setShowReviewForm(true);
+                    }}
+                  >
+                    + Add Review
+                  </Button>
+                ) : (
+                  <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-semibold text-gray-900">Write Your Review</h3>
+                      <button 
+                        onClick={() => setShowReviewForm(false)}
+                        className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+
+                    {/* Rating Selection */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Rating</label>
+                      <div className="flex gap-2">
+                        {[1, 2, 3, 4, 5].map((rating) => (
+                          <button
+                            key={rating}
+                            onClick={() => setSelectedReviewRating(rating)}
+                            className="transition-transform hover:scale-110"
+                          >
+                            <Star
+                              className={`w-6 h-6 ${selectedReviewRating >= rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`}
+                            />
+                          </button>
+                        ))}
+                      </div>
+                      {selectedReviewRating > 0 && (
+                        <p className="text-xs text-gray-600 mt-1">You selected {selectedReviewRating} star{selectedReviewRating !== 1 ? 's' : ''}</p>
+                      )}
+                    </div>
+
+                    {/* Comment Input */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Comment</label>
+                      <textarea
+                        value={reviewComment}
+                        onChange={(e) => setReviewComment(e.target.value)}
+                        placeholder="Share your experience with this product..."
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none resize-none text-sm"
+                        rows={4}
+                      />
+                      <p className="text-xs text-gray-500 mt-1">{reviewComment.length} characters</p>
+                    </div>
+
+                    {/* Submit Button */}
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        className="bg-primary-gradient text-white font-semibold hover:shadow-lg"
+                        disabled={createReviewMutation.isPending || selectedReviewRating === 0 || reviewComment.trim().length === 0}
+                        onClick={() => createReviewMutation.mutate()}
+                      >
+                        {createReviewMutation.isPending ? (
+                          <>
+                            <Loader className="w-4 h-4 mr-1 animate-spin" />
+                            Submitting...
+                          </>
+                        ) : (
+                          'Submit Review'
+                        )}
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          setShowReviewForm(false);
+                          setReviewComment('');
+                          setSelectedReviewRating(0);
+                        }}
+                      >
+                        Clear
+                      </Button>
+                    </div>
+                  </div>
+                )}
 
                 {/* Reviews List */}
                 <div className="space-y-3">
