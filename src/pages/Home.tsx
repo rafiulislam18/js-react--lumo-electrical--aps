@@ -105,13 +105,13 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-8 animate-stagger">
             <div className="animate-slide-in-up">
-              <ProductListColumn title="Featured Products" products={featuredProducts} linkTo="/products/featured-products" />
+              <ProductListColumn title="Featured Products" products={featuredProducts} linkTo="/products/circuit-breakers" />
             </div>
             <div className="animate-slide-in-up" style={{animationDelay: '0.1s'}}>
-              <ProductListColumn title="Best Sellers" products={bestSellers} linkTo="/products/best-sellers" />
+              <ProductListColumn title="Best Sellers" products={bestSellers} linkTo="/products/circuit-breakers" />
             </div>
             <div className="animate-slide-in-up" style={{animationDelay: '0.2s'}}>
-              <ProductListColumn title="New Arrivals" products={latestProducts} linkTo="/products/new-arrivals" />
+              <ProductListColumn title="New Arrivals" products={latestProducts} linkTo="/products/circuit-breakers" />
             </div>
           </div>
         </div>
