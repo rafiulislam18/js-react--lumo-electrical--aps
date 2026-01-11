@@ -106,7 +106,6 @@ export default function Products() {
   const [rating, setRating] = useState(searchParams.get('rating') || 'all');
   const [currentPage, setCurrentPage] = useState(parseInt(searchParams.get('page') || '1'));
   const [showFilters, setShowFilters] = useState(false);
-  const [activeSlider, setActiveSlider] = useState<"min" | "max">("min");
 
   // Build query params
   const queryParams = new URLSearchParams();
@@ -155,6 +154,9 @@ export default function Products() {
     return products.map(transformProduct);
   }, [products]);
 
+  const MIN_PRICE = priceRange.min || 0;
+  const MAX_PRICE = priceRange.max || 10000;
+
   // Update URL params when filters change
   useEffect(() => {
     const params = new URLSearchParams();
@@ -168,53 +170,39 @@ export default function Products() {
   }, [currentPage, sortBy, availability, rating, minPrice, maxPrice, setSearchParams]);
 
   const handleMinPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = Math.max(priceRange.min || 0, Math.min(parseInt(e.target.value) || 0, maxPrice));
-    setMinPrice(value);
-    setCurrentPage(1);
+    const inputValue = e.target.value;
+    setMinPrice(inputValue === '' ? 0 : parseFloat(inputValue) || minPrice);
   };
 
   const handleMaxPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = Math.min(priceRange.max || 10000, Math.max(parseInt(e.target.value) || 10000, minPrice));
-    setMaxPrice(value);
+    const inputValue = e.target.value;
+    setMaxPrice(inputValue === '' ? 10000 : parseFloat(inputValue) || maxPrice);
+  };
+
+  const handleMinPriceBlur = () => {
+    const constrainedValue = Math.max(MIN_PRICE || 0, Math.min(minPrice, maxPrice));
+    setMinPrice(constrainedValue);
     setCurrentPage(1);
   };
 
-  const handleMinSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = Math.min(parseInt(e.target.value), maxPrice);
-    setMinPrice(value);
-    setActiveSlider("min");
+  const handleMaxPriceBlur = () => {
+    const constrainedValue = Math.min(MAX_PRICE || 10000, Math.max(maxPrice, minPrice));
+    setMaxPrice(constrainedValue);
     setCurrentPage(1);
   };
 
-  const handleMaxSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = Math.max(parseInt(e.target.value), minPrice);
-    setMaxPrice(value);
-    setActiveSlider("max");
-    setCurrentPage(1);
-  };
-
-  const MIN_PRICE = priceRange.min || 0;
-  const MAX_PRICE = priceRange.max || 10000;
-
-  const handleSliderBarClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    const bar = e.currentTarget;
-    const rect = bar.getBoundingClientRect();
-    const clickX = e.clientX - rect.left;
-    const percentage = clickX / rect.width;
-    const clickValue = MIN_PRICE + (percentage * (MAX_PRICE - MIN_PRICE));
-
-    const distanceToMin = Math.abs(clickValue - minPrice);
-    const distanceToMax = Math.abs(clickValue - maxPrice);
-
-    if (distanceToMin < distanceToMax) {
-      const newMin = Math.max(MIN_PRICE, Math.min(clickValue, maxPrice));
-      setMinPrice(Math.round(newMin));
-    } else {
-      const newMax = Math.min(MAX_PRICE, Math.max(clickValue, minPrice));
-      setMaxPrice(Math.round(newMax));
+  // Initialize price range from backend when available
+  useEffect(() => {
+    if (priceRange.min !== null && priceRange.max !== null) {
+      // Only set if they're at default values (not explicitly set by user)
+      if (minPrice === 0 && !searchParams.get('min_price')) {
+        setMinPrice(priceRange.min);
+      }
+      if (maxPrice === 10000 && !searchParams.get('max_price')) {
+        setMaxPrice(priceRange.max);
+      }
     }
-    setCurrentPage(1);
-  };
+  }, [priceRange]);
 
   return (
     <div className="min-h-screen bg-gray-50/30 flex flex-col font-sans">
@@ -401,6 +389,7 @@ export default function Products() {
                         max={MAX_PRICE}
                         value={minPrice}
                         onChange={handleMinPriceChange}
+                        onBlur={handleMinPriceBlur}
                         className="pl-7 h-9 text-sm border-gray-200"
                       />
                     </div>
@@ -415,53 +404,10 @@ export default function Products() {
                         max={MAX_PRICE}
                         value={maxPrice}
                         onChange={handleMaxPriceChange}
+                        onBlur={handleMaxPriceBlur}
                         className="pl-7 h-9 text-sm border-gray-200"
                       />
                     </div>
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <div 
-                    className="relative h-2 bg-gray-200 rounded-full cursor-pointer hover:bg-gray-300 transition-colors"
-                    onClick={handleSliderBarClick}
-                  >
-                    <input
-                      type="range"
-                      min={MIN_PRICE}
-                      max={MAX_PRICE}
-                      value={minPrice}
-                      onChange={handleMinSliderChange}
-                      onMouseDown={() => setActiveSlider("min")}
-                      onTouchStart={() => setActiveSlider("min")}
-                      className="absolute w-full h-2 top-0 left-0 rounded-full appearance-none bg-transparent thumb-left"
-                      style={{
-                        zIndex: activeSlider === "min" ? 5 : 3,
-                      }}
-                    />
-                    <input
-                      type="range"
-                      min={MIN_PRICE}
-                      max={MAX_PRICE}
-                      value={maxPrice}
-                      onChange={handleMaxSliderChange}
-                      onMouseDown={() => setActiveSlider("max")}
-                      onTouchStart={() => setActiveSlider("max")}
-                      className="absolute w-full h-2 top-0 left-0 rounded-full appearance-none bg-transparent thumb-right"
-                      style={{
-                        zIndex: activeSlider === "max" ? 5 : 3,
-                      }}
-                    />
-                    <div
-                      className="absolute h-2 bg-primary rounded-full"
-                      style={{
-                        left: `${((minPrice - MIN_PRICE) / (MAX_PRICE - MIN_PRICE)) * 100}%`,
-                        right: `${100 - ((maxPrice - MIN_PRICE) / (MAX_PRICE - MIN_PRICE)) * 100}%`,
-                      }}
-                    />
-                  </div>
-                  <div className="text-xs text-gray-600 text-center">
-                    ${minPrice.toFixed(0)} - ${maxPrice.toFixed(0)}
                   </div>
                 </div>
               </div>
