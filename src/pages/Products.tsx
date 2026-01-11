@@ -237,7 +237,7 @@ export default function Products() {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
           {/* Filters Sidebar */}
           <div className={`lg:col-span-1 animate-slide-in-left ${showFilters ? 'block' : 'hidden lg:block'}`}>
-            <div className="bg-white rounded-xl border border-gray-100 p-4 sm:p-6 sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto">
+            <div className="bg-white rounded-xl border border-gray-100 p-4 sm:p-6 sticky top-32 max-h-[calc(100vh-8rem)] overflow-y-auto">
               <div className="flex items-center justify-between mb-6 lg:hidden">
                 <h3 className="font-bold text-lg">Filters</h3>
                 <button
@@ -246,6 +246,44 @@ export default function Products() {
                 >
                   ✕
                 </button>
+              </div>
+
+              {/* Price Range Filter */}
+              <div className="mb-8 pb-6 border-b border-gray-100">
+                <h4 className="font-semibold text-gray-900 mb-4">Price Range</h4>
+                
+                <div className="flex gap-2 mb-4">
+                  <div className="flex-1">
+                    <label className="block text-xs text-gray-600 mb-1">Min Price</label>
+                    <div className="relative">
+                      <span className="absolute left-3 top-2.5 text-gray-500 text-sm">$</span>
+                      <Input
+                        type="number"
+                        min={MIN_PRICE}
+                        max={MAX_PRICE}
+                        value={minPrice}
+                        onChange={handleMinPriceChange}
+                        onBlur={handleMinPriceBlur}
+                        className="pl-7 h-9 text-sm border-gray-200"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex-1">
+                    <label className="block text-xs text-gray-600 mb-1">Max Price</label>
+                    <div className="relative">
+                      <span className="absolute left-3 top-2.5 text-gray-500 text-sm">$</span>
+                      <Input
+                        type="number"
+                        min={MIN_PRICE}
+                        max={MAX_PRICE}
+                        value={maxPrice}
+                        onChange={handleMaxPriceChange}
+                        onBlur={handleMaxPriceBlur}
+                        className="pl-7 h-9 text-sm border-gray-200"
+                      />
+                    </div>
+                  </div>
+                </div>
               </div>
 
               {/* Availability Filter */}
@@ -298,7 +336,7 @@ export default function Products() {
               </div>
 
               {/* Rating Filter */}
-              <div className="mb-8 pb-8 border-b border-gray-100">
+              <div className="mb-8">
                 <h4 className="font-semibold text-gray-900 mb-4">Rating</h4>
                 <div className="flex flex-col gap-3">
                   <label className="flex items-center gap-3 cursor-pointer group">
@@ -371,44 +409,6 @@ export default function Products() {
                     />
                     <span className="text-sm text-gray-600 group-hover:text-primary transition-colors">Below 3 Stars</span>
                   </label>
-                </div>
-              </div>
-
-              {/* Price Range Filter */}
-              <div className="mb-8">
-                <h4 className="font-semibold text-gray-900 mb-4">Price Range</h4>
-                
-                <div className="flex gap-2 mb-4">
-                  <div className="flex-1">
-                    <label className="block text-xs text-gray-600 mb-1">Min Price</label>
-                    <div className="relative">
-                      <span className="absolute left-3 top-2.5 text-gray-500 text-sm">$</span>
-                      <Input
-                        type="number"
-                        min={MIN_PRICE}
-                        max={MAX_PRICE}
-                        value={minPrice}
-                        onChange={handleMinPriceChange}
-                        onBlur={handleMinPriceBlur}
-                        className="pl-7 h-9 text-sm border-gray-200"
-                      />
-                    </div>
-                  </div>
-                  <div className="flex-1">
-                    <label className="block text-xs text-gray-600 mb-1">Max Price</label>
-                    <div className="relative">
-                      <span className="absolute left-3 top-2.5 text-gray-500 text-sm">$</span>
-                      <Input
-                        type="number"
-                        min={MIN_PRICE}
-                        max={MAX_PRICE}
-                        value={maxPrice}
-                        onChange={handleMaxPriceChange}
-                        onBlur={handleMaxPriceBlur}
-                        className="pl-7 h-9 text-sm border-gray-200"
-                      />
-                    </div>
-                  </div>
                 </div>
               </div>
 
