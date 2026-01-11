@@ -1,19 +1,79 @@
-import { Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { CategoryCard } from "@/components/CategoryCard";
 import { ProductListColumn } from "@/components/ProductListColumn";
-import { 
-  categories, featuredProducts, bestSellers, latestProducts, 
-  faqs 
-} from "@/data/dummyData";
+import { categories, faqs } from "@/data/dummyData";
 import { Button } from "@/components/ui/button";
+import { Loader } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { apiGet } from "@/lib/api";
+
+interface Product {
+  id: number;
+  name: string;
+  price: string;
+  old_price: string | null;
+  image: string;
+  avg_rating: number;
+  total_reviews: number;
+  badge: string;
+  in_stock: boolean;
+  discount_percentage: number;
+  created_at: string;
+  category: {
+    id: number;
+    name: string;
+    slug: string;
+  };
+}
+
+interface FeaturedProduct {
+  product: Product;
+  created_at: string;
+}
+
+interface HomeResponse {
+  featured_products: FeaturedProduct[];
+  best_sellers: Product[];
+  new_arrivals: Product[];
+}
+
+// Helper to get full image URL
+const getImageUrl = (imagePath: string | undefined) => {
+  if (!imagePath) return '';
+  if (imagePath.startsWith('http')) return imagePath;
+  const baseUrl = import.meta.env.VITE_BASE_URL || 'http://127.0.0.1:8000';
+  return `${baseUrl}${imagePath}`;
+};
+
+// Transform backend product to match ProductListColumn format
+const transformProduct = (product: Product) => ({
+  id: product.id.toString(),
+  name: product.name,
+  price: parseFloat(product.price),
+  oldPrice: product.old_price ? parseFloat(product.old_price) : undefined,
+  image: getImageUrl(product.image),
+  category: product.category.name,
+  categoryId: product.category.id.toString(),
+  rating: product.avg_rating,
+  reviews: product.total_reviews,
+  badge: product.badge || undefined,
+  inStock: product.in_stock,
+});
 
 export default function Home() {
+  const { data: homeData, isLoading, isError } = useQuery<HomeResponse>({
+    queryKey: ['home'],
+    queryFn: () => apiGet<HomeResponse>('/home/'),
+  });
+
+  const featuredProducts = homeData?.featured_products?.map(fp => transformProduct(fp.product)) || [];
+  const bestSellers = homeData?.best_sellers?.map(transformProduct) || [];
+  const newArrivals = homeData?.new_arrivals?.map(transformProduct) || [];
   return (
     <div className="min-h-screen bg-gray-50/30 flex flex-col font-sans">
       {/* Hero Section */}
@@ -103,17 +163,27 @@ export default function Home() {
       {/* Product Lists (3 Columns) */}
       <section className="py-20 bg-gray-50 border-y border-gray-100 animate-fade-in" style={{animationDelay: '0.2s'}}>
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-8 animate-stagger">
-            <div className="animate-slide-in-up">
-              <ProductListColumn title="Featured Products" products={featuredProducts} linkTo="/products/circuit-breakers" />
+          {isLoading ? (
+            <div className="flex items-center justify-center min-h-96">
+              <Loader className="w-8 h-8 text-primary animate-spin" />
             </div>
-            <div className="animate-slide-in-up" style={{animationDelay: '0.1s'}}>
-              <ProductListColumn title="Best Sellers" products={bestSellers} linkTo="/products/circuit-breakers" />
+          ) : isError ? (
+            <div className="text-center py-16">
+              <p className="text-red-600 text-lg mb-4">Failed to load products. Please try again later.</p>
             </div>
-            <div className="animate-slide-in-up" style={{animationDelay: '0.2s'}}>
-              <ProductListColumn title="New Arrivals" products={latestProducts} linkTo="/products/circuit-breakers" />
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-8 animate-stagger">
+              <div className="animate-slide-in-up">
+                <ProductListColumn title="Featured Products" products={featuredProducts} linkTo="/products/circuit-breakers" />
+              </div>
+              <div className="animate-slide-in-up" style={{animationDelay: '0.1s'}}>
+                <ProductListColumn title="Best Sellers" products={bestSellers} linkTo="/products/circuit-breakers" />
+              </div>
+              <div className="animate-slide-in-up" style={{animationDelay: '0.2s'}}>
+                <ProductListColumn title="New Arrivals" products={newArrivals} linkTo="/products/circuit-breakers" />
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </section>
 
