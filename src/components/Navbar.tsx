@@ -221,7 +221,6 @@ export function Navbar() {
                       className="text-red-600 focus:text-red-600 focus:bg-red-50 rounded-lg cursor-pointer"
                       onClick={() => {
                         logout();
-                        navigate("/");
                         toast({
                           title: "Logged Out",
                           description: "You have been logged out successfully.",

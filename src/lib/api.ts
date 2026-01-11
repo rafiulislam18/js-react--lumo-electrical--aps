@@ -4,8 +4,54 @@
 
 const API_URL = import.meta.env.VITE_API_URL;
 
+// List of public endpoints that don't require authentication
+const PUBLIC_ENDPOINTS = [
+  '/products/',
+  '/categories/',
+];
+
 interface FetchOptions extends RequestInit {
   skipAuth?: boolean;
+}
+
+/**
+ * Check if an endpoint is public (doesn't require auth)
+ */
+function isPublicEndpoint(endpoint: string): boolean {
+  return PUBLIC_ENDPOINTS.some(publicEndpoint => endpoint.startsWith(publicEndpoint));
+}
+
+/**
+ * Refresh access token using refresh token
+ */
+async function refreshAccessToken(): Promise<boolean> {
+  try {
+    const refreshToken = localStorage.getItem('refresh_token');
+    if (!refreshToken) return false;
+
+    const response = await fetch(`${API_URL}/users/token/refresh/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ refresh: refreshToken }),
+    });
+
+    if (!response.ok) {
+      // Refresh failed, clear tokens and redirect to login
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('refresh_token');
+      window.location.href = '/login';
+      return false;
+    }
+
+    const data = await response.json();
+    localStorage.setItem('access_token', data.access);
+    return true;
+  } catch (error) {
+    console.error('Token refresh failed:', error);
+    return false;
+  }
 }
 
 /**
@@ -24,18 +70,38 @@ export async function authenticatedFetch(
     ...(fetchOptions.headers || {}),
   };
 
-  // Add authorization header if not skipping auth
-  if (!skipAuth) {
+  // Determine if auth should be used
+  // Skip auth if explicitly requested OR if it's a public endpoint
+  const shouldAuth = !skipAuth && !isPublicEndpoint(endpoint);
+
+  // Add authorization header only if needed
+  if (shouldAuth) {
     const token = localStorage.getItem('access_token');
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
     }
   }
 
-  const response = await fetch(url, {
+  let response = await fetch(url, {
     ...fetchOptions,
     headers,
   });
+
+  // Handle token refresh on 401
+  if (response.status === 401 && shouldAuth) {
+    const refreshed = await refreshAccessToken();
+    if (refreshed) {
+      // Retry request with new token
+      const newToken = localStorage.getItem('access_token');
+      if (newToken) {
+        headers['Authorization'] = `Bearer ${newToken}`;
+      }
+      response = await fetch(url, {
+        ...fetchOptions,
+        headers,
+      });
+    }
+  }
 
   return response;
 }
