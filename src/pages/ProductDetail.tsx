@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, Heart, Star, ChevronLeft, AlertCircle, Loader } from "lucide-react";
+import { ShoppingCart, Heart, Star, ChevronLeft, AlertCircle, Loader, MessageCircle } from "lucide-react";
 import {
   Tabs,
   TabsContent,
@@ -13,21 +13,84 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/context/AuthContext";
 import { apiGet, apiPost } from "@/lib/api";
 
+interface Category {
+  id: number;
+  name: string;
+  slug: string;
+  breadcrumb: Array<{
+    id: number;
+    name: string;
+    slug: string;
+  }>;
+}
+
+interface Review {
+  id: number;
+  rating: string;
+  comment: string;
+  is_verified_purchase: boolean;
+  helpful_count: number;
+  created_at: string;
+  updated_at: string;
+  reviewed_by: {
+    id: number;
+    username: string;
+    first_name: string;
+    last_name: string;
+  };
+}
+
+interface Question {
+  id: number;
+  question: string;
+  answer: string | null;
+  is_answered: boolean;
+  asked_by: {
+    id: number;
+    username: string;
+    first_name: string;
+    last_name: string;
+  };
+  created_at: string;
+  answered_at: string | null;
+}
+
 interface ProductData {
   id: number;
   name: string;
   description: string;
   price: string;
   old_price: string | null;
-  stock_quantity: number;
   image: string;
-  rating: string;
-  reviews_count: number;
+  avg_rating: number;
+  total_reviews: number;
   badge: string;
   in_stock: boolean;
   discount_percentage: number;
   created_at: string;
   updated_at: string;
+  category: Category;
+  specifications: Record<string, any>;
+  reviews: Review[];
+  questions: Question[];
+  related_products: Array<{
+    id: number;
+    name: string;
+    price: string;
+    old_price: string | null;
+    image: string;
+    avg_rating: number;
+    total_reviews: number;
+    badge: string;
+    in_stock: boolean;
+    discount_percentage: number;
+    created_at: string;
+    category: {
+      id: number;
+      name: string;
+      slug: string;
+    };
+  }>;
 }
 
 // Helper to get full image URL
@@ -55,8 +118,9 @@ export default function ProductDetail() {
   const queryClient = useQueryClient();
   const [quantity, setQuantity] = useState(1);
   const [isWishlisted, setIsWishlisted] = useState(false);
+  const [selectedReviewRating, setSelectedReviewRating] = useState(0);
 
-  // Fetch product details
+  // Fetch product details with all related data
   const { data: product, isLoading: productLoading, isError: productError } = useQuery<ProductData>({
     queryKey: ['product', id],
     queryFn: async () => {
@@ -64,19 +128,6 @@ export default function ProductDetail() {
     },
     enabled: !!id,
   });
-
-  // Fetch related products
-  const { data: relatedProductsData } = useQuery<ProductData[]>({
-    queryKey: ['relatedProducts'],
-    queryFn: async () => {
-      const products = await apiGet<ProductData[]>('/products/');
-      // Return first 5 products excluding current product
-      return products.filter(p => p.id !== parseInt(id || '0')).slice(0, 5);
-    },
-    enabled: !!id,
-  });
-
-  const relatedProducts = relatedProductsData || [];
 
   // Add to cart mutation
   const addToCartMutation = useMutation({
@@ -125,15 +176,24 @@ export default function ProductDetail() {
       {/* Breadcrumb */}
       <section className="border-b border-gray-100 bg-white">
         <div className="container mx-auto px-4 py-3">
-          <div className="flex items-center gap-2 text-xs sm:text-sm animate-fade-in">
-            <button onClick={() => navigate("/")} className="text-gray-600 hover:text-primary transition-colors">Home</button>
+          <div className="flex items-center gap-2 text-xs sm:text-sm animate-fade-in overflow-x-auto">
+            <button onClick={() => navigate("/")} className="text-gray-600 hover:text-primary transition-colors whitespace-nowrap">Home</button>
             <span className="text-gray-400">/</span>
-            {product && (
+            {product?.category?.breadcrumb && product.category.breadcrumb.length > 0 ? (
               <>
-                <span className="text-gray-600">Products</span>
-                <span className="text-gray-400">/</span>
+                {product.category.breadcrumb.map((cat, idx) => (
+                  <div key={cat.id} className="flex items-center gap-2">
+                    <span className="text-gray-600 hover:text-primary cursor-pointer transition-colors whitespace-nowrap">
+                      {cat.name}
+                    </span>
+                    {idx < product.category.breadcrumb.length - 1 && <span className="text-gray-400">/</span>}
+                  </div>
+                ))}
               </>
+            ) : (
+              <span className="text-gray-600">Products</span>
             )}
+            <span className="text-gray-400">/</span>
             <span className="text-primary font-semibold line-clamp-1">{product?.name || 'Loading...'}</span>
           </div>
         </div>
@@ -215,11 +275,11 @@ export default function ProductDetail() {
                       {[...Array(5)].map((_, i) => (
                         <Star
                           key={i}
-                          className={`w-4 h-4 ${i < Math.floor(parseFloat(product.rating)) ? 'fill-current' : 'text-gray-200'}`}
+                          className={`w-4 h-4 ${i < Math.floor(product.avg_rating) ? 'fill-current' : 'text-gray-200'}`}
                         />
                       ))}
                     </div>
-                    <span className="text-sm text-gray-600">({product.reviews_count ?? 0} reviews)</span>
+                    <span className="text-sm text-gray-600">({product.total_reviews} reviews)</span>
                   </div>
 
                   {/* Stock & Code */}
@@ -301,11 +361,11 @@ export default function ProductDetail() {
             </div>
 
             {/* Right: Related Products */}
-            {relatedProducts.length > 0 && (
+            {product?.related_products && product.related_products.length > 0 && (
               <div className="hidden lg:block space-y-3 animate-fade-in">
                 <h3 className="text-base font-bold text-gray-900">Related Items</h3>
                 <div className="space-y-2">
-                  {relatedProducts.map(relatedProduct => (
+                  {product.related_products.map(relatedProduct => (
                     <button
                       key={relatedProduct.id}
                       onClick={() => navigate(`/product-details/${relatedProduct.id}`)}
@@ -353,99 +413,90 @@ export default function ProductDetail() {
 
             {/* Specifications Tab */}
             <TabsContent value="specifications" className="p-4 sm:p-6 space-y-3 sm:space-y-4">
-              <div className="grid grid-cols-2 gap-3 sm:gap-4">
-                <div className="p-3 bg-gray-50 rounded-lg">
-                  <p className="text-xs text-gray-500 mb-1">Brand</p>
-                  <p className="text-sm font-semibold text-gray-900">Lumo Electrical</p>
+              {product?.specifications && Object.keys(product.specifications).length > 0 ? (
+                <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                  {Object.entries(product.specifications).map(([key, value]) => (
+                    <div key={key} className="p-3 bg-gray-50 rounded-lg">
+                      <p className="text-xs text-gray-500 mb-1 font-medium">{key}</p>
+                      <p className="text-sm font-semibold text-gray-900">{String(value)}</p>
+                    </div>
+                  ))}
                 </div>
-                <div className="p-3 bg-gray-50 rounded-lg">
-                  <p className="text-xs text-gray-500 mb-1">Warranty</p>
-                  <p className="text-sm font-semibold text-gray-900">2 Years</p>
+              ) : (
+                <div className="p-4 bg-blue-50 rounded-lg border border-blue-100">
+                  <p className="text-sm text-blue-600 font-semibold">No specifications available</p>
                 </div>
-                <div className="p-3 bg-gray-50 rounded-lg">
-                  <p className="text-xs text-gray-500 mb-1">Stock</p>
-                  <p className="text-sm font-semibold text-gray-900">{product.stock_quantity} units</p>
-                </div>
-                <div className="p-3 bg-gray-50 rounded-lg">
-                  <p className="text-xs text-gray-500 mb-1">Certification</p>
-                  <p className="text-sm font-semibold text-gray-900">ISO 9001</p>
-                </div>
-              </div>
-              <div className="p-3 bg-blue-50 rounded-lg border border-blue-100">
-                <p className="text-xs text-blue-600 font-semibold">Technical specifications available upon request</p>
-              </div>
+              )}
             </TabsContent>
 
             {/* Description Tab */}
             <TabsContent value="description" className="p-4 sm:p-6 space-y-3 sm:space-y-4">
-              <div className="space-y-3 text-sm text-gray-600">
-                <p>
-                  This is a premium electrical product designed for professional and DIY installations. Built with high-quality materials and rigorous testing standards.
-                </p>
-                <p>
-                  Whether you're a seasoned electrician or a DIY enthusiast, this product delivers reliability and performance you can count on. Perfect for both residential and commercial applications.
-                </p>
-                <div className="space-y-2">
-                  <p className="font-semibold text-gray-900">Key Features:</p>
-                  <ul className="list-disc list-inside space-y-1 text-xs sm:text-sm">
-                    <li>High quality construction</li>
-                    <li>Long lasting durability</li>
-                    <li>Professional grade performance</li>
-                    <li>Easy installation</li>
-                    <li>Certified and tested</li>
-                  </ul>
+              {product?.description ? (
+                <div className="space-y-3 text-sm text-gray-600">
+                  <p>{product.description}</p>
                 </div>
-              </div>
+              ) : (
+                <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                  <p className="text-sm text-gray-600">No description available for this product.</p>
+                </div>
+              )}
             </TabsContent>
 
             {/* Questions Tab */}
             <TabsContent value="questions" className="p-4 sm:p-6">
               <div className="space-y-4">
-                <Button className="w-full bg-primary-gradient text-white font-semibold hover:shadow-lg" size="sm">
-                  + Add Question
+                <Button 
+                  className="w-full bg-primary-gradient text-white font-semibold hover:shadow-lg" 
+                  size="sm"
+                  onClick={() => {
+                    if (!isAuthenticated) {
+                      navigate('/login');
+                      return;
+                    }
+                    // Open modal to add question
+                    toast({
+                      title: "Coming Soon",
+                      description: "Question form will be available soon",
+                      duration: 2000,
+                    });
+                  }}
+                >
+                  <MessageCircle className="w-4 h-4" />
+                  + Ask a Question
                 </Button>
                 
                 <div className="space-y-3">
-                  <div className="p-3 sm:p-4 border border-gray-200 rounded-lg">
-                    <div className="flex items-start justify-between gap-2 mb-2">
-                      <div className="flex-1">
-                        <p className="font-semibold text-gray-900 text-sm">What's the warranty period?</p>
+                  {product?.questions && product.questions.length > 0 ? (
+                    product.questions.map(question => (
+                      <div key={question.id} className={`p-3 sm:p-4 border rounded-lg ${question.is_answered ? 'border-green-100 bg-green-50' : 'border-yellow-200 bg-yellow-50'}`}>
+                        <div className="flex items-start justify-between gap-2 mb-2">
+                          <div className="flex-1">
+                            <p className="font-semibold text-gray-900 text-sm">{question.question}</p>
+                          </div>
+                          <span className="text-xs text-gray-500 whitespace-nowrap">
+                            {new Date(question.created_at).toLocaleDateString()}
+                          </span>
+                        </div>
+                        <p className="text-xs text-gray-600 mb-2">
+                          Asked by <span className="font-medium">{question.asked_by.first_name + " " + question.asked_by.last_name || question.asked_by.username}</span>
+                        </p>
+                        {question.is_answered && question.answer ? (
+                          <div className="bg-white border border-green-100 rounded p-2">
+                            <p className="text-sm text-gray-600">
+                              <span className="font-semibold text-green-700">Answer: </span>
+                              {question.answer}
+                            </p>
+                          </div>
+                        ) : (
+                          <p className="text-xs font-semibold text-yellow-800">Awaiting Answer</p>
+                        )}
                       </div>
-                      <span className="text-xs text-gray-500 whitespace-nowrap">2 weeks ago</span>
+                    ))
+                  ) : (
+                    <div className="p-4 bg-gray-50 rounded-lg border border-gray-200 text-center">
+                      <p className="text-sm text-gray-600">No questions yet. Be the first to ask!</p>
                     </div>
-                    <p className="text-xs text-gray-500 mb-2">Asked by Sarah M.</p>
-                    <div className="bg-green-50 border border-green-100 rounded p-2">
-                      <p className="text-sm text-gray-600">
-                        <span className="font-semibold text-green-700">Answer: </span>This product comes with a 2-year manufacturer warranty covering defects in materials and workmanship.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="p-3 sm:p-4 border border-gray-200 rounded-lg">
-                    <div className="flex items-start justify-between gap-2 mb-2">
-                      <div className="flex-1">
-                        <p className="font-semibold text-gray-900 text-sm">How long does it take to deliver?</p>
-                      </div>
-                      <span className="text-xs text-gray-500 whitespace-nowrap">1 month ago</span>
-                    </div>
-                    <p className="text-xs text-gray-500 mb-2">Asked by John K.</p>
-                    <div className="bg-green-50 border border-green-100 rounded p-2">
-                      <p className="text-sm text-gray-600">
-                        <span className="font-semibold text-green-700">Answer: </span>Standard delivery takes 3-5 business days. Express options available at checkout.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="p-3 sm:p-4 border border-yellow-200 bg-yellow-50 rounded-lg">
-                    <div className="flex items-start justify-between gap-2 mb-2">
-                      <div className="flex-1">
-                        <p className="font-semibold text-gray-900 text-sm">Is installation included?</p>
-                      </div>
-                      <span className="text-xs text-gray-500 whitespace-nowrap">1 week ago</span>
-                    </div>
-                    <p className="text-xs text-gray-500 mb-2">Asked by Mike T.</p>
-                    <p className="text-xs text-yellow-800 font-semibold mb-2">Awaiting Answer</p>
-                  </div>
+                  )}
                 </div>
               </div>
             </TabsContent>
@@ -458,76 +509,73 @@ export default function ProductDetail() {
                   <div className="flex items-start justify-between">
                     <div>
                       <div className="flex items-baseline gap-2 mb-2">
-                        <span className="text-3xl font-bold text-primary">{product.rating}</span>
+                        <span className="text-3xl font-bold text-primary">{product?.avg_rating || 0}</span>
                         <span className="text-sm text-gray-600">/5</span>
                       </div>
                       <div className="flex gap-1 mb-2">
                         {[...Array(5)].map((_, i) => (
                           <Star
                             key={i}
-                            className={`w-4 h-4 ${i < Math.floor(parseFloat(product.rating)) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`}
+                            className={`w-4 h-4 ${i < Math.floor(product?.avg_rating || 0) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`}
                           />
                         ))}
                       </div>
-                      <p className="text-sm text-gray-600 font-semibold">{product.reviews_count} verified reviews</p>
+                      <p className="text-sm text-gray-600 font-semibold">{product?.total_reviews || 0} reviews</p>
                     </div>
                   </div>
                 </div>
 
                 {/* Add Review Button */}
-                <Button className="w-full bg-primary-gradient text-white font-semibold hover:shadow-lg" size="sm">
+                <Button 
+                  className="w-full bg-primary-gradient text-white font-semibold hover:shadow-lg" 
+                  size="sm"
+                  onClick={() => {
+                    if (!isAuthenticated) {
+                      navigate('/login');
+                      return;
+                    }
+                    toast({
+                      title: "Coming Soon",
+                      description: "Review form will be available soon",
+                      duration: 2000,
+                    });
+                  }}
+                >
                   + Add Review
                 </Button>
 
                 {/* Reviews List */}
                 <div className="space-y-3">
-                  <div className="p-4 border border-gray-200 rounded-lg">
-                    <div className="flex items-start justify-between gap-2 mb-2">
-                      <div>
-                        <p className="font-semibold text-gray-900 text-sm">Excellent Quality Product</p>
-                        <div className="flex gap-0.5 mt-1">
-                          {[...Array(5)].map((_, i) => (
-                            <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                          ))}
+                  {product?.reviews && product.reviews.length > 0 ? (
+                    product.reviews.map(review => (
+                      <div key={review.id} className="p-4 border border-gray-200 rounded-lg">
+                        <div className="flex items-start justify-between gap-2 mb-2">
+                          <div>
+                            <p className="font-semibold text-gray-900 text-sm">{review.comment}</p>
+                            <div className="flex gap-0.5 mt-1">
+                              {[...Array(5)].map((_, i) => (
+                                <Star 
+                                  key={i} 
+                                  className={`w-3 h-3 ${i < parseFloat(review.rating) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`}
+                                />
+                              ))}
+                            </div>
+                          </div>
+                          <span className="text-xs text-gray-500 whitespace-nowrap">
+                            {new Date(review.created_at).toLocaleDateString()}
+                          </span>
                         </div>
+                        <p className="text-xs text-gray-600 font-medium mb-2">
+                          By <span className="font-semibold">{review.reviewed_by.first_name + " " + review.reviewed_by.last_name || review.reviewed_by.username}</span>
+                          {review.is_verified_purchase && <span className="ml-2 text-green-600">✓ Verified Purchase</span>}
+                        </p>
                       </div>
-                      <span className="text-xs text-gray-500 whitespace-nowrap">2 weeks ago</span>
+                    ))
+                  ) : (
+                    <div className="p-4 bg-gray-50 rounded-lg border border-gray-200 text-center">
+                      <p className="text-sm text-gray-600">No reviews yet. Be the first to review!</p>
                     </div>
-                    <p className="text-xs text-gray-600 font-medium mb-2">By Sarah M. | Verified Purchase</p>
-                    <p className="text-sm text-gray-600">Excellent product! This has been exactly what I needed. Perfect quality and fast delivery. Highly recommended for anyone in the electrical trade.</p>
-                  </div>
-
-                  <div className="p-4 border border-gray-200 rounded-lg">
-                    <div className="flex items-start justify-between gap-2 mb-2">
-                      <div>
-                        <p className="font-semibold text-gray-900 text-sm">Great Value for Money</p>
-                        <div className="flex gap-0.5 mt-1">
-                          {[...Array(5)].map((_, i) => (
-                            <Star key={i} className={`w-3 h-3 ${i < 4 ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
-                          ))}
-                        </div>
-                      </div>
-                      <span className="text-xs text-gray-500 whitespace-nowrap">1 month ago</span>
-                    </div>
-                    <p className="text-xs text-gray-600 font-medium mb-2">By John K. | Verified Purchase</p>
-                    <p className="text-sm text-gray-600">Really happy with this purchase. The quality is impressive and the price is very reasonable. Would definitely buy again.</p>
-                  </div>
-
-                  <div className="p-4 border border-gray-200 rounded-lg">
-                    <div className="flex items-start justify-between gap-2 mb-2">
-                      <div>
-                        <p className="font-semibold text-gray-900 text-sm">Professional Grade</p>
-                        <div className="flex gap-0.5 mt-1">
-                          {[...Array(5)].map((_, i) => (
-                            <Star key={i} className={`w-3 h-3 ${i < 4 ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
-                          ))}
-                        </div>
-                      </div>
-                      <span className="text-xs text-gray-500 whitespace-nowrap">1.5 months ago</span>
-                    </div>
-                    <p className="text-xs text-gray-600 font-medium mb-2">By Mike T. | Verified Purchase</p>
-                    <p className="text-sm text-gray-600">Using this for professional installations. Meets all standards and very reliable. Only minor issue was packaging could be better, but product itself is perfect.</p>
-                  </div>
+                  )}
                 </div>
               </div>
             </TabsContent>
@@ -536,11 +584,11 @@ export default function ProductDetail() {
         )}
 
         {/* Related Items for mobile/tablet (below tabs) */}
-        {relatedProducts.length > 0 && (
+        {product?.related_products && product.related_products.length > 0 && (
           <div className="block lg:hidden mt-8 animate-fade-in">
             <h3 className="text-base font-bold text-gray-900 mb-2">Related Items</h3>
             <div className="space-y-2">
-              {relatedProducts.map(relatedProduct => (
+              {product.related_products.map(relatedProduct => (
                 <button
                   key={relatedProduct.id}
                   onClick={() => navigate(`/product-details/${relatedProduct.id}`)}
