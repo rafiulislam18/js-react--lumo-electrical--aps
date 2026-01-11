@@ -212,23 +212,42 @@ export default function Products() {
           <div className="flex items-center gap-2 text-xs sm:text-sm overflow-x-auto">
             <a href="/" className="text-gray-600 hover:text-primary transition-colors whitespace-nowrap">Home</a>
             <span className="text-gray-400">/</span>
-            {breadcrumb.length > 0 ? (
+            {breadcrumb.length > 0 && (
               <>
-                {breadcrumb.map((cat, idx) => (
+                {/* <span className="text-gray-400">/</span> */}
+                {breadcrumb.slice(0, -1).map((cat, idx) => (
                   <div key={cat.id} className="flex items-center gap-2">
-                    <span className="text-gray-600 hover:text-primary cursor-pointer transition-colors whitespace-nowrap">
+                    <a href={`/products/${cat.slug}`} className="text-gray-600 hover:text-primary cursor-pointer transition-colors whitespace-nowrap">
                       {cat.name}
-                    </span>
-                    {idx < breadcrumb.length - 1 && <span className="text-gray-400">/</span>}
+                    </a>
+                    <span className="text-gray-400">/</span>
                   </div>
                 ))}
               </>
-            ) : (
-              <span className="text-gray-600">Products</span>
             )}
-            <span className="text-gray-400">/</span>
             <span className="text-primary font-semibold whitespace-nowrap">{categoryData?.name || 'Products'}</span>
           </div>
+        </div>
+      </section>
+
+      {/* Children Categories */}
+      <section className="border-b border-gray-100 bg-white">
+        <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-3">{categoryData?.name} price in Cape Town, South Africa</h3>
+          <p className="text-sm text-gray-900 mb-3">{categoryData?.name} price starts from ZAR {response?.results.price_range.min} to ZAR {response?.results.price_range.max} in Cape Town, South Africa; depending on brand, model, and features. Buy the Latest {categoryData?.name} from Lumo Electrical online shop. Browse below and order yours now!</p>
+          {categoryData?.children && categoryData.children.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {categoryData.children.map((child) => (
+                <a
+                  key={child.id}
+                  href={`/products/${child.slug}`}
+                  className="inline-block px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm bg-gray-100 hover:bg-primary hover:text-white text-gray-700 rounded-lg transition-colors"
+                >
+                  {child.name}
+                </a>
+              ))}  
+            </div>
+          )}
         </div>
       </section>
 
