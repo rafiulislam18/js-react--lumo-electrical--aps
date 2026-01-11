@@ -219,7 +219,7 @@ export default function ProductDetail() {
                         />
                       ))}
                     </div>
-                    <span className="text-sm text-gray-600">({product.reviews_count} reviews)</span>
+                    <span className="text-sm text-gray-600">({product.reviews_count ?? 0} reviews)</span>
                   </div>
 
                   {/* Stock & Code */}
