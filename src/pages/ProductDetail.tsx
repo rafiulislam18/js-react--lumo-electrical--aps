@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, Heart, Star, ChevronLeft, AlertCircle, Loader } from "lucide-react";
+import { ShoppingCart, Heart, Star, ChevronLeft, AlertCircle, Loader, MessageCircle } from "lucide-react";
 import {
   Tabs,
   TabsContent,
@@ -11,7 +11,49 @@ import {
 } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/context/AuthContext";
-import { apiGet, apiPost } from "@/lib/api";
+import { apiGet, apiPost, apiDelete } from "@/lib/api";
+
+interface Category {
+  id: number;
+  name: string;
+  slug: string;
+  breadcrumb: Array<{
+    id: number;
+    name: string;
+    slug: string;
+  }>;
+}
+
+interface Review {
+  id: number;
+  rating: string;
+  comment: string;
+  is_verified_purchase: boolean;
+  helpful_count: number;
+  created_at: string;
+  updated_at: string;
+  reviewed_by: {
+    id: number;
+    username: string;
+    first_name: string;
+    last_name: string;
+  };
+}
+
+interface Question {
+  id: number;
+  question: string;
+  answer: string | null;
+  is_answered: boolean;
+  asked_by: {
+    id: number;
+    username: string;
+    first_name: string;
+    last_name: string;
+  };
+  created_at: string;
+  answered_at: string | null;
+}
 
 interface ProductData {
   id: number;
@@ -19,15 +61,36 @@ interface ProductData {
   description: string;
   price: string;
   old_price: string | null;
-  stock_quantity: number;
   image: string;
-  rating: string;
-  reviews_count: number;
+  avg_rating: number;
+  total_reviews: number;
   badge: string;
   in_stock: boolean;
   discount_percentage: number;
   created_at: string;
   updated_at: string;
+  category: Category;
+  specifications: Record<string, any>;
+  reviews: Review[];
+  questions: Question[];
+  related_products: Array<{
+    id: number;
+    name: string;
+    price: string;
+    old_price: string | null;
+    image: string;
+    avg_rating: number;
+    total_reviews: number;
+    badge: string;
+    in_stock: boolean;
+    discount_percentage: number;
+    created_at: string;
+    category: {
+      id: number;
+      name: string;
+      slug: string;
+    };
+  }>;
 }
 
 // Helper to get full image URL
@@ -55,8 +118,14 @@ export default function ProductDetail() {
   const queryClient = useQueryClient();
   const [quantity, setQuantity] = useState(1);
   const [isWishlisted, setIsWishlisted] = useState(false);
+  const [wishlistId, setWishlistId] = useState<number | null>(null);
+  const [selectedReviewRating, setSelectedReviewRating] = useState(0);
+  const [reviewComment, setReviewComment] = useState('');
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [questionText, setQuestionText] = useState('');
+  const [showQuestionForm, setShowQuestionForm] = useState(false);
 
-  // Fetch product details
+  // Fetch product details with all related data
   const { data: product, isLoading: productLoading, isError: productError } = useQuery<ProductData>({
     queryKey: ['product', id],
     queryFn: async () => {
@@ -64,19 +133,6 @@ export default function ProductDetail() {
     },
     enabled: !!id,
   });
-
-  // Fetch related products
-  const { data: relatedProductsData } = useQuery<ProductData[]>({
-    queryKey: ['relatedProducts'],
-    queryFn: async () => {
-      const products = await apiGet<ProductData[]>('/products/');
-      // Return first 5 products excluding current product
-      return products.filter(p => p.id !== parseInt(id || '0')).slice(0, 5);
-    },
-    enabled: !!id,
-  });
-
-  const relatedProducts = relatedProductsData || [];
 
   // Add to cart mutation
   const addToCartMutation = useMutation({
@@ -107,6 +163,74 @@ export default function ProductDetail() {
     },
   });
 
+  // Create review mutation
+  const createReviewMutation = useMutation({
+    mutationFn: async () => {
+      if (!product) throw new Error('Product not loaded');
+      if (selectedReviewRating === 0) throw new Error('Please select a rating');
+      
+      return apiPost(`/reviews/create/${product.id}/`, {
+        rating: selectedReviewRating,
+        comment: reviewComment.trim() || null,
+      });
+    },
+    onSuccess: (data) => {
+      toast({
+        title: 'Review submitted',
+        description: 'Thank you for your review!',
+        className: "bg-green-600 text-white border-green-700",
+        duration: 2000,
+      });
+      setReviewComment('');
+      setSelectedReviewRating(0);
+      setShowReviewForm(false);
+      // Refresh product data to get updated reviews
+      queryClient.invalidateQueries({ queryKey: ['product', id] });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.detail || error?.response?.data?.non_field_errors?.[0] || error.message || 'Failed to submit review';
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: errorMessage,
+        duration: 3000,
+      });
+    },
+  });
+
+  // Create question mutation
+  const createQuestionMutation = useMutation({
+    mutationFn: async () => {
+      if (!product) throw new Error('Product not loaded');
+      if (questionText.trim().length === 0) throw new Error('Please enter a question');
+      
+      return apiPost(`/questions/create/${product.id}/`, {
+        question: questionText.trim(),
+      });
+    },
+    onSuccess: (data) => {
+      toast({
+        title: 'Question submitted',
+        description: 'Thank you for your question!',
+        className: "bg-green-600 text-white border-green-700",
+        duration: 2000,
+      });
+      setQuestionText('');
+      setShowQuestionForm(false);
+      // Refresh product data to get updated questions
+      queryClient.invalidateQueries({ queryKey: ['product', id] });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.detail || error?.response?.data?.non_field_errors?.[0] || error.message || 'Failed to submit question';
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: errorMessage,
+        duration: 3000,
+      });
+    },
+  });
+
   const handleAddToCart = () => {
     if (!isAuthenticated) {
       toast({
@@ -120,20 +244,101 @@ export default function ProductDetail() {
     addToCartMutation.mutate();
   };
 
+  // Add to wishlist mutation
+  const addToWishlistMutation = useMutation({
+    mutationFn: async () => {
+      if (!product) throw new Error('Product not loaded');
+      return apiPost('/wishlist/', {
+        product_id: product.id,
+      });
+    },
+    onSuccess: (data: any) => {
+      setIsWishlisted(true);
+      setWishlistId(data.id);
+      toast({
+        title: 'Added to wishlist',
+        description: `${product?.name} has been added to your wishlist.`,
+        className: "bg-green-600 text-white border-green-700",
+        duration: 2000,
+      });
+      queryClient.invalidateQueries({ queryKey: ['wishlist'] });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.detail || error.message || 'Failed to add to wishlist';
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: errorMessage,
+        duration: 3000,
+      });
+    },
+  });
+
+  // Remove from wishlist mutation
+  const removeFromWishlistMutation = useMutation({
+    mutationFn: async () => {
+      if (!wishlistId) throw new Error('Wishlist item not found');
+      return apiDelete(`/wishlist/${wishlistId}/`);
+    },
+    onSuccess: () => {
+      setIsWishlisted(false);
+      setWishlistId(null);
+      toast({
+        title: 'Removed from wishlist',
+        description: `${product?.name} has been removed from your wishlist.`,
+        className: "bg-blue-600 text-white border-blue-700",
+        duration: 2000,
+      });
+      queryClient.invalidateQueries({ queryKey: ['wishlist'] });
+    },
+    onError: (error: Error) => {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: error.message,
+        duration: 3000,
+      });
+    },
+  });
+
+  const handleWishlistToggle = () => {
+    if (!isAuthenticated) {
+      toast({
+        title: 'Authentication required',
+        description: 'Please log in to add items to your wishlist.',
+        duration: 3000,
+      });
+      navigate('/login');
+      return;
+    }
+
+    if (isWishlisted) {
+      removeFromWishlistMutation.mutate();
+    } else {
+      addToWishlistMutation.mutate();
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50/30 flex flex-col font-sans">
       {/* Breadcrumb */}
       <section className="border-b border-gray-100 bg-white">
         <div className="container mx-auto px-4 py-3">
-          <div className="flex items-center gap-2 text-xs sm:text-sm animate-fade-in">
-            <button onClick={() => navigate("/")} className="text-gray-600 hover:text-primary transition-colors">Home</button>
+          <div className="flex items-center gap-2 text-xs sm:text-sm animate-fade-in overflow-x-auto">
+            <a href="/" className="text-gray-600 hover:text-primary transition-colors whitespace-nowrap">Home</a>
             <span className="text-gray-400">/</span>
-            {product && (
+            {product?.category?.breadcrumb && product.category.breadcrumb.length > 0 ? (
               <>
-                <span className="text-gray-600">Products</span>
-                <span className="text-gray-400">/</span>
+                {product.category.breadcrumb.map((cat, idx) => (
+                  <div key={cat.id} className="flex items-center gap-2">
+                    <a href={`/products/${cat.slug}`} className="text-gray-600 hover:text-primary transition-colors whitespace-nowrap">
+                      {cat.name}
+                    </a>
+                    <span className="text-gray-400">/</span>
+                  </div>
+                ))}
               </>
-            )}
+            ) : null}
             <span className="text-primary font-semibold line-clamp-1">{product?.name || 'Loading...'}</span>
           </div>
         </div>
@@ -215,11 +420,11 @@ export default function ProductDetail() {
                       {[...Array(5)].map((_, i) => (
                         <Star
                           key={i}
-                          className={`w-4 h-4 ${i < Math.floor(parseFloat(product.rating)) ? 'fill-current' : 'text-gray-200'}`}
+                          className={`w-4 h-4 ${i < Math.floor(product.avg_rating) ? 'fill-current' : 'text-gray-200'}`}
                         />
                       ))}
                     </div>
-                    <span className="text-sm text-gray-600">({product.reviews_count} reviews)</span>
+                    <span className="text-sm text-gray-600">({product.total_reviews} reviews)</span>
                   </div>
 
                   {/* Stock & Code */}
@@ -280,10 +485,16 @@ export default function ProductDetail() {
                       <Button
                         variant="outline"
                         size="sm"
-                        className="rounded-lg border-gray-200 hover:border-red-300 hover:bg-red-50 hover:text-red-500 transition-all px-3 py-1.5 h-auto text-sm"
-                        onClick={() => setIsWishlisted(!isWishlisted)}
+                        className={`rounded-lg transition-all px-3 py-1.5 h-auto text-sm ${isWishlisted ? 'border-red-300 bg-red-50 text-red-500' : 'border-gray-200 hover:border-red-300 hover:bg-red-50 hover:text-red-500'}`}
+                        onClick={handleWishlistToggle}
+                        disabled={addToWishlistMutation.isPending || removeFromWishlistMutation.isPending}
+                        title={isWishlisted ? "Remove from Wishlist" : "Add to Wishlist"}
                       >
-                        <Heart className={`w-4 h-4 ${isWishlisted ? 'fill-current' : ''}`} />
+                        {addToWishlistMutation.isPending || removeFromWishlistMutation.isPending ? (
+                          <Loader className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <Heart className={`w-4 h-4 ${isWishlisted ? 'fill-current' : ''}`} />
+                        )}
                       </Button>
                       <Button
                         size="sm"
@@ -301,11 +512,11 @@ export default function ProductDetail() {
             </div>
 
             {/* Right: Related Products */}
-            {relatedProducts.length > 0 && (
+            {product?.related_products && product.related_products.length > 0 && (
               <div className="hidden lg:block space-y-3 animate-fade-in">
                 <h3 className="text-base font-bold text-gray-900">Related Items</h3>
                 <div className="space-y-2">
-                  {relatedProducts.map(relatedProduct => (
+                  {product.related_products.map(relatedProduct => (
                     <button
                       key={relatedProduct.id}
                       onClick={() => navigate(`/product-details/${relatedProduct.id}`)}
@@ -353,99 +564,147 @@ export default function ProductDetail() {
 
             {/* Specifications Tab */}
             <TabsContent value="specifications" className="p-4 sm:p-6 space-y-3 sm:space-y-4">
-              <div className="grid grid-cols-2 gap-3 sm:gap-4">
-                <div className="p-3 bg-gray-50 rounded-lg">
-                  <p className="text-xs text-gray-500 mb-1">Brand</p>
-                  <p className="text-sm font-semibold text-gray-900">Lumo Electrical</p>
+              {product?.specifications && Object.keys(product.specifications).length > 0 ? (
+                <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                  {Object.entries(product.specifications).map(([key, value]) => (
+                    <div key={key} className="p-3 bg-gray-50 rounded-lg">
+                      <p className="text-xs text-gray-500 mb-1 font-medium">{key}</p>
+                      <p className="text-sm font-semibold text-gray-900">{String(value)}</p>
+                    </div>
+                  ))}
                 </div>
-                <div className="p-3 bg-gray-50 rounded-lg">
-                  <p className="text-xs text-gray-500 mb-1">Warranty</p>
-                  <p className="text-sm font-semibold text-gray-900">2 Years</p>
+              ) : (
+                <div className="p-4 bg-blue-50 rounded-lg border border-blue-100">
+                  <p className="text-sm text-blue-600 font-semibold">No specifications available</p>
                 </div>
-                <div className="p-3 bg-gray-50 rounded-lg">
-                  <p className="text-xs text-gray-500 mb-1">Stock</p>
-                  <p className="text-sm font-semibold text-gray-900">{product.stock_quantity} units</p>
-                </div>
-                <div className="p-3 bg-gray-50 rounded-lg">
-                  <p className="text-xs text-gray-500 mb-1">Certification</p>
-                  <p className="text-sm font-semibold text-gray-900">ISO 9001</p>
-                </div>
-              </div>
-              <div className="p-3 bg-blue-50 rounded-lg border border-blue-100">
-                <p className="text-xs text-blue-600 font-semibold">Technical specifications available upon request</p>
-              </div>
+              )}
             </TabsContent>
 
             {/* Description Tab */}
             <TabsContent value="description" className="p-4 sm:p-6 space-y-3 sm:space-y-4">
-              <div className="space-y-3 text-sm text-gray-600">
-                <p>
-                  This is a premium electrical product designed for professional and DIY installations. Built with high-quality materials and rigorous testing standards.
-                </p>
-                <p>
-                  Whether you're a seasoned electrician or a DIY enthusiast, this product delivers reliability and performance you can count on. Perfect for both residential and commercial applications.
-                </p>
-                <div className="space-y-2">
-                  <p className="font-semibold text-gray-900">Key Features:</p>
-                  <ul className="list-disc list-inside space-y-1 text-xs sm:text-sm">
-                    <li>High quality construction</li>
-                    <li>Long lasting durability</li>
-                    <li>Professional grade performance</li>
-                    <li>Easy installation</li>
-                    <li>Certified and tested</li>
-                  </ul>
+              {product?.description ? (
+                <div className="space-y-3 text-sm text-gray-600">
+                  <p>{product.description}</p>
                 </div>
-              </div>
+              ) : (
+                <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                  <p className="text-sm text-gray-600">No description available for this product.</p>
+                </div>
+              )}
             </TabsContent>
 
             {/* Questions Tab */}
             <TabsContent value="questions" className="p-4 sm:p-6">
               <div className="space-y-4">
-                <Button className="w-full bg-primary-gradient text-white font-semibold hover:shadow-lg" size="sm">
-                  + Add Question
-                </Button>
+                {/* Question Form Toggle */}
+                {!showQuestionForm ? (
+                  <Button 
+                    className="w-full bg-primary-gradient text-white font-semibold hover:shadow-lg" 
+                    size="sm"
+                    onClick={() => {
+                      if (!isAuthenticated) {
+                        toast({
+                          title: 'Authentication required',
+                          description: 'Please log in to ask a question.',
+                          duration: 3000,
+                        });
+                        navigate('/login');
+                        return;
+                      }
+                      setShowQuestionForm(true);
+                    }}
+                  >
+                    <MessageCircle className="w-4 h-4" />
+                    + Ask a Question
+                  </Button>
+                ) : (
+                  <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-semibold text-gray-900">Ask a Question</h3>
+                      <button 
+                        onClick={() => setShowQuestionForm(false)}
+                        className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+
+                    {/* Question Input */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Question</label>
+                      <textarea
+                        value={questionText}
+                        onChange={(e) => setQuestionText(e.target.value)}
+                        placeholder="Ask your question about this product..."
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none resize-none text-sm"
+                        rows={4}
+                      />
+                      <p className="text-xs text-gray-500 mt-1">{questionText.length} characters</p>
+                    </div>
+
+                    {/* Submit Button */}
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        className="bg-primary-gradient text-white font-semibold hover:shadow-lg"
+                        disabled={createQuestionMutation.isPending || questionText.trim().length === 0}
+                        onClick={() => createQuestionMutation.mutate()}
+                      >
+                        {createQuestionMutation.isPending ? (
+                          <>
+                            <Loader className="w-4 h-4 mr-1 animate-spin" />
+                            Submitting...
+                          </>
+                        ) : (
+                          'Ask Question'
+                        )}
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          setShowQuestionForm(false);
+                          setQuestionText('');
+                        }}
+                      >
+                        Clear
+                      </Button>
+                    </div>
+                  </div>
+                )}
                 
                 <div className="space-y-3">
-                  <div className="p-3 sm:p-4 border border-gray-200 rounded-lg">
-                    <div className="flex items-start justify-between gap-2 mb-2">
-                      <div className="flex-1">
-                        <p className="font-semibold text-gray-900 text-sm">What's the warranty period?</p>
+                  {product?.questions && product.questions.length > 0 ? (
+                    product.questions.map(question => (
+                      <div key={question.id} className={`p-3 sm:p-4 border rounded-lg ${question.is_answered ? 'border-green-100 bg-green-50' : 'border-yellow-200 bg-yellow-50'}`}>
+                        <div className="flex items-start justify-between gap-2 mb-2">
+                          <div className="flex-1">
+                            <p className="font-semibold text-gray-900 text-sm">{question.question}</p>
+                          </div>
+                          <span className="text-xs text-gray-500 whitespace-nowrap">
+                            {new Date(question.created_at).toLocaleDateString()}
+                          </span>
+                        </div>
+                        <p className="text-xs text-gray-600 mb-2">
+                          Asked by <span className="font-medium">{question.asked_by.first_name + " " + question.asked_by.last_name || question.asked_by.username}</span>
+                        </p>
+                        {question.is_answered && question.answer ? (
+                          <div className="bg-white border border-green-100 rounded p-2">
+                            <p className="text-sm text-gray-600">
+                              <span className="font-semibold text-green-700">Answer: </span>
+                              {question.answer}
+                            </p>
+                          </div>
+                        ) : (
+                          <p className="text-xs font-semibold text-yellow-800">Awaiting Answer</p>
+                        )}
                       </div>
-                      <span className="text-xs text-gray-500 whitespace-nowrap">2 weeks ago</span>
+                    ))
+                  ) : (
+                    <div className="p-4 bg-gray-50 rounded-lg border border-gray-200 text-center">
+                      <p className="text-sm text-gray-600">No questions yet. Be the first to ask!</p>
                     </div>
-                    <p className="text-xs text-gray-500 mb-2">Asked by Sarah M.</p>
-                    <div className="bg-green-50 border border-green-100 rounded p-2">
-                      <p className="text-sm text-gray-600">
-                        <span className="font-semibold text-green-700">Answer: </span>This product comes with a 2-year manufacturer warranty covering defects in materials and workmanship.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="p-3 sm:p-4 border border-gray-200 rounded-lg">
-                    <div className="flex items-start justify-between gap-2 mb-2">
-                      <div className="flex-1">
-                        <p className="font-semibold text-gray-900 text-sm">How long does it take to deliver?</p>
-                      </div>
-                      <span className="text-xs text-gray-500 whitespace-nowrap">1 month ago</span>
-                    </div>
-                    <p className="text-xs text-gray-500 mb-2">Asked by John K.</p>
-                    <div className="bg-green-50 border border-green-100 rounded p-2">
-                      <p className="text-sm text-gray-600">
-                        <span className="font-semibold text-green-700">Answer: </span>Standard delivery takes 3-5 business days. Express options available at checkout.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="p-3 sm:p-4 border border-yellow-200 bg-yellow-50 rounded-lg">
-                    <div className="flex items-start justify-between gap-2 mb-2">
-                      <div className="flex-1">
-                        <p className="font-semibold text-gray-900 text-sm">Is installation included?</p>
-                      </div>
-                      <span className="text-xs text-gray-500 whitespace-nowrap">1 week ago</span>
-                    </div>
-                    <p className="text-xs text-gray-500 mb-2">Asked by Mike T.</p>
-                    <p className="text-xs text-yellow-800 font-semibold mb-2">Awaiting Answer</p>
-                  </div>
+                  )}
                 </div>
               </div>
             </TabsContent>
@@ -458,76 +717,152 @@ export default function ProductDetail() {
                   <div className="flex items-start justify-between">
                     <div>
                       <div className="flex items-baseline gap-2 mb-2">
-                        <span className="text-3xl font-bold text-primary">{product.rating}</span>
+                        <span className="text-3xl font-bold text-primary">{product?.avg_rating || 0}</span>
                         <span className="text-sm text-gray-600">/5</span>
                       </div>
                       <div className="flex gap-1 mb-2">
                         {[...Array(5)].map((_, i) => (
                           <Star
                             key={i}
-                            className={`w-4 h-4 ${i < Math.floor(parseFloat(product.rating)) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`}
+                            className={`w-4 h-4 ${i < Math.floor(product?.avg_rating || 0) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`}
                           />
                         ))}
                       </div>
-                      <p className="text-sm text-gray-600 font-semibold">{product.reviews_count} verified reviews</p>
+                      <p className="text-sm text-gray-600 font-semibold">{product?.total_reviews || 0} reviews</p>
                     </div>
                   </div>
                 </div>
 
-                {/* Add Review Button */}
-                <Button className="w-full bg-primary-gradient text-white font-semibold hover:shadow-lg" size="sm">
-                  + Add Review
-                </Button>
+                {/* Review Form Toggle */}
+                {!showReviewForm ? (
+                  <Button 
+                    className="w-full bg-primary-gradient text-white font-semibold hover:shadow-lg" 
+                    size="sm"
+                    onClick={() => {
+                      if (!isAuthenticated) {
+                        toast({
+                          title: 'Authentication required',
+                          description: 'Please log in to submit a review.',
+                          duration: 3000,
+                        });
+                        navigate('/login');
+                        return;
+                      }
+                      setShowReviewForm(true);
+                    }}
+                  >
+                    + Add Review
+                  </Button>
+                ) : (
+                  <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-semibold text-gray-900">Write Your Review</h3>
+                      <button 
+                        onClick={() => setShowReviewForm(false)}
+                        className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+
+                    {/* Rating Selection */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Rating</label>
+                      <div className="flex gap-2">
+                        {[1, 2, 3, 4, 5].map((rating) => (
+                          <button
+                            key={rating}
+                            onClick={() => setSelectedReviewRating(rating)}
+                            className="transition-transform hover:scale-110"
+                          >
+                            <Star
+                              className={`w-6 h-6 ${selectedReviewRating >= rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`}
+                            />
+                          </button>
+                        ))}
+                      </div>
+                      {selectedReviewRating > 0 && (
+                        <p className="text-xs text-gray-600 mt-1">You selected {selectedReviewRating} star{selectedReviewRating !== 1 ? 's' : ''}</p>
+                      )}
+                    </div>
+
+                    {/* Comment Input */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Comment</label>
+                      <textarea
+                        value={reviewComment}
+                        onChange={(e) => setReviewComment(e.target.value)}
+                        placeholder="Share your experience with this product..."
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none resize-none text-sm"
+                        rows={4}
+                      />
+                      <p className="text-xs text-gray-500 mt-1">{reviewComment.length} characters</p>
+                    </div>
+
+                    {/* Submit Button */}
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        className="bg-primary-gradient text-white font-semibold hover:shadow-lg"
+                        disabled={createReviewMutation.isPending || selectedReviewRating === 0}
+                        onClick={() => createReviewMutation.mutate()}
+                      >
+                        {createReviewMutation.isPending ? (
+                          <>
+                            <Loader className="w-4 h-4 mr-1 animate-spin" />
+                            Submitting...
+                          </>
+                        ) : (
+                          'Submit Review'
+                        )}
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          setShowReviewForm(false);
+                          setReviewComment('');
+                          setSelectedReviewRating(0);
+                        }}
+                      >
+                        Clear
+                      </Button>
+                    </div>
+                  </div>
+                )}
 
                 {/* Reviews List */}
                 <div className="space-y-3">
-                  <div className="p-4 border border-gray-200 rounded-lg">
-                    <div className="flex items-start justify-between gap-2 mb-2">
-                      <div>
-                        <p className="font-semibold text-gray-900 text-sm">Excellent Quality Product</p>
-                        <div className="flex gap-0.5 mt-1">
-                          {[...Array(5)].map((_, i) => (
-                            <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                          ))}
+                  {product?.reviews && product.reviews.length > 0 ? (
+                    product.reviews.map(review => (
+                      <div key={review.id} className="p-4 border border-gray-200 rounded-lg">
+                        <div className="flex items-start justify-between gap-2 mb-2">
+                          <div>
+                            <p className="font-semibold text-gray-900 text-sm">{review.comment}</p>
+                            <div className="flex gap-0.5 mt-1">
+                              {[...Array(5)].map((_, i) => (
+                                <Star 
+                                  key={i} 
+                                  className={`w-3 h-3 ${i < parseFloat(review.rating) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`}
+                                />
+                              ))}
+                            </div>
+                          </div>
+                          <span className="text-xs text-gray-500 whitespace-nowrap">
+                            {new Date(review.created_at).toLocaleDateString()}
+                          </span>
                         </div>
+                        <p className="text-xs text-gray-600 font-medium mb-2">
+                          By <span className="font-semibold">{review.reviewed_by.first_name + " " + review.reviewed_by.last_name || review.reviewed_by.username}</span>
+                          {review.is_verified_purchase && <span className="ml-2 text-green-600">✓ Verified Purchase</span>}
+                        </p>
                       </div>
-                      <span className="text-xs text-gray-500 whitespace-nowrap">2 weeks ago</span>
+                    ))
+                  ) : (
+                    <div className="p-4 bg-gray-50 rounded-lg border border-gray-200 text-center">
+                      <p className="text-sm text-gray-600">No reviews yet. Be the first to review!</p>
                     </div>
-                    <p className="text-xs text-gray-600 font-medium mb-2">By Sarah M. | Verified Purchase</p>
-                    <p className="text-sm text-gray-600">Excellent product! This has been exactly what I needed. Perfect quality and fast delivery. Highly recommended for anyone in the electrical trade.</p>
-                  </div>
-
-                  <div className="p-4 border border-gray-200 rounded-lg">
-                    <div className="flex items-start justify-between gap-2 mb-2">
-                      <div>
-                        <p className="font-semibold text-gray-900 text-sm">Great Value for Money</p>
-                        <div className="flex gap-0.5 mt-1">
-                          {[...Array(5)].map((_, i) => (
-                            <Star key={i} className={`w-3 h-3 ${i < 4 ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
-                          ))}
-                        </div>
-                      </div>
-                      <span className="text-xs text-gray-500 whitespace-nowrap">1 month ago</span>
-                    </div>
-                    <p className="text-xs text-gray-600 font-medium mb-2">By John K. | Verified Purchase</p>
-                    <p className="text-sm text-gray-600">Really happy with this purchase. The quality is impressive and the price is very reasonable. Would definitely buy again.</p>
-                  </div>
-
-                  <div className="p-4 border border-gray-200 rounded-lg">
-                    <div className="flex items-start justify-between gap-2 mb-2">
-                      <div>
-                        <p className="font-semibold text-gray-900 text-sm">Professional Grade</p>
-                        <div className="flex gap-0.5 mt-1">
-                          {[...Array(5)].map((_, i) => (
-                            <Star key={i} className={`w-3 h-3 ${i < 4 ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
-                          ))}
-                        </div>
-                      </div>
-                      <span className="text-xs text-gray-500 whitespace-nowrap">1.5 months ago</span>
-                    </div>
-                    <p className="text-xs text-gray-600 font-medium mb-2">By Mike T. | Verified Purchase</p>
-                    <p className="text-sm text-gray-600">Using this for professional installations. Meets all standards and very reliable. Only minor issue was packaging could be better, but product itself is perfect.</p>
-                  </div>
+                  )}
                 </div>
               </div>
             </TabsContent>
@@ -536,11 +871,11 @@ export default function ProductDetail() {
         )}
 
         {/* Related Items for mobile/tablet (below tabs) */}
-        {relatedProducts.length > 0 && (
+        {product?.related_products && product.related_products.length > 0 && (
           <div className="block lg:hidden mt-8 animate-fade-in">
             <h3 className="text-base font-bold text-gray-900 mb-2">Related Items</h3>
             <div className="space-y-2">
-              {relatedProducts.map(relatedProduct => (
+              {product.related_products.map(relatedProduct => (
                 <button
                   key={relatedProduct.id}
                   onClick={() => navigate(`/product-details/${relatedProduct.id}`)}

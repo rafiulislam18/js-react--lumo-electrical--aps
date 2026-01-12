@@ -1,7 +1,12 @@
-import { ArrowRight, ShoppingCart, Heart } from "lucide-react";
+import { ArrowRight, ShoppingCart, Heart, Loader } from "lucide-react";
 import { type Product } from "@/data/dummyData";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "@/context/AuthContext";
+import { useToast } from "@/hooks/use-toast";
+import { apiPost, apiDelete } from "@/lib/api";
+import { useState } from "react";
 
 interface ProductListColumnProps {
   title: string;
@@ -17,6 +22,140 @@ const calculateDiscountPercentage = (oldPrice: number | undefined, currentPrice:
 
 export function ProductListColumn({ title, products, linkTo }: ProductListColumnProps) {
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  // Add to cart mutation
+  const addToCartMutation = useMutation({
+    mutationFn: async (productId: string) => {
+      return apiPost('/cart/add/', {
+        product_id: productId,
+        quantity: 1,
+      });
+    },
+    onSuccess: (data, productId) => {
+      const product = products.find(p => p.id === productId);
+      toast({
+        title: 'Added to cart',
+        description: `${product?.name} has been added to your cart.`,
+        className: "bg-green-600 text-white border-green-700",
+        duration: 2000,
+      });
+      queryClient.invalidateQueries({ queryKey: ['cart'] });
+    },
+    onError: (error: Error) => {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: error.message,
+        duration: 3000,
+      });
+    },
+  });
+
+  const handleAddToCart = (e: React.MouseEvent<HTMLButtonElement>, productId: string) => {
+    e.stopPropagation();
+    
+    if (!isAuthenticated) {
+      toast({
+        title: 'Authentication required',
+        description: 'Please log in to add items to your cart.',
+        duration: 3000,
+      });
+      navigate('/login');
+      return;
+    }
+    
+    addToCartMutation.mutate(productId);
+  };
+
+  // Wishlist state management
+  const [wishlistStates, setWishlistStates] = useState<{ [key: string]: { isWishlisted: boolean; id: number | null } }>({});
+
+  // Add to wishlist mutation
+  const addToWishlistMutation = useMutation({
+    mutationFn: async (productId: string) => {
+      return apiPost('/wishlist/', {
+        product_id: parseInt(productId),
+      });
+    },
+    onSuccess: (data: any, productId: string) => {
+      setWishlistStates(prev => ({
+        ...prev,
+        [productId]: { isWishlisted: true, id: data.id }
+      }));
+      const product = products.find(p => p.id === productId);
+      toast({
+        title: 'Added to wishlist',
+        description: `${product?.name} has been added to your wishlist.`,
+        className: "bg-green-600 text-white border-green-700",
+        duration: 2000,
+      });
+      queryClient.invalidateQueries({ queryKey: ['wishlist'] });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.detail || error.message || 'Failed to add to wishlist';
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: errorMessage,
+        duration: 3000,
+      });
+    },
+  });
+
+  // Remove from wishlist mutation
+  const removeFromWishlistMutation = useMutation({
+    mutationFn: async (productId: string) => {
+      const wishlistId = wishlistStates[productId]?.id;
+      if (!wishlistId) throw new Error('Wishlist item not found');
+      return apiDelete(`/wishlist/${wishlistId}/`);
+    },
+    onSuccess: (data, productId: string) => {
+      setWishlistStates(prev => ({
+        ...prev,
+        [productId]: { isWishlisted: false, id: null }
+      }));
+      const product = products.find(p => p.id === productId);
+      toast({
+        title: 'Removed from wishlist',
+        description: `${product?.name} has been removed from your wishlist.`,
+        className: "bg-blue-600 text-white border-blue-700",
+        duration: 2000,
+      });
+      queryClient.invalidateQueries({ queryKey: ['wishlist'] });
+    },
+    onError: (error: Error) => {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: error.message,
+        duration: 3000,
+      });
+    },
+  });
+
+  const handleWishlistToggle = (e: React.MouseEvent<HTMLButtonElement>, productId: string) => {
+    e.stopPropagation();
+    
+    if (!isAuthenticated) {
+      toast({
+        title: 'Authentication required',
+        description: 'Please log in to add items to your wishlist.',
+        duration: 3000,
+      });
+      navigate('/login');
+      return;
+    }
+
+    const currentState = wishlistStates[productId];
+    if (currentState?.isWishlisted) {
+      removeFromWishlistMutation.mutate(productId);
+    } else {
+      addToWishlistMutation.mutate(productId);
+    }
+  };
 
   return (
     <div className="flex flex-col h-full">
@@ -87,25 +226,29 @@ export function ProductListColumn({ title, products, linkTo }: ProductListColumn
                     <Button
                       size="icon"
                       variant="ghost"
-                      className="h-8 w-8 sm:h-9 sm:w-9 rounded-full hover:bg-red-50 hover:text-red-500 transition-smooth shadow-sm border border-gray-200"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        console.log('Add to wishlist', product.id);
-                      }}
-                      title="Add to Wishlist"
+                      className={`h-8 w-8 sm:h-9 sm:w-9 rounded-full transition-smooth shadow-sm border ${wishlistStates[product.id]?.isWishlisted ? 'border-red-300 bg-red-50 text-red-500' : 'border-gray-200 hover:bg-red-50 hover:text-red-500'} disabled:opacity-50`}
+                      onClick={(e) => handleWishlistToggle(e, product.id)}
+                      disabled={addToWishlistMutation.isPending || removeFromWishlistMutation.isPending}
+                      title={wishlistStates[product.id]?.isWishlisted ? "Remove from Wishlist" : "Add to Wishlist"}
                     >
-                      <Heart className="w-4 h-4" />
+                      {addToWishlistMutation.isPending || removeFromWishlistMutation.isPending ? (
+                        <Loader className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <Heart className={`w-4 h-4 ${wishlistStates[product.id]?.isWishlisted ? 'fill-current' : ''}`} />
+                      )}
                     </Button>
                     <Button
                       size="icon"
-                      className="h-8 w-8 sm:h-9 sm:w-9 rounded-full bg-primary-gradient hover:shadow-lg hover:shadow-green-600/30 transition-smooth shadow-md"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        console.log('Add to cart', product.id);
-                      }}
+                      className="h-8 w-8 sm:h-9 sm:w-9 rounded-full bg-primary-gradient hover:shadow-lg hover:shadow-green-600/30 transition-smooth shadow-md disabled:opacity-50"
+                      disabled={addToCartMutation.isPending}
+                      onClick={(e) => handleAddToCart(e, product.id)}
                       title="Add to Cart"
                     >
-                      <ShoppingCart className="w-4 h-4 text-white" />
+                      {addToCartMutation.isPending ? (
+                        <Loader className="w-4 h-4 text-white animate-spin" />
+                      ) : (
+                        <ShoppingCart className="w-4 h-4 text-white" />
+                      )}
                     </Button>
                   </div>
                 </div>

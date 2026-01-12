@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { 
   Search, ShoppingCart, Heart, User, Menu, 
   ChevronDown, LogIn, UserPlus, Package, LogOut, Lock 
@@ -15,9 +16,97 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { CartSidebar } from "@/components/CartSidebar";
-import { categories, allProducts } from "@/data/dummyData";
+import { allProducts } from "@/data/dummyData";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import { apiGet } from "@/lib/api";
+
+interface Category {
+  id: number;
+  name: string;
+  slug: string;
+  is_leaf: boolean;
+  children: Category[];
+}
+
+interface CategoriesResponse {
+  categories: Category[];
+}
+
+// Recursive category menu item component for desktop
+function CategoryMenuItem({ category }: { category: Category }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  if (!category.children || category.children.length === 0) {
+    return (
+      <div className="px-2 py-2 rounded-lg text-gray-700 hover:text-primary hover:bg-gray-50 cursor-pointer text-sm">
+        <a href={`/products/${category.slug}`} className="flex items-center block">
+          {category.name}
+        </a>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className="relative group"
+      onMouseEnter={() => setIsOpen(true)}
+      onMouseLeave={() => setIsOpen(false)}
+    >
+      <div className="flex items-center justify-between px-2 py-2 rounded-lg text-gray-700 hover:text-primary hover:bg-gray-50 cursor-pointer text-sm">
+        <a href={`/products/${category.slug}`} className="flex-1 block">
+          {category.name}
+        </a>
+        <ChevronDown className="w-3 h-3 ml-2 flex-shrink-0" />
+      </div>
+      {/* Invisible bridge to prevent gap hover trigger */}
+      <div className="absolute left-full top-0 -ml-1 w-1 h-full pointer-events-none" />
+      {isOpen && (
+        <div className="absolute left-full top-0 bg-white border border-gray-200 rounded-lg shadow-xl p-1 min-w-max z-[999]">
+          {category.children.map((child) => (
+            <CategoryMenuItem key={child.id} category={child} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Recursive mobile category menu component
+function MobileCategoryItem({ category, level = 0 }: { category: Category; level?: number }) {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  return (
+    <div key={category.id}>
+      <div className="flex items-center justify-between">
+        <a
+          href={`/products/${category.slug}`}
+          className="flex-1 px-3 py-2.5 text-sm font-medium text-gray-700 hover:text-primary transition-colors"
+          style={{ paddingLeft: `${12 + level * 12}px` }}
+        >
+          {category.name}
+        </a>
+        {category.children && category.children.length > 0 && (
+          <button
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="px-3 py-2.5"
+          >
+            <ChevronDown
+              className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+            />
+          </button>
+        )}
+      </div>
+      {isExpanded && category.children && category.children.length > 0 && (
+        <div className="bg-gray-50">
+          {category.children.map((child) => (
+            <MobileCategoryItem key={child.id} category={child} level={level + 1} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export function Navbar() {
   const navigate = useNavigate();
@@ -33,6 +122,15 @@ export function Navbar() {
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+
+  // Fetch categories from backend
+  const { data: categoriesData } = useQuery<CategoriesResponse>({
+    queryKey: ['categories-tree'],
+    queryFn: () => apiGet<CategoriesResponse>('/categories/tree/'),
+  });
+
+  const allCategories = categoriesData?.categories || [];
+  const firstEightCategories = allCategories.slice(0, 8);
 
   useEffect(() => {
     const updateCounts = () => {
@@ -221,7 +319,6 @@ export function Navbar() {
                       className="text-red-600 focus:text-red-600 focus:bg-red-50 rounded-lg cursor-pointer"
                       onClick={() => {
                         logout();
-                        navigate("/");
                         toast({
                           title: "Logged Out",
                           description: "You have been logged out successfully.",
@@ -279,20 +376,15 @@ export function Navbar() {
                 <ChevronDown className="w-3 h-3 ml-1" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-56 rounded-xl p-2 shadow-lg border-gray-100" onOpenAutoFocus={(e: any) => e.preventDefault()} onMouseLeave={() => setOpenDropdown(null)}>
-              {categories.map((cat: any) => (
-                <DropdownMenuItem key={cat.id} className="cursor-pointer rounded-lg py-2 text-gray-700 hover:text-primary hover:bg-gray-50 focus:text-primary focus:bg-gray-50" asChild>
-                  <a href={`/products/${cat.slug}`} className="flex items-center">
-                    <cat.icon className="w-4 h-4 mr-2" />
-                    {cat.name}
-                  </a>
-                </DropdownMenuItem>
+            <DropdownMenuContent align="start" className="w-80 rounded-xl p-2 shadow-lg border-gray-100 overflow-visible" onOpenAutoFocus={(e: any) => e.preventDefault()} onMouseLeave={() => setOpenDropdown(null)}>
+              {allCategories.map((cat: Category) => (
+                <CategoryMenuItem key={cat.id} category={cat} />
               ))}
             </DropdownMenuContent>
           </DropdownMenu>
 
           <div className="flex items-center gap-6 overflow-x-auto no-scrollbar">
-            {categories.slice(0, 8).map((cat: any) => (
+            {firstEightCategories.map((cat: Category) => (
               <a 
                 key={cat.id} 
                 href={`/products/${cat.slug}`} 
@@ -301,9 +393,6 @@ export function Navbar() {
                 {cat.name}
               </a>
             ))}
-            {/* <a href="/deals" className="text-sm font-medium text-red-500 hover:text-red-600 transition-colors whitespace-nowrap">
-              Hot Deals
-            </a> */}
           </div>
         </div>
       </div>
@@ -388,16 +477,8 @@ export function Navbar() {
             {/* Mobile Categories */}
             <div className="space-y-1 pt-4">
               <p className="text-xs font-bold text-gray-500 uppercase tracking-widest px-3 mb-2">Categories</p>
-              {categories.map((cat: any) => (
-                <a 
-                  key={cat.id} 
-                  href={`/products/${cat.slug}`}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex items-center gap-2 px-3 py-2.5 text-sm font-medium text-gray-700 hover:text-primary hover:bg-gray-50 rounded-lg transition-colors"
-                >
-                  <cat.icon className="w-4 h-4" />
-                  {cat.name}
-                </a>
+              {allCategories.map((cat: Category) => (
+                <MobileCategoryItem key={cat.id} category={cat} />
               ))}
             </div>
           </div>
