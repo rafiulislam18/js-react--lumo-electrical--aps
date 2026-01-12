@@ -1,12 +1,12 @@
-import { ShoppingCart, Heart, Star } from "lucide-react";
+import { ShoppingCart, Heart, Star, Loader } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { type Product } from "@/data/dummyData";
 import { useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/context/AuthContext";
-import { useState } from "react";
-import { apiPost } from "@/lib/api";
+import { useState, useEffect } from "react";
+import { apiPost, apiDelete } from "@/lib/api";
 
 interface ProductCardProps {
   product: Product;
@@ -25,6 +25,8 @@ export function ProductCard({ product }: ProductCardProps) {
   const { isAuthenticated } = useAuth();
   const queryClient = useQueryClient();
   const [isAdding, setIsAdding] = useState(false);
+  const [isWishlisted, setIsWishlisted] = useState(false);
+  const [wishlistId, setWishlistId] = useState<number | null>(null);
 
   const handleProductClick = () => {
     navigate(`/product-details/${product.id}`);
@@ -75,6 +77,80 @@ export function ProductCard({ product }: ProductCardProps) {
     addToCartMutation.mutate();
   };
 
+  // Add to wishlist mutation
+  const addToWishlistMutation = useMutation({
+    mutationFn: async () => {
+      return apiPost('/wishlist/', {
+        product_id: parseInt(product.id),
+      });
+    },
+    onSuccess: (data: any) => {
+      setIsWishlisted(true);
+      setWishlistId(data.id);
+      toast({
+        title: 'Added to wishlist',
+        description: `${product.name} has been added to your wishlist.`,
+        className: "bg-green-600 text-white border-green-700",
+        duration: 2000,
+      });
+      queryClient.invalidateQueries({ queryKey: ['wishlist'] });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.detail || error.message || 'Failed to add to wishlist';
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: errorMessage,
+        duration: 3000,
+      });
+    },
+  });
+
+  // Remove from wishlist mutation
+  const removeFromWishlistMutation = useMutation({
+    mutationFn: async () => {
+      if (!wishlistId) throw new Error('Wishlist item not found');
+      return apiDelete(`/wishlist/${wishlistId}/`);
+    },
+    onSuccess: () => {
+      setIsWishlisted(false);
+      setWishlistId(null);
+      toast({
+        title: 'Removed from wishlist',
+        description: `${product.name} has been removed from your wishlist.`,
+        className: "bg-blue-600 text-white border-blue-700",
+        duration: 2000,
+      });
+      queryClient.invalidateQueries({ queryKey: ['wishlist'] });
+    },
+    onError: (error: Error) => {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: error.message,
+        duration: 3000,
+      });
+    },
+  });
+
+  const handleWishlistToggle = () => {
+    if (!isAuthenticated) {
+      toast({
+        title: 'Authentication required',
+        description: 'Please log in to add items to your wishlist.',
+        duration: 3000,
+      });
+      navigate('/login');
+      return;
+    }
+
+    if (isWishlisted) {
+      removeFromWishlistMutation.mutate();
+    } else {
+      addToWishlistMutation.mutate();
+    }
+  };
+
   return (
     <div className="group relative flex flex-col p-2 sm:p-3 bg-white rounded-lg border border-transparent hover:border-green-200 hover:shadow-lg hover:shadow-green-900/5 transition-smooth">
       {/* Top Left Badge */}
@@ -96,8 +172,17 @@ export function ProductCard({ product }: ProductCardProps) {
       )}
 
       {/* Wishlist Button - Hidden until hover */}
-      <button className="absolute top-12 right-2 z-10 p-2 bg-white rounded-full shadow-md text-gray-400 opacity-0 group-hover:opacity-100 translate-x-2 group-hover:translate-x-0 transition-smooth hover:text-red-500 hover:bg-red-50 border border-gray-100 hover:border-red-200" title="Add to Wishlist">
-        <Heart className="w-3.5 h-3.5" />
+      <button 
+        onClick={handleWishlistToggle}
+        disabled={addToWishlistMutation.isPending || removeFromWishlistMutation.isPending}
+        className="absolute top-12 right-2 z-10 p-2 bg-white rounded-full shadow-md opacity-0 group-hover:opacity-100 translate-x-2 group-hover:translate-x-0 transition-smooth border border-gray-100 hover:border-red-200 disabled:opacity-50" 
+        title={isWishlisted ? "Remove from Wishlist" : "Add to Wishlist"}
+      >
+        {addToWishlistMutation.isPending || removeFromWishlistMutation.isPending ? (
+          <Loader className="w-4 h-4 text-gray-400 animate-spin" />
+        ) : (
+          <Heart className={`w-4 h-4 ${isWishlisted ? 'fill-red-500 text-red-500' : 'text-gray-400 hover:text-red-500'}`} />
+        )}
       </button>
 
       {/* Image Container */}
@@ -149,11 +234,16 @@ export function ProductCard({ product }: ProductCardProps) {
           <Button 
             size="sm"
             variant="outline"
-            className="flex-1 rounded-lg border-gray-200 hover:border-red-300 hover:bg-red-50 hover:text-red-500 transition-smooth text-xs font-medium h-8"
-            onClick={() => console.log('Add to wishlist', product.id)}
-            title="Add to Wishlist"
+            className={`flex-1 rounded-lg transition-smooth text-xs font-medium h-8 ${isWishlisted ? 'border-red-300 bg-red-50 text-red-500' : 'border-gray-200 hover:border-red-300 hover:bg-red-50 hover:text-red-500'}`}
+            onClick={handleWishlistToggle}
+            disabled={addToWishlistMutation.isPending || removeFromWishlistMutation.isPending}
+            title={isWishlisted ? "Remove from Wishlist" : "Add to Wishlist"}
           >
-            <Heart className="w-3 h-3" />
+            {addToWishlistMutation.isPending || removeFromWishlistMutation.isPending ? (
+              <Loader className="w-3 h-3 animate-spin" />
+            ) : (
+              <Heart className={`w-3 h-3 ${isWishlisted ? 'fill-current' : ''}`} />
+            )}
           </Button>
           <Button 
             size="sm"
