@@ -121,6 +121,8 @@ export default function ProductDetail() {
   const [selectedReviewRating, setSelectedReviewRating] = useState(0);
   const [reviewComment, setReviewComment] = useState('');
   const [showReviewForm, setShowReviewForm] = useState(false);
+  const [questionText, setQuestionText] = useState('');
+  const [showQuestionForm, setShowQuestionForm] = useState(false);
 
   // Fetch product details with all related data
   const { data: product, isLoading: productLoading, isError: productError } = useQuery<ProductData>({
@@ -186,6 +188,39 @@ export default function ProductDetail() {
     },
     onError: (error: any) => {
       const errorMessage = error?.response?.data?.detail || error?.response?.data?.non_field_errors?.[0] || error.message || 'Failed to submit review';
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: errorMessage,
+        duration: 3000,
+      });
+    },
+  });
+
+  // Create question mutation
+  const createQuestionMutation = useMutation({
+    mutationFn: async () => {
+      if (!product) throw new Error('Product not loaded');
+      if (questionText.trim().length === 0) throw new Error('Please enter a question');
+      
+      return apiPost(`/questions/create/${product.id}/`, {
+        question: questionText.trim(),
+      });
+    },
+    onSuccess: (data) => {
+      toast({
+        title: 'Question submitted',
+        description: 'Thank you for your question!',
+        className: "bg-green-600 text-white border-green-700",
+        duration: 2000,
+      });
+      setQuestionText('');
+      setShowQuestionForm(false);
+      // Refresh product data to get updated questions
+      queryClient.invalidateQueries({ queryKey: ['product', id] });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.detail || error?.response?.data?.non_field_errors?.[0] || error.message || 'Failed to submit question';
       toast({
         variant: 'destructive',
         title: 'Error',
@@ -482,25 +517,82 @@ export default function ProductDetail() {
             {/* Questions Tab */}
             <TabsContent value="questions" className="p-4 sm:p-6">
               <div className="space-y-4">
-                <Button 
-                  className="w-full bg-primary-gradient text-white font-semibold hover:shadow-lg" 
-                  size="sm"
-                  onClick={() => {
-                    if (!isAuthenticated) {
-                      navigate('/login');
-                      return;
-                    }
-                    // Open modal to add question
-                    toast({
-                      title: "Coming Soon",
-                      description: "Question form will be available soon",
-                      duration: 2000,
-                    });
-                  }}
-                >
-                  <MessageCircle className="w-4 h-4" />
-                  + Ask a Question
-                </Button>
+                {/* Question Form Toggle */}
+                {!showQuestionForm ? (
+                  <Button 
+                    className="w-full bg-primary-gradient text-white font-semibold hover:shadow-lg" 
+                    size="sm"
+                    onClick={() => {
+                      if (!isAuthenticated) {
+                        toast({
+                          title: 'Authentication required',
+                          description: 'Please log in to ask a question.',
+                          duration: 3000,
+                        });
+                        navigate('/login');
+                        return;
+                      }
+                      setShowQuestionForm(true);
+                    }}
+                  >
+                    <MessageCircle className="w-4 h-4" />
+                    + Ask a Question
+                  </Button>
+                ) : (
+                  <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-semibold text-gray-900">Ask a Question</h3>
+                      <button 
+                        onClick={() => setShowQuestionForm(false)}
+                        className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+
+                    {/* Question Input */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Question</label>
+                      <textarea
+                        value={questionText}
+                        onChange={(e) => setQuestionText(e.target.value)}
+                        placeholder="Ask your question about this product..."
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none resize-none text-sm"
+                        rows={4}
+                      />
+                      <p className="text-xs text-gray-500 mt-1">{questionText.length} characters</p>
+                    </div>
+
+                    {/* Submit Button */}
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        className="bg-primary-gradient text-white font-semibold hover:shadow-lg"
+                        disabled={createQuestionMutation.isPending || questionText.trim().length === 0}
+                        onClick={() => createQuestionMutation.mutate()}
+                      >
+                        {createQuestionMutation.isPending ? (
+                          <>
+                            <Loader className="w-4 h-4 mr-1 animate-spin" />
+                            Submitting...
+                          </>
+                        ) : (
+                          'Ask Question'
+                        )}
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          setShowQuestionForm(false);
+                          setQuestionText('');
+                        }}
+                      >
+                        Clear
+                      </Button>
+                    </div>
+                  </div>
+                )}
                 
                 <div className="space-y-3">
                   {product?.questions && product.questions.length > 0 ? (
