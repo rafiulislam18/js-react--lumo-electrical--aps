@@ -249,23 +249,20 @@ export default function ProductDetail() {
       <section className="border-b border-gray-100 bg-white">
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-center gap-2 text-xs sm:text-sm animate-fade-in overflow-x-auto">
-            <button onClick={() => navigate("/")} className="text-gray-600 hover:text-primary transition-colors whitespace-nowrap">Home</button>
+            <a href="/" className="text-gray-600 hover:text-primary transition-colors whitespace-nowrap">Home</a>
             <span className="text-gray-400">/</span>
             {product?.category?.breadcrumb && product.category.breadcrumb.length > 0 ? (
               <>
                 {product.category.breadcrumb.map((cat, idx) => (
                   <div key={cat.id} className="flex items-center gap-2">
-                    <span className="text-gray-600 hover:text-primary cursor-pointer transition-colors whitespace-nowrap">
+                    <a href={`/products/${cat.slug}`} className="text-gray-600 hover:text-primary transition-colors whitespace-nowrap">
                       {cat.name}
-                    </span>
-                    {idx < product.category.breadcrumb.length - 1 && <span className="text-gray-400">/</span>}
+                    </a>
+                    <span className="text-gray-400">/</span>
                   </div>
                 ))}
               </>
-            ) : (
-              <span className="text-gray-600">Products</span>
-            )}
-            <span className="text-gray-400">/</span>
+            ) : null}
             <span className="text-primary font-semibold line-clamp-1">{product?.name || 'Loading...'}</span>
           </div>
         </div>
