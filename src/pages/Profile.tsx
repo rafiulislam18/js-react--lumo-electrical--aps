@@ -494,7 +494,7 @@ export default function Profile() {
                               <select
                                 value={formData.billing_province}
                                 onChange={(e) => setFormData(prev => ({ ...prev, billing_province: e.target.value }))}
-                                className="h-11 px-3 rounded-lg border border-gray-200 bg-white text-gray-900 font-medium"
+                                className="h-11 px-3 rounded-lg border border-gray-200 bg-white text-gray-900"
                               >
                                 <option value="">Select Province</option>
                                 {PROVINCES.map((province) => (
@@ -558,7 +558,7 @@ export default function Profile() {
                               <select
                                 value={formData.delivery_province}
                                 onChange={(e) => setFormData(prev => ({ ...prev, delivery_province: e.target.value }))}
-                                className="h-11 px-3 rounded-lg border border-gray-200 bg-white text-gray-900 font-medium"
+                                className="h-11 px-3 rounded-lg border border-gray-200 bg-white text-gray-900"
                               >
                                 <option value="">Select Province</option>
                                 {PROVINCES.map((province) => (
@@ -606,7 +606,8 @@ export default function Profile() {
                               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div>
                                   <label className="block text-sm font-semibold text-gray-900 mb-2">
-                                    VAT Number
+                                    VAT Number {" "}
+                                    <span className="font-normal text-gray-500 italic">(Optional)</span>
                                   </label>
                                   <Input
                                     type="text"
@@ -637,7 +638,7 @@ export default function Profile() {
                                   <select
                                     value={formData.business_type}
                                     onChange={(e) => setFormData(prev => ({ ...prev, business_type: e.target.value }))}
-                                    className="h-11 px-3 rounded-lg border border-gray-200 bg-white text-gray-900 font-medium"
+                                    className="h-11 px-3 rounded-lg border border-gray-200 bg-white text-gray-900"
                                   >
                                     <option value="">Select Business Type</option>
                                     {BUSINESS_TYPES.map((type) => (
@@ -648,43 +649,41 @@ export default function Profile() {
                                   </select>
                                 </div>
                               </div>
-                            </div>
-                          </div>
 
-                          <div className="border-t pt-6">
-                            <h3 className="text-lg font-semibold text-gray-900 mb-4">Trade Documentation</h3>
-                            <div>
-                              <label className="block text-sm font-semibold text-gray-900 mb-2">
-                                Trade Documents (Optional)
-                              </label>
-                              
-                              {/* Show existing file if present */}
-                              {existingTradeDocsUrl && !formData.trade_docs && (
-                                <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                                  <p className="text-sm text-blue-800">
-                                    <span className="font-semibold">Current file:</span> {existingTradeDocsUrl.split('/').pop()}
-                                  </p>
-                                  <a 
-                                    href={existingTradeDocsUrl} 
-                                    target="_blank" 
-                                    rel="noopener noreferrer"
-                                    className="text-sm text-blue-600 hover:text-blue-800 underline mt-1 inline-block"
-                                  >
-                                    View file
-                                  </a>
-                                </div>
-                              )}
-                              
-                              <input
-                                type="file"
-                                onChange={(e) => setFormData(prev => ({ ...prev, trade_docs: e.target.files?.[0] || null }))}
-                                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100 cursor-pointer"
-                              />
-                              <p className="text-xs text-gray-500 mt-2">PDF, DOC, DOCX, JPG, JPEG, PNG {existingTradeDocsUrl && '(Upload to replace existing file)'}</p>
-                              {formData.trade_docs && (
-                                <p className="text-sm text-green-600 mt-2">New file selected: {formData.trade_docs.name}</p>
-                              )}
+                              <div>
+                                <label className="block text-sm font-semibold text-gray-900 mb-2">
+                                  Trade Documents {" "}
+                                  <span className="font-normal text-gray-500 italic">(Optional)</span>
+                                </label>
+                                
+                                {/* Show existing file if present */}
+                                {existingTradeDocsUrl && !formData.trade_docs && (
+                                  <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                                    <p className="text-sm text-blue-800">
+                                      <span className="font-semibold">Current file:</span> {existingTradeDocsUrl.split('/').pop()}
+                                    </p>
+                                    <a 
+                                      href={existingTradeDocsUrl} 
+                                      target="_blank" 
+                                      rel="noopener noreferrer"
+                                      className="text-sm text-blue-600 hover:text-blue-800 underline mt-1 inline-block"
+                                    >
+                                      View file
+                                    </a>
+                                  </div>
+                                )}
+                                
+                                <input
+                                  type="file"
+                                  onChange={(e) => setFormData(prev => ({ ...prev, trade_docs: e.target.files?.[0] || null }))}
+                                  accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                                  className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100"
+                                />
+                                <p className="text-xs text-gray-500 mt-2">PDF, DOC, DOCX, JPG, JPEG, PNG {existingTradeDocsUrl && '(Upload to replace existing file)'}</p>
+                                {formData.trade_docs && (
+                                  <p className="text-sm text-green-600 mt-2">New file selected: {formData.trade_docs.name}</p>
+                                )}
+                              </div>
                             </div>
                           </div>
 
@@ -843,6 +842,21 @@ export default function Profile() {
                               <div>
                                 <p className="text-sm font-medium text-gray-600 mb-1">Business Type</p>
                                 <p className="text-gray-900">{formData.business_type || "—"}</p>
+                              </div>
+                              <div>
+                                <p className="text-sm font-medium text-gray-600 mb-1">Trade Documents</p>
+                                {existingTradeDocsUrl ? (
+                                  <a 
+                                    href={existingTradeDocsUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-blue-600 hover:text-blue-800 underline"
+                                  >
+                                    View Document
+                                  </a>
+                                ) : (
+                                  <p className="text-gray-500 italic">(No document uploaded)</p>
+                                )}
                               </div>
                             </div>
                           </div>
