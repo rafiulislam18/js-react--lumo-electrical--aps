@@ -13,14 +13,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { dummyCartItems } from "@/data/dummyData";
 
 interface CartItem {
   id: string;
-  name: string;
+  product_name: string;
   price: number;
   image: string;
   quantity: number;
+  subtotal: number;
 }
 
 interface FormData {
@@ -36,11 +36,28 @@ interface FormData {
   comment: string;
 }
 
+interface CheckoutData {
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone: string;
+  delivery_address: string;
+  delivery_city: string;
+  delivery_province: string;
+  delivery_postal_code: string;
+  cart_items: CartItem[];
+  subtotal: number;
+  tax: number;
+  shipping: number;
+  total: number;
+}
+
 export default function Checkout() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [items, setItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
   const [sameAsShipping, setSameAsShipping] = useState(true);
   const [formData, setFormData] = useState<FormData>({
     firstName: "",
@@ -54,28 +71,82 @@ export default function Checkout() {
     country: "South Africa",
     comment: "",
   });
+  const [pricing, setPricing] = useState({
+    subtotal: 0,
+    tax: 0,
+    shipping: 0,
+    total: 0,
+  });
 
   useEffect(() => {
-    const saved = localStorage.getItem("cart");
-    if (saved) {
-      setItems(JSON.parse(saved));
-    } else {
-      // Use dummy data for testing
-      setItems(dummyCartItems);
-      // Uncomment the lines below to redirect instead of using dummy data
-      // toast({
-      //   title: "Empty Cart",
-      //   description: "Your cart is empty. Please add items before checkout.",
-      //   variant: "destructive",
-      // });
-      // navigate("/products");
-    }
-  }, [navigate, toast]);
+    const fetchCheckoutData = async () => {
+      try {
+        const token = localStorage.getItem("access_token");
+        if (!token) {
+          toast({
+            title: "Authentication Required",
+            description: "Please log in to proceed with checkout.",
+            variant: "destructive",
+          });
+          navigate("/login");
+          return;
+        }
 
-  const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const tax = subtotal * 0.1;
-  const shipping = subtotal > 0 ? (subtotal >= 500 ? 0 : 50) : 0;
-  const total = subtotal + tax + shipping;
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL || "http://localhost:8000/api"}/orders/checkout-data/`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch checkout data");
+        }
+
+        const data: CheckoutData = await response.json();
+
+        // Set cart items
+        setItems(data.cart_items);
+
+        // Pre-fill form
+        setFormData({
+          firstName: data.first_name,
+          lastName: data.last_name,
+          email: data.email,
+          phone: data.phone,
+          address: data.delivery_address,
+          city: data.delivery_city,
+          state: data.delivery_province,
+          zipCode: data.delivery_postal_code,
+          country: "South Africa",
+          comment: "",
+        });
+
+        // Set pricing
+        setPricing({
+          subtotal: data.subtotal,
+          tax: data.tax,
+          shipping: data.shipping,
+          total: data.total,
+        });
+      } catch (error) {
+        console.error("Error fetching checkout data:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load checkout data. Please try again.",
+          variant: "destructive",
+        });
+      } finally {
+        setInitialLoading(false);
+      }
+    };
+
+    fetchCheckoutData();
+  }, [navigate, toast]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -136,8 +207,28 @@ export default function Checkout() {
     }
   };
 
-  if (items.length === 0 && localStorage.getItem("cart") === null) {
-    return null; // Will redirect via useEffect
+  if (initialLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-block animate-spin">⚙️</div>
+          <p className="text-gray-600 mt-2">Loading checkout data...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (items.length === 0) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600 mb-4">Your cart is empty</p>
+          <Button onClick={() => navigate("/products")}>
+            Continue Shopping
+          </Button>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -323,18 +414,20 @@ export default function Checkout() {
                     key={item.id}
                     className="flex gap-4 pb-4 border-b border-gray-100 last:border-0"
                   >
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="w-16 h-16 object-cover rounded-lg"
-                    />
+                    {item.image && (
+                      <img
+                        src={item.image}
+                        alt={item.product_name}
+                        className="w-16 h-16 object-cover rounded-lg"
+                      />
+                    )}
                     <div className="flex-1 min-w-0">
                       <h3 className="font-medium text-gray-900 line-clamp-2 text-sm">
-                        {item.name}
+                        {item.product_name}
                       </h3>
                       <p className="text-sm text-gray-600 mt-1">Qty: {item.quantity}</p>
                       <p className="font-bold text-gray-900 text-sm mt-2">
-                        ${(item.price * item.quantity).toFixed(2)}
+                        ${item.subtotal.toFixed(2)}
                       </p>
                     </div>
                   </div>
@@ -345,20 +438,20 @@ export default function Checkout() {
               <div className="space-y-3 border-t border-gray-200 pt-6 text-sm">
                 <div className="flex justify-between text-gray-700">
                   <span>Subtotal</span>
-                  <span>${subtotal.toFixed(2)}</span>
+                  <span>${pricing.subtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-gray-700">
                   <span>Tax (10%)</span>
-                  <span>${tax.toFixed(2)}</span>
+                  <span>${pricing.tax.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-gray-700">
                   <span>Shipping</span>
-                  <span className={shipping === 0 ? "text-green-600 font-semibold" : ""}>
-                    {shipping === 0 ? "Free" : `$${shipping.toFixed(2)}`}
+                  <span className={pricing.shipping === 0 ? "text-green-600 font-semibold" : ""}>
+                    {pricing.shipping === 0 ? "Free" : `$${pricing.shipping.toFixed(2)}`}
                   </span>
                 </div>
 
-                {shipping === 0 && (
+                {pricing.shipping === 0 && (
                   <p className="text-xs text-green-600 font-medium">
                     You've qualified for free shipping!
                   </p>
@@ -367,7 +460,7 @@ export default function Checkout() {
                 <div className="border-t border-gray-200 pt-3 flex justify-between items-center">
                   <span className="font-bold text-gray-900 text-lg">Total</span>
                   <span className="text-lg font-bold text-green-600">
-                    ${total.toFixed(2)}
+                    ${pricing.total.toFixed(2)}
                   </span>
                 </div>
               </div>
@@ -396,6 +489,6 @@ export default function Checkout() {
         </div>
       </div>
     </div>
-  </div>  
+  </div>
   );
 }
