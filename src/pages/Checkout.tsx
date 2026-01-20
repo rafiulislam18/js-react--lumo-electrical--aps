@@ -122,13 +122,13 @@ export default function Checkout() {
       localStorage.removeItem("cart");
       toast({
         title: "Order Placed Successfully",
-        description: "Your order has been confirmed. Check your email for details.",
+        description: "Your order has been placed. Thank you for shopping with us!",
       });
       navigate("/orders");
     } catch (error) {
       toast({
-        title: "Payment Failed",
-        description: "There was an error processing your payment. Please try again.",
+        title: "Order Failed",
+        description: "There was an error processing your order. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -372,14 +372,6 @@ export default function Checkout() {
                 </div>
               </div>
 
-              {/* Info Box */}
-              <div className="mt-6 p-2 bg-blue-50 border border-blue-200 rounded-lg">
-                <p className="text-xs text-blue-900 text-center">
-                  Secure checkout powered by {' '}
-                  <span className="font-semibold">PayFast</span>
-                </p>
-              </div>
-
               {/* Submit Button */}
               <form onSubmit={handleSubmit} className="mt-2">
                 <Button
@@ -394,8 +386,8 @@ export default function Checkout() {
                     </>
                   ) : (
                     <>
-                      <CreditCard className="w-5 h-5 mr-2" />
-                      Proceed to Payment
+                      <Truck className="w-5 h-5 mr-2" />
+                      Confirm Order
                     </>
                   )}
                 </Button>
