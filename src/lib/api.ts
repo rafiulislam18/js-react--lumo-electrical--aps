@@ -162,6 +162,26 @@ export async function apiPatch<T>(
 }
 
 /**
+ * Make a PUT request
+ */
+export async function apiPut<T>(
+  endpoint: string,
+  data: unknown
+): Promise<T> {
+  const response = await authenticatedFetch(endpoint, {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  });
+  
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    throw new Error(error.error || error.detail || `Failed to put ${endpoint}`);
+  }
+  
+  return response.json();
+}
+
+/**
  * Make a DELETE request
  */
 export async function apiDelete(endpoint: string): Promise<void> {
