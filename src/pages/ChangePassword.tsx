@@ -270,7 +270,7 @@ export default function ChangePassword() {
                 <Button
                   type="submit"
                   disabled={isLoading || !passwords.current || !passwords.new || !passwords.confirm}
-                  className="flex-1 bg-gradient-to-r from-green-500 to-lime-400 text-white font-semibold hover:opacity-90 border-0"
+                  className="flex-1 bg-primary-gradient text-white font-semibold hover:opacity-90 border-0"
                 >
                   {isLoading ? "Verifying..." : "Send Verification Code"}
                 </Button>
