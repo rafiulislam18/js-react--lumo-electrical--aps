@@ -315,7 +315,7 @@ export default function Signup() {
                 <h3 className="text-sm font-semibold text-gray-900 mb-4">Personal Details</h3>
                 
                 {/* Name Fields */}
-                <div className="grid grid-cols-2 gap-4 mb-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       First Name <span className="text-red-600">*</span>
@@ -328,7 +328,7 @@ export default function Signup() {
                         value={formData.firstName}
                         onChange={handleChange}
                         placeholder="John"
-                        className="pl-10 h-11 rounded-lg border-gray-200"
+                        className="pl-10 h-11 text-sm rounded-lg border-gray-200"
                         required
                       />
                     </div>
@@ -345,7 +345,7 @@ export default function Signup() {
                         value={formData.lastName}
                         onChange={handleChange}
                         placeholder="Doe"
-                        className="pl-10 h-11 rounded-lg border-gray-200"
+                        className="pl-10 h-11 text-sm rounded-lg border-gray-200"
                         required
                       />
                     </div>
@@ -365,7 +365,7 @@ export default function Signup() {
                       value={formData.email}
                       onChange={handleChange}
                       placeholder="john@example.com"
-                      className="pl-10 h-11 rounded-lg border-gray-200"
+                      className="pl-10 h-11 text-sm rounded-lg border-gray-200"
                       required
                     />
                   </div>
@@ -384,7 +384,7 @@ export default function Signup() {
                       value={formData.phone}
                       onChange={handleChange}
                       placeholder="+27 71 234 5678"
-                      className="pl-10 h-11 rounded-lg border-gray-200"
+                      className="pl-10 h-11 text-sm rounded-lg border-gray-200"
                       required
                     />
                   </div>
@@ -411,7 +411,7 @@ export default function Signup() {
                         value={formData.companyName}
                         onChange={handleChange}
                         placeholder="Your Company Ltd"
-                        className="h-11 rounded-lg border-gray-200"
+                        className="h-11 text-sm rounded-lg border-gray-200"
                         required
                       />
                     </div>
@@ -427,7 +427,7 @@ export default function Signup() {
                         value={formData.vatNumber}
                         onChange={handleChange}
                         placeholder="e.g., 4123456789"
-                        className="h-11 rounded-lg border-gray-200"
+                        className="h-11 text-sm rounded-lg border-gray-200"
                       />
                     </div>
 
@@ -442,7 +442,7 @@ export default function Signup() {
                         value={formData.companyRegistration}
                         onChange={handleChange}
                         placeholder="e.g., 2023/123456"
-                        className="h-11 rounded-lg border-gray-200"
+                        className="h-11 text-sm rounded-lg border-gray-200"
                         required
                       />
                     </div>
@@ -501,7 +501,7 @@ export default function Signup() {
                         value={formData.poNumber}
                         onChange={handleChange}
                         placeholder="e.g., PO-2026-001"
-                        className="h-11 rounded-lg border-gray-200"
+                        className="h-11 text-sm rounded-lg border-gray-200"
                         required
                       />
                     </div>
@@ -517,7 +517,7 @@ export default function Signup() {
                         value={formData.procurementContact}
                         onChange={handleChange}
                         placeholder="Contact person name or title"
-                        className="h-11 rounded-lg border-gray-200"
+                        className="h-11 text-sm rounded-lg border-gray-200"
                         required
                       />
                     </div>
@@ -562,14 +562,14 @@ export default function Signup() {
                       value={formData.billingAddress}
                       onChange={handleChange}
                       placeholder="123 Main Street"
-                      className="pl-10 h-11 rounded-lg border-gray-200"
+                      className="pl-10 h-11 text-sm rounded-lg border-gray-200"
                       required={formData.customerType === "Trade"}
                     />
                   </div>
                 </div>
 
                 {/* Billing City, Province, Postal Code */}
-                <div className="grid grid-cols-3 gap-4 mb-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       City {formData.customerType === "Trade" && <span className="text-red-600">*</span>}
@@ -580,7 +580,7 @@ export default function Signup() {
                       value={formData.billingCity}
                       onChange={handleChange}
                       placeholder="Cape Town"
-                      className="h-11 rounded-lg border-gray-200"
+                      className="h-11 text-sm rounded-lg border-gray-200"
                       required={formData.customerType === "Trade"}
                     />
                   </div>
@@ -617,7 +617,7 @@ export default function Signup() {
                       value={formData.billingPostalCode}
                       onChange={handleChange}
                       placeholder="8000"
-                      className="h-11 rounded-lg border-gray-200"
+                      className="h-11 text-sm rounded-lg border-gray-200"
                       required={formData.customerType === "Trade"}
                     />
                   </div>
@@ -661,13 +661,13 @@ export default function Signup() {
                           value={formData.deliveryAddress}
                           onChange={handleChange}
                           placeholder="456 Delivery Street"
-                          className="pl-10 h-11 rounded-lg border-gray-200"
+                          className="pl-10 h-11 text-sm rounded-lg border-gray-200"
                         />
                       </div>
                     </div>
 
                     {/* Delivery City, Province, Postal Code */}
-                    <div className="grid grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                           City
@@ -678,7 +678,7 @@ export default function Signup() {
                           value={formData.deliveryCity}
                           onChange={handleChange}
                           placeholder="Johannesburg"
-                          className="h-11 rounded-lg border-gray-200"
+                          className="h-11 text-sm rounded-lg border-gray-200"
                         />
                       </div>
                       <div>
@@ -712,8 +712,8 @@ export default function Signup() {
                           name="deliveryPostalCode"
                           value={formData.deliveryPostalCode}
                           onChange={handleChange}
-                          placeholder="2000"
-                          className="h-11 rounded-lg border-gray-200"
+                          placeholder="8000"
+                          className="h-11 text-sm rounded-lg border-gray-200"
                         />
                       </div>
                     </div>
@@ -741,7 +741,7 @@ export default function Signup() {
                       value={formData.password}
                       onChange={handleChange}
                       placeholder="••••••••"
-                      className="pl-10 pr-10 h-11 rounded-lg border-gray-200"
+                      className="pl-10 pr-10 h-11 text-sm rounded-lg border-gray-200"
                       required
                     />
                     <button
@@ -771,7 +771,7 @@ export default function Signup() {
                       value={formData.confirmPassword}
                       onChange={handleChange}
                       placeholder="••••••••"
-                      className="pl-10 pr-10 h-11 rounded-lg border-gray-200"
+                      className="pl-10 pr-10 h-11 text-sm rounded-lg border-gray-200"
                       required
                     />
                     <button

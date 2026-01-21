@@ -13,14 +13,26 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { dummyCartItems } from "@/data/dummyData";
+
+const SOUTH_AFRICAN_PROVINCES = [
+  "Eastern Cape",
+  "Free State",
+  "Gauteng",
+  "KwaZulu-Natal",
+  "Limpopo",
+  "Mpumalanga",
+  "Northern Cape",
+  "North West",
+  "Western Cape",
+];
 
 interface CartItem {
   id: string;
-  name: string;
+  product_name: string;
   price: number;
   image: string;
   quantity: number;
+  subtotal: number;
 }
 
 interface FormData {
@@ -36,11 +48,28 @@ interface FormData {
   comment: string;
 }
 
+interface CheckoutData {
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone: string;
+  delivery_address: string;
+  delivery_city: string;
+  delivery_province: string;
+  delivery_postal_code: string;
+  cart_items: CartItem[];
+  subtotal: number;
+  tax: number;
+  shipping: number;
+  total: number;
+}
+
 export default function Checkout() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [items, setItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
   const [sameAsShipping, setSameAsShipping] = useState(true);
   const [formData, setFormData] = useState<FormData>({
     firstName: "",
@@ -54,28 +83,89 @@ export default function Checkout() {
     country: "South Africa",
     comment: "",
   });
+  const [pricing, setPricing] = useState({
+    subtotal: 0,
+    tax: 0,
+    shipping: 0,
+    total: 0,
+  });
 
   useEffect(() => {
-    const saved = localStorage.getItem("cart");
-    if (saved) {
-      setItems(JSON.parse(saved));
-    } else {
-      // Use dummy data for testing
-      setItems(dummyCartItems);
-      // Uncomment the lines below to redirect instead of using dummy data
-      // toast({
-      //   title: "Empty Cart",
-      //   description: "Your cart is empty. Please add items before checkout.",
-      //   variant: "destructive",
-      // });
-      // navigate("/products");
-    }
-  }, [navigate, toast]);
+    const fetchCheckoutData = async () => {
+      try {
+        const token = localStorage.getItem("access_token");
+        if (!token) {
+          toast({
+            title: "Authentication Required",
+            description: "Please log in to proceed with checkout.",
+            variant: "destructive",
+          });
+          navigate("/login");
+          return;
+        }
 
-  const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const tax = subtotal * 0.1;
-  const shipping = subtotal > 0 ? (subtotal >= 500 ? 0 : 50) : 0;
-  const total = subtotal + tax + shipping;
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL || "http://localhost:8000/api"}/orders/checkout-data/`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch checkout data");
+        }
+
+        const data: CheckoutData = await response.json();
+
+        // Convert cart item prices from strings to numbers
+        data.cart_items = data.cart_items.map((item) => ({
+          ...item,
+          price: Number(item.price),
+          subtotal: Number(item.subtotal),
+        }));
+
+        // Set cart items
+        setItems(data.cart_items);
+
+        // Pre-fill form
+        setFormData({
+          firstName: data.first_name,
+          lastName: data.last_name,
+          email: data.email,
+          phone: data.phone,
+          address: data.delivery_address,
+          city: data.delivery_city,
+          state: data.delivery_province,
+          zipCode: data.delivery_postal_code,
+          country: "South Africa",
+          comment: "",
+        });
+
+        // Set pricing
+        setPricing({
+          subtotal: Number(data.subtotal),
+          tax: Number(data.tax),
+          shipping: Number(data.shipping),
+          total: Number(data.total),
+        });
+      } catch (error) {
+        console.error("Error fetching checkout data:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load checkout data. Please try again.",
+          variant: "destructive",
+        });
+      } finally {
+        setInitialLoading(false);
+      }
+    };
+
+    fetchCheckoutData();
+  }, [navigate, toast]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -115,20 +205,79 @@ export default function Checkout() {
 
     setLoading(true);
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      const token = localStorage.getItem("access_token");
+      if (!token) {
+        toast({
+          title: "Authentication Required",
+          description: "Please log in to proceed.",
+          variant: "destructive",
+        });
+        navigate("/login");
+        return;
+      }
+
+      const orderData = {
+        first_name: formData.firstName,
+        last_name: formData.lastName,
+        email: formData.email,
+        phone: formData.phone,
+        delivery_address: formData.address,
+        delivery_city: formData.city,
+        delivery_province: formData.state,
+        delivery_postal_code: formData.zipCode,
+        comment: formData.comment || "",
+      };
+
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL || "http://localhost:8000/api"}/orders/create/`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(orderData),
+        }
+      );
+      
+      if (response.ok) {
+        const { url, data, method } = await response.json();
+
+        // Create hidden form and submit to PayFast (redirects user)
+        const form = document.createElement('form');
+        form.method = method;
+        form.action = url;
+        form.target = '_self'; // Check if it makes the form submit work properly on mobile
+
+        Object.keys(data).forEach(key => {
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = key;
+          input.value = data[key];
+          form.appendChild(input);
+        });
+
+        document.body.appendChild(form);
+        form.submit();
+      } else {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || "Failed to create order");
+      }
+
+      const data = await response.json();
 
       // Clear cart and redirect
       localStorage.removeItem("cart");
       toast({
         title: "Order Placed Successfully",
-        description: "Your order has been confirmed. Check your email for details.",
+        description: `Your order #${data.order_id} has been placed. Thank you for shopping with us!`,
       });
       navigate("/orders");
     } catch (error) {
+      // console.error("Order creation error:", error);
       toast({
-        title: "Payment Failed",
-        description: "There was an error processing your payment. Please try again.",
+        title: "Order Failed",
+        description: error instanceof Error ? error.message : "There was an error processing your order. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -136,8 +285,28 @@ export default function Checkout() {
     }
   };
 
-  if (items.length === 0 && localStorage.getItem("cart") === null) {
-    return null; // Will redirect via useEffect
+  if (initialLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-block animate-spin">⚙️</div>
+          <p className="text-gray-600 mt-2">Loading checkout data...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (items.length === 0) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600 mb-4">Your cart is empty</p>
+          <Button onClick={() => navigate("/products")}>
+            Continue Shopping
+          </Button>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -158,7 +327,7 @@ export default function Checkout() {
 
                 <div className="space-y-6">
                   {/* Name Fields */}
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <Label htmlFor="firstName" className="text-gray-700 font-medium mb-2 block">
                         First Name <span className="text-red-600">*</span>
@@ -169,7 +338,7 @@ export default function Checkout() {
                         value={formData.firstName}
                         onChange={handleInputChange}
                         placeholder="John"
-                        className="border-gray-300"
+                        className="border-gray-300 text-sm"
                       />
                     </div>
                     <div>
@@ -182,13 +351,13 @@ export default function Checkout() {
                         value={formData.lastName}
                         onChange={handleInputChange}
                         placeholder="Doe"
-                        className="border-gray-300"
+                        className="border-gray-300 text-sm"
                       />
                     </div>
                   </div>
 
                   {/* Email & Phone */}
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <Label htmlFor="email" className="text-gray-700 font-medium mb-2 block">
                         Email <span className="text-red-600">*</span>
@@ -200,7 +369,7 @@ export default function Checkout() {
                         value={formData.email}
                         onChange={handleInputChange}
                         placeholder="john@example.com"
-                        className="border-gray-300"
+                        className="border-gray-300 text-sm"
                       />
                     </div>
                     <div>
@@ -213,7 +382,7 @@ export default function Checkout() {
                         value={formData.phone}
                         onChange={handleInputChange}
                         placeholder="+27 123 456 7890"
-                        className="border-gray-300"
+                        className="border-gray-300 text-sm"
                       />
                     </div>
                   </div>
@@ -229,12 +398,12 @@ export default function Checkout() {
                       value={formData.address}
                       onChange={handleInputChange}
                       placeholder="123 Main Street"
-                      className="border-gray-300"
+                      className="border-gray-300 text-sm"
                     />
                   </div>
 
-                  {/* City, State, ZIP */}
-                  <div className="grid grid-cols-2 gap-4">
+                  {/* City & State (Province) */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <Label htmlFor="city" className="text-gray-700 font-medium mb-2 block">
                         City <span className="text-red-600">*</span>
@@ -245,26 +414,30 @@ export default function Checkout() {
                         value={formData.city}
                         onChange={handleInputChange}
                         placeholder="Cape Town"
-                        className="border-gray-300"
+                        className="border-gray-300 text-sm"
                       />
                     </div>
                     <div>
                       <Label htmlFor="state" className="text-gray-700 font-medium mb-2 block">
                         Province <span className="text-red-600">*</span>
                       </Label>
-                      <Input
-                        id="state"
-                        name="state"
-                        value={formData.state}
-                        onChange={handleInputChange}
-                        placeholder="Western Cape"
-                        className="border-gray-300"
-                      />
+                      <Select value={formData.state} onValueChange={(value) => handleSelectChange("state", value)}>
+                        <SelectTrigger id="state" className="border-gray-300">
+                          <SelectValue placeholder="Select a province" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-white">
+                          {SOUTH_AFRICAN_PROVINCES.map((province) => (
+                            <SelectItem key={province} value={province}>
+                              {province}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
 
                   {/* ZIP & Country */}
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <Label htmlFor="zipCode" className="text-gray-700 font-medium mb-2 block">
                         Postal Code <span className="text-red-600">*</span>
@@ -275,7 +448,7 @@ export default function Checkout() {
                         value={formData.zipCode}
                         onChange={handleInputChange}
                         placeholder="8000"
-                        className="border-gray-300"
+                        className="border-gray-300 text-sm"
                       />
                     </div>
                     <div>
@@ -284,7 +457,7 @@ export default function Checkout() {
                       </Label>
                       <div
                         id="country"
-                        className="w-full h-9 px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-700 font-medium flex items-center cursor-not-allowed overflow-hidden"
+                        className="w-full h-9 px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-700 text-sm flex items-center cursor-not-allowed overflow-hidden"
                       >
                         South Africa
                       </div>
@@ -302,7 +475,7 @@ export default function Checkout() {
                       value={formData.comment}
                       onChange={(e) => setFormData((prev) => ({ ...prev, comment: e.target.value }))}
                       placeholder="Add any special instructions or comments for your order..."
-                      className="border-gray-300 resize-none"
+                      className="border-gray-300 text-sm resize-none"
                       rows={4}
                     />
                   </div>
@@ -323,18 +496,22 @@ export default function Checkout() {
                     key={item.id}
                     className="flex gap-4 pb-4 border-b border-gray-100 last:border-0"
                   >
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="w-16 h-16 object-cover rounded-lg"
-                    />
+                    {item.image && (
+                      <img
+                        src={item.image}
+                        alt={item.product_name}
+                        className="w-16 h-16 object-cover rounded-lg"
+                      />
+                    )}
                     <div className="flex-1 min-w-0">
                       <h3 className="font-medium text-gray-900 line-clamp-2 text-sm">
-                        {item.name}
+                        {item.product_name}
                       </h3>
-                      <p className="text-sm text-gray-600 mt-1">Qty: {item.quantity}</p>
+                      {/* <p className="text-sm font-bold text-gray-600 mt-1">x{item.quantity}</p> */}
                       <p className="font-bold text-gray-900 text-sm mt-2">
-                        ${(item.price * item.quantity).toFixed(2)}
+                        ${item.price}
+                        <span className="font-normal"> x {item.quantity} = {" "}</span>
+                        <span className="text-green-600">${item.subtotal.toFixed(2)}</span>
                       </p>
                     </div>
                   </div>
@@ -345,20 +522,20 @@ export default function Checkout() {
               <div className="space-y-3 border-t border-gray-200 pt-6 text-sm">
                 <div className="flex justify-between text-gray-700">
                   <span>Subtotal</span>
-                  <span>${subtotal.toFixed(2)}</span>
+                  <span>${pricing.subtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-gray-700">
                   <span>Tax (10%)</span>
-                  <span>${tax.toFixed(2)}</span>
+                  <span>${pricing.tax.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-gray-700">
                   <span>Shipping</span>
-                  <span className={shipping === 0 ? "text-green-600 font-semibold" : ""}>
-                    {shipping === 0 ? "Free" : `$${shipping.toFixed(2)}`}
+                  <span className={pricing.shipping === 0 ? "text-green-600 font-semibold" : ""}>
+                    {pricing.shipping === 0 ? "Free" : `$${pricing.shipping.toFixed(2)}`}
                   </span>
                 </div>
 
-                {shipping === 0 && (
+                {pricing.shipping === 0 && (
                   <p className="text-xs text-green-600 font-medium">
                     You've qualified for free shipping!
                   </p>
@@ -367,17 +544,9 @@ export default function Checkout() {
                 <div className="border-t border-gray-200 pt-3 flex justify-between items-center">
                   <span className="font-bold text-gray-900 text-lg">Total</span>
                   <span className="text-lg font-bold text-green-600">
-                    ${total.toFixed(2)}
+                    ${pricing.total.toFixed(2)}
                   </span>
                 </div>
-              </div>
-
-              {/* Info Box */}
-              <div className="mt-6 p-2 bg-blue-50 border border-blue-200 rounded-lg">
-                <p className="text-xs text-blue-900 text-center">
-                  Secure checkout powered by {' '}
-                  <span className="font-semibold">PayFast</span>
-                </p>
               </div>
 
               {/* Submit Button */}
@@ -404,6 +573,6 @@ export default function Checkout() {
         </div>
       </div>
     </div>
-  </div>  
+  </div>
   );
 }
