@@ -121,6 +121,13 @@ export default function Checkout() {
 
         const data: CheckoutData = await response.json();
 
+        // Convert cart item prices from strings to numbers
+        data.cart_items = data.cart_items.map((item) => ({
+          ...item,
+          price: Number(item.price),
+          subtotal: Number(item.subtotal),
+        }));
+
         // Set cart items
         setItems(data.cart_items);
 
@@ -140,10 +147,10 @@ export default function Checkout() {
 
         // Set pricing
         setPricing({
-          subtotal: data.subtotal,
-          tax: data.tax,
-          shipping: data.shipping,
-          total: data.total,
+          subtotal: Number(data.subtotal),
+          tax: Number(data.tax),
+          shipping: Number(data.shipping),
+          total: Number(data.total),
         });
       } catch (error) {
         console.error("Error fetching checkout data:", error);
