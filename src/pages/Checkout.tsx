@@ -205,20 +205,60 @@ export default function Checkout() {
 
     setLoading(true);
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      const token = localStorage.getItem("access_token");
+      if (!token) {
+        toast({
+          title: "Authentication Required",
+          description: "Please log in to proceed.",
+          variant: "destructive",
+        });
+        navigate("/login");
+        return;
+      }
+
+      const orderData = {
+        first_name: formData.firstName,
+        last_name: formData.lastName,
+        email: formData.email,
+        phone: formData.phone,
+        delivery_address: formData.address,
+        delivery_city: formData.city,
+        delivery_province: formData.state,
+        delivery_postal_code: formData.zipCode,
+        comment: formData.comment || "",
+      };
+
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL || "http://localhost:8000/api"}/orders/create/`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(orderData),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || "Failed to create order");
+      }
+
+      const data = await response.json();
 
       // Clear cart and redirect
       localStorage.removeItem("cart");
       toast({
         title: "Order Placed Successfully",
-        description: "Your order has been placed. Thank you for shopping with us!",
+        description: `Your order #${data.order_id} has been placed. Thank you for shopping with us!`,
       });
       navigate("/orders");
     } catch (error) {
+      // console.error("Order creation error:", error);
       toast({
         title: "Order Failed",
-        description: "There was an error processing your order. Please try again.",
+        description: error instanceof Error ? error.message : "There was an error processing your order. Please try again.",
         variant: "destructive",
       });
     } finally {
