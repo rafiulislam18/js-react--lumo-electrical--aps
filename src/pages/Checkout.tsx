@@ -563,8 +563,8 @@ export default function Checkout() {
                     </>
                   ) : (
                     <>
-                      <Truck className="w-5 h-5 mr-2" />
-                      Confirm Order
+                      <CreditCard className="w-5 h-5 mr-2" />
+                      Proceed to Payment
                     </>
                   )}
                 </Button>

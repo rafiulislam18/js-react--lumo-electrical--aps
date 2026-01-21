@@ -6,31 +6,31 @@ export default function PaymentCancel() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-50 to-orange-50 flex items-center justify-center px-4 py-12">
-      <div className="w-full max-w-2xl">
+    <div className="min-h-screen bg-gradient-to-br from-red-50 to-orange-50 flex items-center justify-center px-3 py-8 sm:px-4 sm:py-12">
+      <div className="w-full max-w-xl">
         {/* Cancel Container */}
-        <div className="bg-white rounded-2xl shadow-lg border border-red-100 p-8 md:p-12 text-center animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg border border-red-100 p-6 sm:p-8 text-center animate-in fade-in slide-in-from-bottom-4 duration-500">
           {/* Cancel Icon */}
-          <div className="flex justify-center mb-6">
+          <div className="flex justify-center mb-4 sm:mb-6">
             <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-red-400 to-orange-400 rounded-full blur-xl opacity-30 animate-pulse" />
-              <div className="relative bg-gradient-to-r from-red-400 to-orange-400 rounded-full p-4">
-                <XCircle className="w-16 h-16 text-white" strokeWidth={1.5} />
+              <div className="absolute inset-0 bg-gradient-to-r from-red-400 to-orange-400 rounded-full blur-lg opacity-30 animate-pulse" />
+              <div className="relative bg-gradient-to-r from-red-400 to-orange-400 rounded-full p-2.5 sm:p-4">
+                <XCircle className="w-12 sm:w-16 h-12 sm:h-16 text-white" strokeWidth={1.5} />
               </div>
             </div>
           </div>
 
           {/* Heading */}
-          <h1 className="text-4xl md:text-5xl font-display font-bold text-gray-900 mb-3">
+          <h1 className="text-3xl sm:text-4xl font-display font-bold text-gray-900 mb-2 sm:mb-3">
             Payment Cancelled
           </h1>
-          <p className="text-lg text-gray-600 mb-8">
+          <p className="text-sm sm:text-base text-gray-600 mb-6 sm:mb-8">
             Your payment has been cancelled. Your order was not completed.
           </p>
 
           {/* Order Info Card */}
-          <div className="bg-gradient-to-br from-orange-50 to-red-50 border border-red-200 rounded-xl p-6 md:p-8 mb-8">
-            <div className="space-y-3 text-sm text-gray-600">
+          <div className="bg-gradient-to-br from-orange-50 to-red-50 border border-red-200 rounded-lg sm:rounded-xl p-4 sm:p-6 mb-5 sm:mb-6">
+            <div className="space-y-2 text-xs sm:text-sm text-gray-600">
               <div className="flex justify-between">
                 <span>Status:</span>
                 <span className="font-semibold text-red-600">✗ Payment Cancelled</span>
@@ -43,11 +43,11 @@ export default function PaymentCancel() {
           </div>
 
           {/* Information Box */}
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 mb-8 text-left">
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 sm:p-5 mb-5 sm:mb-6 text-left">
             <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-              <span className="text-lg">⚠️</span> What Happened?
+              <span>⚠️</span> <span className="text-sm sm:text-base">What Happened?</span>
             </h3>
-            <ul className="space-y-2 text-sm text-gray-700">
+            <ul className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm text-gray-700">
               <li>• Your payment was cancelled during the checkout process</li>
               <li>• Your order was not created and no payment was processed</li>
               <li>• Your items are still saved in your cart</li>
@@ -56,18 +56,18 @@ export default function PaymentCancel() {
           </div>
 
           {/* Reasons & Next Steps */}
-          <div className="grid md:grid-cols-2 gap-6 mb-8">
-            <div className="bg-gray-50 border border-gray-200 rounded-lg p-5">
-              <h4 className="font-semibold text-gray-900 mb-3">Why This Happened?</h4>
-              <ul className="text-sm text-gray-600 space-y-2">
+          <div className="grid md:grid-cols-2 gap-3 sm:gap-4 mb-5 sm:mb-6">
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 sm:p-4">
+              <h4 className="font-semibold text-gray-900 mb-2 text-xs sm:text-sm">Why This Happened?</h4>
+              <ul className="text-xs sm:text-sm text-gray-600 space-y-1">
                 <li>• You cancelled the payment</li>
                 <li>• Payment provider issue</li>
                 <li>• Connection timeout</li>
               </ul>
             </div>
-            <div className="bg-gray-50 border border-gray-200 rounded-lg p-5">
-              <h4 className="font-semibold text-gray-900 mb-3">What to Do?</h4>
-              <ul className="text-sm text-gray-600 space-y-2">
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 sm:p-4">
+              <h4 className="font-semibold text-gray-900 mb-2 text-xs sm:text-sm">What to Do?</h4>
+              <ul className="text-xs sm:text-sm text-gray-600 space-y-1">
                 <li>• Review your cart items</li>
                 <li>• Check payment details</li>
                 <li>• Try again with different method</li>
@@ -76,31 +76,31 @@ export default function PaymentCancel() {
           </div>
 
           {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
             <Button
               onClick={() => navigate("/checkout")}
-              className="bg-primary-gradient hover:opacity-90 text-white font-semibold py-3 px-8 rounded-lg transition-all flex items-center justify-center gap-2"
+              className="bg-primary-gradient hover:opacity-90 text-white font-semibold py-2 sm:py-3 px-6 sm:px-8 rounded-lg text-sm sm:text-base transition-all flex items-center justify-center gap-2"
             >
-              <ShoppingCart className="w-5 h-5" />
+              <ShoppingCart className="w-4 sm:w-5 h-4 sm:h-5" />
               Return to Checkout
             </Button>
             <Button
               onClick={() => navigate("/products")}
               variant="outline"
-              className="border-2 border-gray-300 text-gray-700 hover:bg-gray-50 font-semibold py-3 px-8 rounded-lg transition-all flex items-center justify-center gap-2"
+              className="border-2 border-gray-300 text-gray-700 hover:bg-gray-50 font-semibold py-2 sm:py-3 px-6 sm:px-8 rounded-lg text-sm sm:text-base transition-all flex items-center justify-center gap-2"
             >
-              <Home className="w-5 h-5" />
+              <Home className="w-4 sm:w-5 h-4 sm:h-5" />
               Continue Shopping
             </Button>
           </div>
 
           {/* Contact Info */}
-          <div className="mt-10 pt-8 border-t border-gray-200">
-            <p className="text-sm text-gray-600 mb-4">
+          <div className="mt-6 sm:mt-8 pt-6 sm:pt-8 border-t border-gray-200">
+            <p className="text-xs sm:text-sm text-gray-600 mb-3 sm:mb-4">
               Experiencing payment issues? Contact our support team
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center text-sm">
-              <a href="mailto:support@lumoelectrical.co.za" className="text-green-600 font-semibold hover:underline">
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 justify-center text-xs sm:text-sm">
+              <a href="mailto:support@lumoelectrical.co.za" className="text-green-600 font-semibold hover:underline break-all sm:break-normal">
                 📧 support@lumoelectrical.co.za
               </a>
               <span className="text-gray-400 hidden sm:inline">•</span>
@@ -112,7 +112,7 @@ export default function PaymentCancel() {
         </div>
 
         {/* Help Text */}
-        <div className="mt-8 text-center text-gray-500 text-sm">
+        <div className="mt-6 sm:mt-8 text-center text-gray-500 text-xs sm:text-sm">
           <p>💡 Your cart has been saved. No charges were made to your payment method.</p>
         </div>
       </div>
