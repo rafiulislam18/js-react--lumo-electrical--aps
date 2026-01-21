@@ -239,8 +239,27 @@ export default function Checkout() {
           body: JSON.stringify(orderData),
         }
       );
+      
+      if (response.ok) {
+        const { url, data, method } = await response.json();
 
-      if (!response.ok) {
+        // Create hidden form and submit to PayFast (redirects user)
+        const form = document.createElement('form');
+        form.method = method;
+        form.action = url;
+        form.target = '_self'; // Check if it makes the form submit work properly on mobile
+
+        Object.keys(data).forEach(key => {
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = key;
+          input.value = data[key];
+          form.appendChild(input);
+        });
+
+        document.body.appendChild(form);
+        form.submit();
+      } else {
         const errorData = await response.json();
         throw new Error(errorData.detail || "Failed to create order");
       }

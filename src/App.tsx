@@ -21,6 +21,10 @@ import ChangePassword from "@/pages/ChangePassword";
 import Profile from "@/pages/Profile";
 import NotFound from "@/pages/not-found";
 
+// Payment pages
+import PaymentSuccess from "@/pages/PaymentSuccess";
+import PaymentCancel from "@/pages/PaymentCancel";
+
 function ScrollToTop() {
   const { pathname } = useLocation();
 
@@ -61,6 +65,9 @@ function App() {
               <Route path="*" element={<Home />} />
             </Route>
             
+            {/* Payment Routes (outside Layout) */}
+            <Route path="/payment-success/:orderId" element={<PaymentSuccess />} />
+            <Route path="/payment-cancel" element={<PaymentCancel />} />
           </Routes>
         </TooltipProvider>
       </BrowserRouter>
