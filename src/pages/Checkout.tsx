@@ -14,6 +14,18 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 
+const SOUTH_AFRICAN_PROVINCES = [
+  "Eastern Cape",
+  "Free State",
+  "Gauteng",
+  "KwaZulu-Natal",
+  "Limpopo",
+  "Mpumalanga",
+  "Northern Cape",
+  "North West",
+  "Western Cape",
+];
+
 interface CartItem {
   id: string;
   product_name: string;
@@ -249,7 +261,7 @@ export default function Checkout() {
 
                 <div className="space-y-6">
                   {/* Name Fields */}
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <Label htmlFor="firstName" className="text-gray-700 font-medium mb-2 block">
                         First Name <span className="text-red-600">*</span>
@@ -260,7 +272,7 @@ export default function Checkout() {
                         value={formData.firstName}
                         onChange={handleInputChange}
                         placeholder="John"
-                        className="border-gray-300"
+                        className="border-gray-300 text-sm"
                       />
                     </div>
                     <div>
@@ -273,13 +285,13 @@ export default function Checkout() {
                         value={formData.lastName}
                         onChange={handleInputChange}
                         placeholder="Doe"
-                        className="border-gray-300"
+                        className="border-gray-300 text-sm"
                       />
                     </div>
                   </div>
 
                   {/* Email & Phone */}
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <Label htmlFor="email" className="text-gray-700 font-medium mb-2 block">
                         Email <span className="text-red-600">*</span>
@@ -291,7 +303,7 @@ export default function Checkout() {
                         value={formData.email}
                         onChange={handleInputChange}
                         placeholder="john@example.com"
-                        className="border-gray-300"
+                        className="border-gray-300 text-sm"
                       />
                     </div>
                     <div>
@@ -304,7 +316,7 @@ export default function Checkout() {
                         value={formData.phone}
                         onChange={handleInputChange}
                         placeholder="+27 123 456 7890"
-                        className="border-gray-300"
+                        className="border-gray-300 text-sm"
                       />
                     </div>
                   </div>
@@ -320,12 +332,12 @@ export default function Checkout() {
                       value={formData.address}
                       onChange={handleInputChange}
                       placeholder="123 Main Street"
-                      className="border-gray-300"
+                      className="border-gray-300 text-sm"
                     />
                   </div>
 
-                  {/* City, State, ZIP */}
-                  <div className="grid grid-cols-2 gap-4">
+                  {/* City & State (Province) */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <Label htmlFor="city" className="text-gray-700 font-medium mb-2 block">
                         City <span className="text-red-600">*</span>
@@ -336,26 +348,30 @@ export default function Checkout() {
                         value={formData.city}
                         onChange={handleInputChange}
                         placeholder="Cape Town"
-                        className="border-gray-300"
+                        className="border-gray-300 text-sm"
                       />
                     </div>
                     <div>
                       <Label htmlFor="state" className="text-gray-700 font-medium mb-2 block">
                         Province <span className="text-red-600">*</span>
                       </Label>
-                      <Input
-                        id="state"
-                        name="state"
-                        value={formData.state}
-                        onChange={handleInputChange}
-                        placeholder="Western Cape"
-                        className="border-gray-300"
-                      />
+                      <Select value={formData.state} onValueChange={(value) => handleSelectChange("state", value)}>
+                        <SelectTrigger id="state" className="border-gray-300">
+                          <SelectValue placeholder="Select a province" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-white">
+                          {SOUTH_AFRICAN_PROVINCES.map((province) => (
+                            <SelectItem key={province} value={province}>
+                              {province}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
 
                   {/* ZIP & Country */}
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <Label htmlFor="zipCode" className="text-gray-700 font-medium mb-2 block">
                         Postal Code <span className="text-red-600">*</span>
@@ -366,7 +382,7 @@ export default function Checkout() {
                         value={formData.zipCode}
                         onChange={handleInputChange}
                         placeholder="8000"
-                        className="border-gray-300"
+                        className="border-gray-300 text-sm"
                       />
                     </div>
                     <div>
@@ -375,7 +391,7 @@ export default function Checkout() {
                       </Label>
                       <div
                         id="country"
-                        className="w-full h-9 px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-700 font-medium flex items-center cursor-not-allowed overflow-hidden"
+                        className="w-full h-9 px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-700 text-sm flex items-center cursor-not-allowed overflow-hidden"
                       >
                         South Africa
                       </div>
@@ -393,7 +409,7 @@ export default function Checkout() {
                       value={formData.comment}
                       onChange={(e) => setFormData((prev) => ({ ...prev, comment: e.target.value }))}
                       placeholder="Add any special instructions or comments for your order..."
-                      className="border-gray-300 resize-none"
+                      className="border-gray-300 text-sm resize-none"
                       rows={4}
                     />
                   </div>
@@ -425,9 +441,11 @@ export default function Checkout() {
                       <h3 className="font-medium text-gray-900 line-clamp-2 text-sm">
                         {item.product_name}
                       </h3>
-                      <p className="text-sm text-gray-600 mt-1">Qty: {item.quantity}</p>
+                      {/* <p className="text-sm font-bold text-gray-600 mt-1">x{item.quantity}</p> */}
                       <p className="font-bold text-gray-900 text-sm mt-2">
-                        ${item.subtotal.toFixed(2)}
+                        ${item.price}
+                        <span className="font-normal"> x {item.quantity} = {" "}</span>
+                        <span className="text-green-600">${item.subtotal.toFixed(2)}</span>
                       </p>
                     </div>
                   </div>

@@ -149,7 +149,7 @@ export default function Login() {
                     value={formData.email}
                     onChange={handleChange}
                     placeholder="your@email.com"
-                    className="pl-10 h-11 rounded-lg border-gray-200"
+                    className="pl-10 h-11 text-sm rounded-lg border-gray-200"
                     required
                   />
                 </div>
@@ -176,7 +176,7 @@ export default function Login() {
                     value={formData.password}
                     onChange={handleChange}
                     placeholder="••••••••"
-                    className="pl-10 pr-10 h-11 rounded-lg border-gray-200"
+                    className="pl-10 pr-10 h-11 text-sm rounded-lg border-gray-200"
                     required
                   />
                   <button

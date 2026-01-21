@@ -224,8 +224,10 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                       <h4 className="font-semibold text-gray-900 text-xs line-clamp-2">
                         {item.product.name}
                       </h4>
-                      <p className="text-sm font-bold text-green-600 mt-0.5">
-                        ${parseFloat(item.product.price).toFixed(2)}
+                      <p className="text-sm font-bold text-gray-900 mt-0.5">
+                        ${(parseFloat(item.product.price)).toFixed(2)}
+                        <span className="font-normal">{" "} x {item.quantity} = {" "}</span>
+                        <span className="text-green-600">${(parseFloat(item.product.price)*item.quantity).toFixed(2)}</span>
                       </p>
                     </div>
                     
