@@ -29,7 +29,7 @@ interface PaginatedResponse {
   count: number;
   next: string | null;
   previous: string | null;
-  results: {
+  results: ProductListItem[] | {
     featured_products?: Array<{ product: ProductListItem; created_at: string }>;
     new_arrivals?: ProductListItem[];
     best_sellers?: ProductListItem[];
@@ -66,11 +66,15 @@ export default function Products() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [currentPage, setCurrentPage] = useState(parseInt(searchParams.get('page') || '1'));
   
-  // Get the "q" query parameter (defaults to "featured-products")
+  // Get the search or "q" query parameter
+  const searchQuery = searchParams.get('search');
   const q = searchParams.get('q') || 'featured-products';
 
-  // Determine which endpoint to call based on q parameter
+  // Determine which endpoint to call based on parameters
   const getEndpoint = () => {
+    if (searchQuery) {
+      return '/products/';
+    }
     switch (q) {
       case 'new-arrivals':
         return '/products/new-arrivals/';
@@ -82,8 +86,11 @@ export default function Products() {
     }
   };
 
-  // Get display title based on q parameter
+  // Get display title based on parameters
   const getDisplayTitle = () => {
+    if (searchQuery) {
+      return `Search Results for "${searchQuery}"`;
+    }
     switch (q) {
       case 'new-arrivals':
         return 'New Arrivals';
@@ -95,8 +102,11 @@ export default function Products() {
     }
   };
 
-  // Get display description based on q parameter
+  // Get display description based on parameters
   const getDisplayDescription = () => {
+    if (searchQuery) {
+      return `Showing search results for products matching "${searchQuery}"`;
+    }
     switch (q) {
       case 'new-arrivals':
         return 'Discover the latest products just added to our collection. Stay updated with fresh electrical components and solutions.';
@@ -112,6 +122,9 @@ export default function Products() {
   const queryParams = new URLSearchParams();
   queryParams.append('page', currentPage.toString());
   queryParams.append('page_size', '15');
+  if (searchQuery) {
+    queryParams.append('search', searchQuery);
+  }
 
   // Fetch products
   const { 
@@ -119,20 +132,26 @@ export default function Products() {
     isLoading, 
     isError 
   } = useQuery<PaginatedResponse>({
-    queryKey: ['products', q, currentPage],
+    queryKey: ['products', searchQuery, q, currentPage],
     queryFn: () => apiGet<PaginatedResponse>(
       `${getEndpoint()}?${queryParams.toString()}`
     ),
   });
 
   const products = (() => {
-    if (q === 'new-arrivals' && response?.results?.new_arrivals) {
-      return response.results.new_arrivals;
-    } else if (q === 'best-sellers' && response?.results?.best_sellers) {
-      return response.results.best_sellers;
-    } else if (response?.results?.featured_products) {
+    // If search query exists, results are directly in the results array
+    if (searchQuery && Array.isArray(response?.results)) {
+      return response.results as ProductListItem[];
+    }
+    // Otherwise, handle the special response format
+    const results = response?.results as any;
+    if (results?.new_arrivals && q === 'new-arrivals') {
+      return results.new_arrivals;
+    } else if (results?.best_sellers && q === 'best-sellers') {
+      return results.best_sellers;
+    } else if (results?.featured_products) {
       // Extract the 'product' field from featured products wrapper
-      return response.results.featured_products.map(fp => fp.product);
+      return results.featured_products.map((fp: any) => fp.product);
     }
     return [];
   })();
@@ -148,9 +167,13 @@ export default function Products() {
   useEffect(() => {
     const params = new URLSearchParams();
     params.append('page', currentPage.toString());
-    if (q !== 'featured-products') params.append('q', q);
+    if (searchQuery) {
+      params.append('search', searchQuery);
+    } else if (q !== 'featured-products') {
+      params.append('q', q);
+    }
     setSearchParams(params);
-  }, [currentPage, q, setSearchParams]);
+  }, [currentPage, q, searchQuery, setSearchParams]);
 
   return (
     <div className="min-h-screen bg-gray-50/30 flex flex-col font-sans">
