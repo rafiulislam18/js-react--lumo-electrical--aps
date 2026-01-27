@@ -37,10 +37,19 @@ interface FeaturedProduct {
   created_at: string;
 }
 
+interface FAQ {
+  id: number;
+  question: string;
+  answer: string;
+  created_at: string;
+  updated_at: string;
+}
+
 interface HomeResponse {
   featured_products: FeaturedProduct[];
   best_sellers: Product[];
   new_arrivals: Product[];
+  faqs: FAQ[];
 }
 
 // Helper to get full image URL
@@ -75,6 +84,7 @@ export default function Home() {
   const featuredProducts = homeData?.featured_products?.map(fp => transformProduct(fp.product)) || [];
   const bestSellers = homeData?.best_sellers?.map(transformProduct) || [];
   const newArrivals = homeData?.new_arrivals?.map(transformProduct) || [];
+  const faqsData = homeData?.faqs || [];
 
   const handleScrollToCategories = () => {
     const element = document.getElementById('categories-section');
@@ -202,8 +212,8 @@ export default function Home() {
           
           <div className="mt-12 bg-gray-50 p-8 rounded-3xl border border-gray-100 animate-scale-in" style={{animationDelay: '0.4s'}}>
             <Accordion type="single" collapsible className="w-full">
-              {faqs.map((faq: any, index: any) => (
-                <AccordionItem key={faq.id} value={faq.id} className="border-b-gray-200 last:border-0 transition-smooth" style={{animationDelay: `${0.4 + (index * 0.05)}s`}}>
+              {faqsData.map((faq, index) => (
+                <AccordionItem key={faq.id} value={faq.id.toString()} className="border-b-gray-200 last:border-0 transition-smooth" style={{animationDelay: `${0.4 + (index * 0.05)}s`}}>
                   <AccordionTrigger className="text-lg font-medium text-gray-900 hover:text-primary transition-colors py-5">
                     {faq.question}
                   </AccordionTrigger>
