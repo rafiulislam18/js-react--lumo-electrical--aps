@@ -331,7 +331,7 @@ export default function ProductDetail() {
               <>
                 {product.category.breadcrumb.map((cat, idx) => (
                   <div key={cat.id} className="flex items-center gap-2">
-                    <a href={`/products/${cat.slug}`} className="text-gray-600 hover:text-primary transition-colors whitespace-nowrap">
+                    <a href={`/${cat.slug}`} className="text-gray-600 hover:text-primary transition-colors whitespace-nowrap">
                       {cat.name}
                     </a>
                     <span className="text-gray-400">/</span>

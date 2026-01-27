@@ -192,13 +192,13 @@ export default function Home() {
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-8 animate-stagger">
               <div className="animate-slide-in-up">
-                <ProductListColumn title="Featured Products" products={featuredProducts} linkTo="/products/circuit-breakers" />
+                <ProductListColumn title="Featured Products" products={featuredProducts} linkTo="/products" />
               </div>
               <div className="animate-slide-in-up" style={{animationDelay: '0.1s'}}>
-                <ProductListColumn title="Best Sellers" products={bestSellers} linkTo="/products/circuit-breakers" />
+                <ProductListColumn title="Best Sellers" products={bestSellers} linkTo="/products?q=best-sellers" />
               </div>
               <div className="animate-slide-in-up" style={{animationDelay: '0.2s'}}>
-                <ProductListColumn title="New Arrivals" products={newArrivals} linkTo="/products/circuit-breakers" />
+                <ProductListColumn title="New Arrivals" products={newArrivals} linkTo="/products?q=new-arrivals" />
               </div>
             </div>
           )}

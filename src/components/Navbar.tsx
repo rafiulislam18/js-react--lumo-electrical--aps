@@ -40,7 +40,7 @@ function CategoryMenuItem({ category }: { category: Category }) {
   if (!category.children || category.children.length === 0) {
     return (
       <div className="px-2 py-2 rounded-lg text-gray-700 hover:text-primary hover:bg-gray-50 cursor-pointer text-sm">
-        <a href={`/products/${category.slug}`} className="flex items-center block">
+        <a href={`/${category.slug}`} className="flex items-center block">
           {category.name}
         </a>
       </div>
@@ -54,7 +54,7 @@ function CategoryMenuItem({ category }: { category: Category }) {
       onMouseLeave={() => setIsOpen(false)}
     >
       <div className="flex items-center justify-between px-2 py-2 rounded-lg text-gray-700 hover:text-primary hover:bg-gray-50 cursor-pointer text-sm">
-        <a href={`/products/${category.slug}`} className="flex-1 block">
+        <a href={`/${category.slug}`} className="flex-1 block">
           {category.name}
         </a>
         <ChevronDown className="w-3 h-3 ml-2 flex-shrink-0" />
@@ -80,7 +80,7 @@ function MobileCategoryItem({ category, level = 0 }: { category: Category; level
     <div key={category.id}>
       <div className="flex items-center justify-between">
         <a
-          href={`/products/${category.slug}`}
+          href={`/${category.slug}`}
           className="flex-1 px-3 py-2.5 text-sm font-medium text-gray-700 hover:text-primary transition-colors"
           style={{ paddingLeft: `${12 + level * 12}px` }}
         >
@@ -387,7 +387,7 @@ export function Navbar() {
             {firstEightCategories.map((cat: Category) => (
               <a 
                 key={cat.id} 
-                href={`/products/${cat.slug}`} 
+                href={`/${cat.slug}`} 
                 className="text-sm font-medium text-gray-600 hover:text-primary transition-colors whitespace-nowrap"
               >
                 {cat.name}
