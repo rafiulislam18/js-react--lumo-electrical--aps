@@ -180,14 +180,18 @@ export default function Products() {
       {/* Header Section */}
       <section className="border-b border-gray-100 bg-white">
         <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-6">
-          <div className="flex items-center gap-2 text-xs sm:text-sm overflow-x-auto mb-6">
+          <div className="flex items-center gap-2 text-xs sm:text-sm overflow-x-auto">
             <a href="/" className="text-gray-600 hover:text-primary transition-colors whitespace-nowrap">Home</a>
             <span className="text-gray-400">/</span>
             <span className="text-primary font-semibold whitespace-nowrap">{getDisplayTitle()}</span>
           </div>
           
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">{getDisplayTitle()}</h1>
-          <p className="text-sm text-gray-600">{getDisplayDescription()}</p>
+          {/* <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">{getDisplayTitle()}</h1> */}
+          <p className={`text-sm text-gray-600
+            ${getDisplayDescription().includes('search') ? '' : 'mt-6'}
+            `}>
+            {getDisplayDescription().includes('search') ? null : getDisplayDescription()}
+          </p>
         </div>
       </section>
 
@@ -200,7 +204,7 @@ export default function Products() {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8">
               <div className="flex-1 min-w-0">
                 <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 animate-fade-in line-clamp-2 sm:line-clamp-none">
-                  {getDisplayTitle()}
+                  {getDisplayTitle().includes('Search') ? null : getDisplayTitle()}
                 </h2>
                 <p className="text-xs sm:text-sm text-gray-600 mt-1 sm:mt-2 animate-fade-in" style={{animationDelay: '0.1s'}}>
                   {isLoading ? 'Loading products...' : `Showing ${transformedProducts.length} of ${totalCount} products`}
