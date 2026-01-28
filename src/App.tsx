@@ -9,6 +9,7 @@ import { Layout } from "@/components/Layout";
 
 // Pages that use Layout
 import Home from "@/pages/Home";
+import CategorizedProducts from "@/pages/CategorizedProducts";
 import Products from "@/pages/Products";
 import ProductDetail from "@/pages/ProductDetail";
 import Orders from "@/pages/Orders";
@@ -47,8 +48,8 @@ function App() {
             {/* Layout Routes */}
             <Route element={<Layout />}>
               <Route index path="/" element={<Home />} />
+              <Route path="/:categorySlug" element={<CategorizedProducts />} />
               <Route path="/products" element={<Products />} />
-              <Route path="/products/:categorySlug" element={<Products />} />
               <Route path="/product-details/:id" element={<ProductDetail />} />
               <Route path="/checkout" element={<Checkout />} />
               <Route path="/orders" element={<Orders />} />

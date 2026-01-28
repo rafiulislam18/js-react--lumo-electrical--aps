@@ -10,7 +10,7 @@ export function CategoryCard({ category }: CategoryCardProps) {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    navigate(`/products/${category.slug}`);
+    navigate(`/${category.slug}`);
   };
 
   return (

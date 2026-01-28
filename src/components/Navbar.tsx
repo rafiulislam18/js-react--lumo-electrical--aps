@@ -16,7 +16,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { CartSidebar } from "@/components/CartSidebar";
-import { allProducts } from "@/data/dummyData";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { apiGet } from "@/lib/api";
@@ -40,7 +39,7 @@ function CategoryMenuItem({ category }: { category: Category }) {
   if (!category.children || category.children.length === 0) {
     return (
       <div className="px-2 py-2 rounded-lg text-gray-700 hover:text-primary hover:bg-gray-50 cursor-pointer text-sm">
-        <a href={`/products/${category.slug}`} className="flex items-center block">
+        <a href={`/${category.slug}`} className="flex items-center block">
           {category.name}
         </a>
       </div>
@@ -54,7 +53,7 @@ function CategoryMenuItem({ category }: { category: Category }) {
       onMouseLeave={() => setIsOpen(false)}
     >
       <div className="flex items-center justify-between px-2 py-2 rounded-lg text-gray-700 hover:text-primary hover:bg-gray-50 cursor-pointer text-sm">
-        <a href={`/products/${category.slug}`} className="flex-1 block">
+        <a href={`/${category.slug}`} className="flex-1 block">
           {category.name}
         </a>
         <ChevronDown className="w-3 h-3 ml-2 flex-shrink-0" />
@@ -80,7 +79,7 @@ function MobileCategoryItem({ category, level = 0 }: { category: Category; level
     <div key={category.id}>
       <div className="flex items-center justify-between">
         <a
-          href={`/products/${category.slug}`}
+          href={`/${category.slug}`}
           className="flex-1 px-3 py-2.5 text-sm font-medium text-gray-700 hover:text-primary transition-colors"
           style={{ paddingLeft: `${12 + level * 12}px` }}
         >
@@ -147,7 +146,7 @@ export function Navbar() {
     return () => window.removeEventListener("storage", updateCounts);
   }, [isCartOpen]);
 
-  const handleSearch = (query: string) => {
+  const handleSearch = async (query: string) => {
     setSearchQuery(query);
     
     if (query.trim().length === 0) {
@@ -156,13 +155,16 @@ export function Navbar() {
       return;
     }
 
-    const queryLower = query.toLowerCase();
-    const results = allProducts.filter(product =>
-      product.name.toLowerCase().includes(queryLower)
-    ).slice(0, 5);
-
-    setSearchResults(results);
-    setShowSearchResults(true);
+    try {
+      const response = await apiGet<any>(`/products/?search=${encodeURIComponent(query)}&page_size=5`);
+      const results = Array.isArray(response.results) ? response.results : [];
+      setSearchResults(results);
+      setShowSearchResults(true);
+    } catch (error) {
+      console.error('Search failed:', error);
+      setSearchResults([]);
+      setShowSearchResults(false);
+    }
   };
 
   const handleSearchSubmit = () => {
@@ -231,15 +233,19 @@ export function Navbar() {
                     className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 border-b border-gray-100 last:border-0 text-left transition-colors"
                   >
                     <img 
-                      src={product.image} 
+                      src={product.image ? (product.image.startsWith('http') ? product.image : `${import.meta.env.VITE_BASE_URL}${product.image}`) : '/placeholder.png'}
                       alt={product.name}
                       className="w-10 h-10 object-cover rounded"
                     />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-gray-900 truncate">{product.name}</p>
-                      <p className="text-xs text-gray-500">{product.category}</p>
+                      <p className="text-xs text-gray-500">${product.price}</p>
                     </div>
-                    <p className="text-sm font-semibold text-primary">${product.price}</p>
+                    {product.badge && (
+                      <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-1 rounded whitespace-nowrap">
+                        {product.badge}
+                      </span>
+                    )}
                   </button>
                 ))}
                 <button
@@ -387,7 +393,7 @@ export function Navbar() {
             {firstEightCategories.map((cat: Category) => (
               <a 
                 key={cat.id} 
-                href={`/products/${cat.slug}`} 
+                href={`/${cat.slug}`} 
                 className="text-sm font-medium text-gray-600 hover:text-primary transition-colors whitespace-nowrap"
               >
                 {cat.name}
