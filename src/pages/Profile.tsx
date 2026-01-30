@@ -111,8 +111,13 @@ export default function Profile() {
 
   // Fetch user profile on component mount
   useEffect(() => {
+    const accessToken = localStorage.getItem('access_token');
+    if (!accessToken) {
+      navigate('/login');
+      return;
+    }
     fetchUserProfile();
-  }, []);
+  }, [navigate]);
 
   const fetchUserProfile = async () => {
     try {

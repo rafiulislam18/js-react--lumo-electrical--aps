@@ -20,35 +20,34 @@ export function Footer() {
             <p className="text-gray-500 leading-relaxed text-sm">
               Premium electrical components, tools, and solutions for professionals and DIY enthusiasts. Everything you need for reliable installations and repairs inside Cape Town, SA.
             </p>
-            <div className="flex items-center gap-4">
+            {/* <div className="flex items-center gap-4">
               <SocialLink icon={Facebook} />
               <SocialLink icon={Twitter} />
               <SocialLink icon={Instagram} />
               <SocialLink icon={Youtube} />
-            </div>
+            </div> */}
           </div>
 
           {/* Quick Links */}
           <div>
             <h4 className="font-display font-bold text-lg mb-6 text-gray-900">Quick Links</h4>
             <ul className="space-y-4 text-sm text-gray-500">
-              <li><a href="#" className="hover:text-primary transition-colors">About Us</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Contact Us</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Careers</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Blog</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Privacy Policy</a></li>
+              <li><a href="/" className="hover:text-primary transition-colors">Home</a></li>
+              <li><a href="/products" className="hover:text-primary transition-colors">Featured Products</a></li>
+              <li><a href="/products?q=best-sellers" className="hover:text-primary transition-colors">Best Sellers</a></li>
+              <li><a href="/products?q=new-arrivals" className="hover:text-primary transition-colors">New Arrivals</a></li>
+              {/* <li><a href="#" className="hover:text-primary transition-colors">Privacy Policy</a></li> */}
             </ul>
           </div>
 
-          {/* Customer Service */}
+          {/* Account & Orders */}
           <div>
-            <h4 className="font-display font-bold text-lg mb-6 text-gray-900">Customer Care</h4>
+            <h4 className="font-display font-bold text-lg mb-6 text-gray-900">Account & Orders</h4>
             <ul className="space-y-4 text-sm text-gray-500">
-              <li><a href="#" className="hover:text-primary transition-colors">My Account</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Track Order</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Returns & Exchanges</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Shipping Info</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">FAQ</a></li>
+              <li><a href="/profile" className="hover:text-primary transition-colors">My Profile</a></li>
+              <li><a href="/orders" className="hover:text-primary transition-colors">Order History</a></li>
+              <li><a href="/wishlist" className="hover:text-primary transition-colors">Wishlist</a></li>
+              <li><a href="/#faq" className="hover:text-primary transition-colors">FAQ</a></li>
             </ul>
           </div>
 
@@ -70,11 +69,11 @@ export function Footer() {
               </li>
             </ul>
             
-            <h5 className="font-bold text-sm mb-3 text-gray-900">Subscribe to our newsletter</h5>
+            {/* <h5 className="font-bold text-sm mb-3 text-gray-900">Subscribe to our newsletter</h5>
             <div className="flex gap-2">
               <Input placeholder="Your email" className="bg-white border-gray-200" />
               <Button className="bg-primary-gradient px-4">Join</Button>
-            </div>
+            </div> */}
           </div>
         </div>
 
