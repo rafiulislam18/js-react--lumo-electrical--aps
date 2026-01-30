@@ -53,6 +53,9 @@ interface UserProfile {
   first_name: string;
   last_name: string;
   customer_profile: CustomerProfile;
+  total_orders: number;
+  wishlist_items: number;
+  total_spent: number;
 }
 
 interface FormData {
@@ -86,6 +89,7 @@ export default function Profile() {
   const [isSaving, setIsSaving] = useState(false);
   const [userEmail, setUserEmail] = useState("");
   const [existingTradeDocsUrl, setExistingTradeDocsUrl] = useState<string | null>(null);
+  const [stats, setStats] = useState({ total_orders: 0, wishlist_items: 0, total_spent: 0 });
   const [formData, setFormData] = useState<FormData>({
     first_name: "",
     last_name: "",
@@ -131,6 +135,13 @@ export default function Profile() {
       if (tradeDocsUrl) {
         setExistingTradeDocsUrl(tradeDocsUrl);
       }
+
+      // Store stats
+      setStats({
+        total_orders: profile.total_orders,
+        wishlist_items: profile.wishlist_items,
+        total_spent: profile.total_spent,
+      });
       
       setFormData({
         first_name: profile.first_name,
@@ -338,10 +349,10 @@ export default function Profile() {
     navigate("/login");
   };
 
-  const stats = [
-    { label: "Total Orders", value: "12", icon: ShoppingBag, color: "text-blue-600" },
-    { label: "Wishlist Items", value: "24", icon: Heart, color: "text-red-500" },
-    { label: "Total Spent", value: "$2,345.50", icon: DollarSign, color: "text-green-600" }
+  const statsData = [
+    { label: "Total Orders", value: stats.total_orders.toString(), icon: ShoppingBag, color: "text-blue-600" },
+    { label: "Wishlist Items", value: stats.wishlist_items.toString(), icon: Heart, color: "text-red-500" },
+    { label: "Total Spent", value: `$${stats.total_spent.toFixed(2)}`, icon: DollarSign, color: "text-green-600" }
   ];
 
   const actionButtons = [
@@ -899,7 +910,7 @@ export default function Profile() {
 
               {/* Stats Cards */}
               <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-3 gap-4">
-                {stats.map((stat) => {
+                {statsData.map((stat) => {
                   const Icon = stat.icon;
                   return (
                     <div key={stat.label} className="bg-white rounded-xl border border-gray-100 p-4 sm:p-5 shadow-sm hover:shadow-md transition-shadow text-center">
