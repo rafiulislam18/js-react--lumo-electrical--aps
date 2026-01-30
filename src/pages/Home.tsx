@@ -203,6 +203,7 @@ export default function Home() {
             </div>
           )}
         </div>
+        <span id="faq"/>
       </section>
 
       {/* FAQ Section */}

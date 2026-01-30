@@ -56,6 +56,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem('rememberMe');
     localStorage.removeItem('rememberEmail');
     setUser(null);
+
+    // Redirect to login if on profile or change-password page
+    const currentPath = window.location.pathname;
+    if (currentPath.includes('/profile') || currentPath.includes('/change-password')) {
+      window.location.href = '/login';
+    }
   };
 
   return (
