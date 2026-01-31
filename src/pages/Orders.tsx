@@ -217,10 +217,12 @@ export default function Orders() {
 
                     {/* Action Button */}
                     <div className="flex justify-end pt-2 border-t border-gray-100">
-                      <Button className="bg-gradient-to-r from-[#399746] to-[#A6CD3D] text-white border-0 hover:shadow-md transition-all duration-300 group/btn text-xs px-2.5 py-1.5">
-                        View Details
-                        <ArrowRight className="w-3 h-3 ml-1 group-hover/btn:translate-x-0.5 transition-transform" />
-                      </Button>
+                      <Link to={`/order/${order.id}`}>
+                        <Button className="bg-gradient-to-r from-[#399746] to-[#A6CD3D] text-white border-0 hover:shadow-md transition-all duration-300 group/btn text-xs px-2.5 py-1.5">
+                          View Details
+                          <ArrowRight className="w-3 h-3 ml-1 group-hover/btn:translate-x-0.5 transition-transform" />
+                        </Button>
+                      </Link>
                     </div>
                   </div>
                 </div>
