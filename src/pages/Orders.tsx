@@ -58,6 +58,19 @@ export default function Orders() {
     }
   };
 
+  const getStatusDisplay = (status: string) => {
+    switch (status) {
+      case "order_placed":
+        return "Order Placed";
+      case "out_for_delivery":
+        return "Out for Delivery";
+      case "delivered":
+        return "Delivered";
+      default:
+        return "Unknown Status";
+    }
+  };
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', {
@@ -95,7 +108,7 @@ export default function Orders() {
                       <p className="text-sm text-gray-500">{formatDate(order.created_at)}</p>
                     </div>
                     <span className={`px-4 py-2 rounded-full text-sm font-medium ${getStatusColor(order.status)}`}>
-                      {order.status}
+                      {getStatusDisplay(order.status)}
                     </span>
                   </div>
 
@@ -106,7 +119,7 @@ export default function Orders() {
                     </div>
                     <div>
                       <p className="text-sm text-gray-600 mb-1">Total</p>
-                      <p className="text-lg font-bold text-green-600">${order.total.toFixed(2)}</p>
+                      <p className="text-lg font-bold text-green-600">${order.total}</p>
                     </div>
                     <div className="text-right">
                       <Button
