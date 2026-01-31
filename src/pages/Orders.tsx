@@ -1,35 +1,74 @@
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Package, ArrowRight } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { apiGet } from "@/lib/api";
+import { useToast } from "@/hooks/use-toast";
 
-const sampleOrders = [
-  {
-    id: "ORD-001",
-    date: "2024-01-15",
-    total: 245.99,
-    status: "Delivered",
-    items: 3,
-    statusColor: "bg-green-100 text-green-800"
-  },
-  {
-    id: "ORD-002",
-    date: "2024-01-12",
-    total: 89.50,
-    status: "Processing",
-    items: 1,
-    statusColor: "bg-blue-100 text-blue-800"
-  },
-  {
-    id: "ORD-003",
-    date: "2024-01-08",
-    total: 156.75,
-    status: "Shipped",
-    items: 2,
-    statusColor: "bg-orange-100 text-orange-800"
-  }
-];
+interface Order {
+  id: number;
+  created_at: string;
+  total: number;
+  paid: boolean;
+  items_count: number;
+  status: string;
+}
 
 export default function Orders() {
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const accessToken = localStorage.getItem('access_token');
+    if (!accessToken) {
+      navigate('/login');
+      return;
+    }
+    fetchUserOrders();
+  }, [navigate]);
+
+  const fetchUserOrders = async () => {
+    try {
+      setIsLoading(true);
+      const data = await apiGet("/orders/list/");
+      setOrders(data);
+    } catch (err) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to load orders. Please try again.",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "Delivered":
+        return "bg-green-100 text-green-800";
+      case "Processing":
+        return "bg-blue-100 text-blue-800";
+      case "Shipped":
+        return "bg-orange-100 text-orange-800";
+      case "Pending Payment":
+        return "bg-red-100 text-red-800";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gray-50/30 flex flex-col font-sans">
       <section className="flex-1 py-12 px-4">
@@ -41,19 +80,23 @@ export default function Orders() {
           </div>
 
           {/* Orders List */}
-          {sampleOrders.length > 0 ? (
+          {isLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500"></div>
+            </div>
+          ) : orders.length > 0 ? (
             <div className="space-y-4">
-              {sampleOrders.map((order, index) => (
+              {orders.map((order) => (
                 <div
                   key={order.id}
                   className="bg-white rounded-xl border border-gray-100 p-6 hover:shadow-lg transition-shadow hover:border-green-200"
                 >
                   <div className="flex items-center justify-between mb-4">
                     <div>
-                      <h3 className="text-lg font-bold text-gray-900">{order.id}</h3>
-                      <p className="text-sm text-gray-500">{order.date}</p>
+                      <h3 className="text-lg font-bold text-gray-900">Order #{order.id}</h3>
+                      <p className="text-sm text-gray-500">{formatDate(order.created_at)}</p>
                     </div>
-                    <span className={`px-4 py-2 rounded-full text-sm font-medium ${order.statusColor}`}>
+                    <span className={`px-4 py-2 rounded-full text-sm font-medium ${getStatusColor(order.status)}`}>
                       {order.status}
                     </span>
                   </div>
@@ -61,7 +104,7 @@ export default function Orders() {
                   <div className="grid grid-cols-3 gap-4 py-4 border-y border-gray-100">
                     <div>
                       <p className="text-sm text-gray-600 mb-1">Items</p>
-                      <p className="text-lg font-bold text-gray-900">{order.items}</p>
+                      <p className="text-lg font-bold text-gray-900">{order.items_count}</p>
                     </div>
                     <div>
                       <p className="text-sm text-gray-600 mb-1">Total</p>

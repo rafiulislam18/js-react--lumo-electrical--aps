@@ -59,7 +59,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     // Redirect to login if on profile or change-password page
     const currentPath = window.location.pathname;
-    if (currentPath.includes('/profile') || currentPath.includes('/change-password')) {
+    if (currentPath.includes('/profile') || currentPath.includes('/change-password') || currentPath.includes('/orders')) {
       window.location.href = '/login';
     }
   };
