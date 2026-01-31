@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Mail, AlertCircle } from "lucide-react";
+import { Mail, AlertCircle, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
@@ -360,11 +360,28 @@ export default function ForgotPassword() {
                       className="h-11 rounded-lg border-gray-200"
                       required
                     />
+                    
+                    {/* Password Match Validation */}
+                    {newPassword && confirmPassword && (
+                      <div className={`mt-2 flex items-center gap-2 text-sm ${newPassword === confirmPassword ? 'text-green-600' : 'text-red-600'}`}>
+                        {newPassword === confirmPassword ? (
+                          <>
+                            <CheckCircle className="w-4 h-4" />
+                            <span>Passwords match</span>
+                          </>
+                        ) : (
+                          <>
+                            <AlertCircle className="w-4 h-4" />
+                            <span>Passwords do not match</span>
+                          </>
+                        )}
+                      </div>
+                    )}
                   </div>
 
                   <Button
                     type="submit"
-                    disabled={isLoading || !newPassword || !confirmPassword}
+                    disabled={isLoading || !newPassword || !confirmPassword || newPassword !== confirmPassword}
                     className="w-full bg-primary-gradient border-0 text-white font-semibold h-11 rounded-lg hover:opacity-90 transition-smooth"
                   >
                     {isLoading ? "Resetting..." : "Reset Password"}

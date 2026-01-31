@@ -13,6 +13,7 @@ import CategorizedProducts from "@/pages/CategorizedProducts";
 import Products from "@/pages/Products";
 import ProductDetail from "@/pages/ProductDetail";
 import Orders from "@/pages/Orders";
+import OrderDetail from "@/pages/OrderDetail";
 import Wishlist from "@/pages/Wishlist";
 import Checkout from "@/pages/Checkout";
 import Login from "@/pages/Login";
@@ -53,6 +54,7 @@ function App() {
               <Route path="/product-details/:id" element={<ProductDetail />} />
               <Route path="/checkout" element={<Checkout />} />
               <Route path="/orders" element={<Orders />} />
+              <Route path="/order/:orderId" element={<OrderDetail />} />
               <Route path="/wishlist" element={<Wishlist />} />
               <Route path="/profile" element={<Profile />} />
 

@@ -271,13 +271,30 @@ export default function ChangePassword() {
                     )}
                   </button>
                 </div>
+                
+                {/* Password Match Validation */}
+                {passwords.new && passwords.confirm && (
+                  <div className={`mt-2 flex items-center gap-2 text-sm ${passwords.new === passwords.confirm ? 'text-green-600' : 'text-red-600'}`}>
+                    {passwords.new === passwords.confirm ? (
+                      <>
+                        <CheckCircle className="w-4 h-4" />
+                        <span>Passwords match</span>
+                      </>
+                    ) : (
+                      <>
+                        <AlertCircle className="w-4 h-4" />
+                        <span>Passwords do not match</span>
+                      </>
+                    )}
+                  </div>
+                )}
               </div>
 
               {/* Actions */}
               <div className="flex gap-3 pt-4">
                 <Button
                   type="submit"
-                  disabled={isLoading || !passwords.current || !passwords.new || !passwords.confirm}
+                  disabled={isLoading || !passwords.current || !passwords.new || !passwords.confirm || passwords.new !== passwords.confirm}
                   className="flex-1 bg-primary-gradient text-white font-semibold hover:opacity-90 border-0"
                 >
                   {isLoading ? "Verifying..." : "Send Verification Code"}
