@@ -362,28 +362,34 @@ export default function Profile() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50/30 flex flex-col font-sans">
-      <section className="flex-1 py-12 px-4">
-        <div className="container mx-auto max-w-5xl">
-          {/* Page Header */}
-          <div className="mb-8">
-            <h1 className="text-4xl font-bold text-gray-900">My Account</h1>
-            <p className="text-gray-600 mt-2">Manage your profile and account settings</p>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
+      {/* Header Section */}
+      {/* <div className="bg-gradient-to-r from-[#399746] to-[#A6CD3D] text-white py-10 px-4">
+        <div className="container mx-auto max-w-6xl">
+          <div className="flex items-center gap-3 mb-2">
+            <User className="w-8 h-8" />
+            <h1 className="text-3xl md:text-4xl font-bold">My Account</h1>
           </div>
+          <p className="text-green-50 text-sm md:text-base max-w-2xl">Manage your profile, addresses, and account settings</p>
+        </div>
+      </div> */}
+
+      <section className="py-8 px-4">
+        <div className="container mx-auto max-w-6xl">
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Right Content - Main Profile Section */}
             <div className="lg:col-span-2 space-y-6">
               {/* Profile Information Card */}
-              <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+              <div className="bg-white rounded-2xl border-2 border-gray-100 shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
                 {/* Header */}
-                <div className="bg-gradient-to-r from-green-500 to-lime-400 px-4 sm:px-6 md:px-8 py-6 sm:py-8 text-white flex items-start justify-between gap-4">
+                <div className="bg-gradient-to-r from-[#399746] to-[#A6CD3D] px-6 md:px-8 py-8 text-white flex items-start justify-between gap-4">
                   <div className="min-w-0 flex-1">
-                    <h2 className="text-xl sm:text-2xl font-bold flex items-center gap-2">
-                      <User className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0" />
+                    <h2 className="text-2xl md:text-3xl font-bold flex items-center gap-2">
+                      <User className="w-7 h-7 flex-shrink-0" />
                       <span>Personal Information</span>
                     </h2>
-                    <p className="text-green-50 mt-1 text-sm sm:text-base">Update your profile details</p>
+                    <p className="text-green-50 mt-2 text-sm md:text-base">Update your profile details and addresses</p>
                   </div>
                   {!isEditingProfile && (
                     <button
@@ -396,10 +402,12 @@ export default function Profile() {
                 </div>
 
                 {/* Content */}
-                <div className="p-4 sm:p-6 md:p-8">
+                <div className="p-6 md:p-8">
                   {isLoading ? (
-                    <div className="flex items-center justify-center py-12">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500"></div>
+                    <div className="flex items-center justify-center py-16">
+                      <div className="relative w-12 h-12">
+                        <div className="absolute inset-0 bg-gradient-to-r from-[#399746] to-[#A6CD3D] rounded-full animate-spin" style={{mask: 'radial-gradient(circle, transparent 30%, black 70%)'}}></div>
+                      </div>
                     </div>
                   ) : isEditingProfile ? (
                     <div className="space-y-6">
@@ -749,18 +757,18 @@ export default function Profile() {
                         </>
                       )}
 
-                      <div className="flex gap-3 pt-4">
+                      <div className="flex gap-3 pt-6 border-t border-gray-200">
                         <Button
                           onClick={handleSaveProfile}
                           disabled={isSaving}
-                          className="flex-1 h-11 bg-primary-gradient text-white font-semibold hover:opacity-90 disabled:opacity-50"
+                          className="flex-1 h-12 bg-gradient-to-r from-[#399746] to-[#A6CD3D] text-white font-semibold hover:shadow-lg disabled:opacity-50 rounded-lg transition-all"
                         >
                           {isSaving ? "Saving..." : "Save Changes"}
                         </Button>
                         <Button
                           onClick={() => setIsEditingProfile(false)}
                           variant="outline"
-                          className="flex-1 h-11"
+                          className="flex-1 h-12 rounded-lg border-2 border-gray-200"
                         >
                           Cancel
                         </Button>
@@ -899,8 +907,9 @@ export default function Profile() {
 
                       <Button
                         onClick={() => setIsEditingProfile(true)}
-                        className="w-full h-11 bg-green-600 text-white font-semibold hover:bg-green-700"
+                        className="w-full h-12 bg-gradient-to-r from-[#399746] to-[#A6CD3D] text-white font-semibold hover:shadow-lg rounded-lg transition-all"
                       >
+                        <Edit3 className="w-4 h-4 mr-2" />
                         Edit Profile
                       </Button>
                     </div>
@@ -909,16 +918,29 @@ export default function Profile() {
               </div>
 
               {/* Stats Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-3 gap-4">
-                {statsData.map((stat) => {
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {statsData.map((stat, index) => {
                   const Icon = stat.icon;
+                  const colors = [
+                    'from-blue-50 to-cyan-50 border-blue-200',
+                    'from-red-50 to-pink-50 border-red-200',
+                    'from-green-50 to-emerald-50 border-green-200'
+                  ];
                   return (
-                    <div key={stat.label} className="bg-white rounded-xl border border-gray-100 p-4 sm:p-5 shadow-sm hover:shadow-md transition-shadow text-center">
-                      <div className={`${stat.color} mb-2 flex justify-center`}>
-                        <Icon className="w-6 h-6" />
+                    <div 
+                      key={stat.label} 
+                      className={`bg-gradient-to-br ${colors[index]} rounded-xl border-2 p-5 shadow-md hover:shadow-lg transition-all hover:scale-105 transform`}
+                      style={{animation: `slideInUp 0.5s ease-out ${index * 0.1}s both`}}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-xs md:text-sm text-gray-600 font-semibold mb-1">{stat.label}</p>
+                          <p className="text-2xl md:text-3xl font-bold text-gray-900">{stat.value}</p>
+                        </div>
+                        <div className={`${stat.color}`}>
+                          <Icon className="w-10 h-10 opacity-20" />
+                        </div>
                       </div>
-                      <p className="text-xs sm:text-sm text-gray-600 font-medium mb-1">{stat.label}</p>
-                      <p className="text-lg sm:text-xl font-bold text-gray-900">{stat.value}</p>
                     </div>
                   );
                 })}
@@ -927,19 +949,22 @@ export default function Profile() {
 
             {/* Left Sidebar - Action Buttons */}
             <div className="lg:col-span-1 space-y-3">
-              {actionButtons.map((btn) => {
+              {actionButtons.map((btn, index) => {
                 const Icon = btn.icon;
                 return (
                   <button
                     key={btn.label}
                     onClick={btn.onClick}
-                    className="w-full flex items-center justify-between px-4 py-3 bg-white border border-gray-200 rounded-lg hover:border-green-400 hover:bg-green-50/30 transition-colors text-left group"
+                    className="w-full flex items-center justify-between px-4 py-3.5 bg-white border-2 border-gray-200 rounded-xl hover:border-[#399746] hover:bg-gradient-to-r hover:from-green-50 hover:to-lime-50 transition-all hover:shadow-md group"
+                    style={{animation: `slideInRight 0.5s ease-out ${index * 0.1}s both`}}
                   >
                     <div className="flex items-center gap-3">
-                      <Icon className="w-5 h-5 text-gray-600 group-hover:text-green-600" />
-                      <span className="font-medium text-gray-700 group-hover:text-gray-900">{btn.label}</span>
+                      <div className="p-2 bg-gradient-to-br from-[#399746]/10 to-[#A6CD3D]/10 rounded-lg group-hover:bg-gradient-to-br group-hover:from-[#399746]/20 group-hover:to-[#A6CD3D]/20 transition-colors">
+                        <Icon className="w-5 h-5 text-[#399746] group-hover:text-[#399746]" />
+                      </div>
+                      <span className="font-semibold text-gray-700 group-hover:text-gray-900">{btn.label}</span>
                     </div>
-                    <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-green-600" />
+                    <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-[#399746] group-hover:translate-x-1 transition-all" />
                   </button>
                 );
               })}
@@ -947,18 +972,43 @@ export default function Profile() {
               {/* Logout Button */}
               <button
                 onClick={handleLogout}
-                className="w-full flex items-center justify-between px-4 py-3 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 transition-colors text-left group mt-4"
+                className="w-full flex items-center justify-between px-4 py-3.5 bg-gradient-to-r from-red-50 to-red-100 border-2 border-red-200 rounded-xl hover:border-red-400 hover:shadow-md transition-all group"
               >
                 <div className="flex items-center gap-3">
-                  <LogOut className="w-5 h-5 text-red-600 group-hover:text-red-700" />
-                  <span className="font-medium text-red-600 group-hover:text-red-700">Logout</span>
+                  <div className="p-2 bg-red-200/30 rounded-lg group-hover:bg-red-200/50 transition-colors">
+                    <LogOut className="w-5 h-5 text-red-600" />
+                  </div>
+                  <span className="font-semibold text-red-600 group-hover:text-red-700">Logout</span>
                 </div>
-                <ArrowRight className="w-4 h-4 text-red-400 group-hover:text-red-600" />
+                <ArrowRight className="w-4 h-4 text-red-400 group-hover:text-red-600 group-hover:translate-x-1 transition-all" />
               </button>
             </div>
           </div>
         </div>
       </section>
+
+      <style>{`
+        @keyframes slideInUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        @keyframes slideInRight {
+          from {
+            opacity: 0;
+            transform: translateX(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+      `}</style>
     </div>
   );
 }
