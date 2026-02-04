@@ -4,7 +4,6 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Mail, Phone, MapPin, FileText, Receipt, Building2 } from "lucide-react";
-import { apiGet, apiPost } from "@/lib/api";
 
 interface ContactFormData {
   contactReason: string;
@@ -59,16 +58,68 @@ export default function ContactUs() {
 
   // Fetch user profile on component mount
   useEffect(() => {
+    const refreshAccessToken = async (): Promise<boolean> => {
+      try {
+        const refreshToken = localStorage.getItem('refresh_token');
+        if (!refreshToken) return false;
+
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/users/token/refresh/`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ refresh: refreshToken }),
+        });
+
+        if (!response.ok) {
+          return false;
+        }
+
+        const data = await response.json();
+        localStorage.setItem('access_token', data.access);
+        return true;
+      } catch (error) {
+        console.error('Token refresh failed:', error);
+        return false;
+      }
+    };
+
     const fetchUserProfile = async () => {
       try {
-        const profile = await apiGet<UserProfile>('/users/profile/');
-        const fullName = `${profile.first_name} ${profile.last_name}`.trim();
-        setFormData((prev) => ({
-          ...prev,
-          name: fullName,
-          email: profile.email,
-          phone: profile.customer_profile?.phone || '',
-        }));
+        let token = localStorage.getItem('access_token');
+        let response = await fetch(`${import.meta.env.VITE_API_URL}/users/profile/`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+        
+        // If token expired (401), try to refresh once
+        if (response.status === 401) {
+          const refreshed = await refreshAccessToken();
+          if (refreshed) {
+            token = localStorage.getItem('access_token');
+            response = await fetch(`${import.meta.env.VITE_API_URL}/users/profile/`, {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+              },
+            });
+          }
+        }
+
+        if (response.ok) {
+          const profile = await response.json();
+          const fullName = `${profile.first_name} ${profile.last_name}`.trim();
+          setFormData((prev) => ({
+            ...prev,
+            name: fullName,
+            email: profile.email,
+            phone: profile.customer_profile?.phone || '',
+          }));
+        }
       } catch (error) {
         // User might not be authenticated, which is fine
         // Just keep the form empty for non-authenticated users
@@ -84,8 +135,17 @@ export default function ContactUs() {
   useEffect(() => {
     const fetchContactDetails = async () => {
       try {
-        const details = await apiGet<ContactDetailsData>('/core/contact-details/');
-        setContactDetails(details);
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/core/contact-details/`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        
+        if (response.ok) {
+          const details = await response.json();
+          setContactDetails(details);
+        }
       } catch (error) {
         // Handle error silently
         console.error('Failed to fetch contact details:', error);
@@ -149,6 +209,7 @@ export default function ContactUs() {
 
   const submitContactForm = async () => {
     if (!validateForm()) {
+      setIsSubmitting(false);
       return;
     }
 
@@ -164,7 +225,14 @@ export default function ContactUs() {
     }
 
     try {
-      await apiPost('/message/', submitFormData);
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/message/`, {
+        method: 'POST',
+        body: submitFormData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to send message');
+      }
 
       toast({
         title: "Success",
@@ -173,7 +241,7 @@ export default function ContactUs() {
         duration: 5000,
       });
       setFormData({
-        contactReason: "Product Enquiries",
+        contactReason: "",
         name: "",
         email: "",
         phone: "",
