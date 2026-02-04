@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { 
   Search, ShoppingCart, Heart, User, Menu, 
-  ChevronDown, LogIn, UserPlus, Package, LogOut, Lock 
+  ChevronDown, LogIn, UserPlus, Package, LogOut, Lock, PhoneCall
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -355,6 +355,10 @@ export function Navbar() {
                 )}
               </DropdownMenuContent>
             </DropdownMenu>
+
+            <Link to="/contact-us" className="p-1.5 sm:p-2 rounded-full hover:bg-secondary transition-colors" title="Contact Us">
+              <PhoneCall className="w-4 h-4 sm:w-5 sm:h-5 text-foreground" />
+            </Link>
 
             <Button 
               variant="ghost" 

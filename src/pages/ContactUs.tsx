@@ -32,6 +32,15 @@ interface UserProfile {
   };
 }
 
+interface ContactDetailsData {
+  id: number;
+  address: string | null;
+  phone: string | null;
+  email: string | null;
+  vat_number: string | null;
+  registered_number: string | null;
+}
+
 export default function ContactUs() {
   const [formData, setFormData] = useState<ContactFormData>({
     contactReason: "",
@@ -44,6 +53,8 @@ export default function ContactUs() {
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoadingProfile, setIsLoadingProfile] = useState(true);
+  const [contactDetails, setContactDetails] = useState<ContactDetailsData | null>(null);
+  const [isLoadingDetails, setIsLoadingDetails] = useState(true);
   const { toast } = useToast();
 
   // Fetch user profile on component mount
@@ -67,6 +78,23 @@ export default function ContactUs() {
     };
 
     fetchUserProfile();
+  }, []);
+
+  // Fetch contact details from API
+  useEffect(() => {
+    const fetchContactDetails = async () => {
+      try {
+        const details = await apiGet<ContactDetailsData>('/core/contact-details/');
+        setContactDetails(details);
+      } catch (error) {
+        // Handle error silently
+        console.error('Failed to fetch contact details:', error);
+      } finally {
+        setIsLoadingDetails(false);
+      }
+    };
+
+    fetchContactDetails();
   }, []);
 
   const validateForm = (): boolean => {
@@ -328,66 +356,76 @@ export default function ContactUs() {
             </form>
           </div>
 
-          {/* Company Information */}
+          {/* Contact Details */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Company Information</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">Contact Details</h2>
             
             <div className="space-y-6">
-              <div className="flex items-start gap-4">
-                <div className="bg-gradient-to-br from-[#399746] to-[#A6CD3D] rounded-lg p-3 text-white flex-shrink-0">
-                  <MapPin className="w-6 h-6" />
+              {contactDetails?.address && (
+                <div className="flex items-start gap-4">
+                  <div className="bg-gradient-to-br from-[#399746] to-[#A6CD3D] rounded-lg p-3 text-white flex-shrink-0">
+                    <MapPin className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900 mb-2">Address</h3>
+                    <p className="text-gray-600 text-sm leading-relaxed whitespace-pre-wrap">
+                      {contactDetails.address}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900 mb-2">Address</h3>
-                  <p className="text-gray-600 text-sm leading-relaxed">
-                    123 Industrial Lane<br />
-                    London, UK<br />
-                    Postcode: XXX XXX
-                  </p>
-                </div>
-              </div>
+              )}
 
-              <div className="flex items-start gap-4">
-                <div className="bg-gradient-to-br from-[#399746] to-[#A6CD3D] rounded-lg p-3 text-white flex-shrink-0">
-                  <Phone className="w-6 h-6" />
+              {contactDetails?.phone && (
+                <div className="flex items-start gap-4">
+                  <div className="bg-gradient-to-br from-[#399746] to-[#A6CD3D] rounded-lg p-3 text-white flex-shrink-0">
+                    <Phone className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900 mb-2">Phone</h3>
+                    <p className="text-gray-600 text-sm">{contactDetails.phone}</p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900 mb-2">Phone</h3>
-                  <p className="text-gray-600 text-sm">+44 (0) 123 456 7890</p>
-                </div>
-              </div>
+              )}
 
-              <div className="flex items-start gap-4">
-                <div className="bg-gradient-to-br from-[#399746] to-[#A6CD3D] rounded-lg p-3 text-white flex-shrink-0">
-                  <Mail className="w-6 h-6" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900 mb-2">Email</h3>
-                  <p className="text-gray-600 text-sm">support@lumoelectrical.com</p>
-                </div>
-              </div>
-
-              <div className="border-t border-gray-200 pt-6">
-                <div className="flex items-start gap-4 mb-4">
+              {contactDetails?.vat_number && (
+                <div className="flex items-start gap-4">
                   <div className="bg-gradient-to-br from-[#399746] to-[#A6CD3D] rounded-lg p-3 text-white flex-shrink-0">
                     <Receipt className="w-6 h-6" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900">VAT Number</h3>
-                    <p className="text-gray-600 text-sm mt-1">GB123 456 7890</p>
+                    <h3 className="font-semibold text-gray-900 mb-2">VAT Number</h3>
+                    <p className="text-gray-600 text-sm">{contactDetails.vat_number}</p>
                   </div>
                 </div>
+              )}
 
+              {contactDetails?.registered_number && (
                 <div className="flex items-start gap-4">
                   <div className="bg-gradient-to-br from-[#399746] to-[#A6CD3D] rounded-lg p-3 text-white flex-shrink-0">
                     <Building2 className="w-6 h-6" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900">Registered Number</h3>
-                    <p className="text-gray-600 text-sm mt-1">12345678</p>
+                    <h3 className="font-semibold text-gray-900 mb-2">Registered Number</h3>
+                    <p className="text-gray-600 text-sm">{contactDetails.registered_number}</p>
                   </div>
                 </div>
-              </div>
+              )}
+
+              {contactDetails?.email && (
+                <div className="flex items-start gap-4">
+                  <div className="bg-gradient-to-br from-[#399746] to-[#A6CD3D] rounded-lg p-3 text-white flex-shrink-0">
+                    <Mail className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900 mb-2">Email</h3>
+                    <p className="text-gray-600 text-sm">{contactDetails.email}</p>
+                  </div>
+                </div>
+              )}
+
+              {!isLoadingDetails && !contactDetails && (
+                <p className="text-gray-500 text-sm">No contact details available</p>
+              )}
             </div>
           </div>
         </div>
