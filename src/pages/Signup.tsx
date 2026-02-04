@@ -85,14 +85,14 @@ export default function Signup() {
       return;
     }
 
-    if (!formData.agreeTerms) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Please agree to terms and conditions",
-      });
-      return;
-    }
+    // if (!formData.agreeTerms) {
+    //   toast({
+    //     variant: "destructive",
+    //     title: "Error",
+    //     description: "Please agree to terms and conditions",
+    //   });
+    //   return;
+    // }
 
     setIsLoading(true);
     
@@ -790,10 +790,10 @@ export default function Signup() {
               </div>
 
               {/* Divider */}
-              <div className="border-t border-gray-200"></div>
+              {/* <div className="border-t border-gray-200"></div> */}
 
               {/* Terms Checkbox */}
-              <div className="flex items-center gap-3 pt-2">
+              {/* <div className="flex items-center gap-3 pt-2">
                 <Checkbox
                   id="terms"
                   name="agreeTerms"
@@ -808,7 +808,7 @@ export default function Signup() {
                     Terms & Conditions
                   </a>
                 </label>
-              </div>
+              </div> */}
 
               {/* Submit Button */}
               <Button
@@ -831,9 +831,9 @@ export default function Signup() {
           </div>
 
           {/* Additional Info */}
-          <div className="mt-8 text-center text-sm text-gray-500 animate-in fade-in" style={{animationDelay: '0.3s'}}>
+          {/* <div className="mt-8 text-center text-sm text-gray-500 animate-in fade-in" style={{animationDelay: '0.3s'}}>
             <p>By signing up, you agree to our privacy policy and terms of service</p>
-          </div>
+          </div> */}
         </div>
       </section>
 
