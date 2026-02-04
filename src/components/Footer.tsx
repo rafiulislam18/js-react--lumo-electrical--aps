@@ -3,7 +3,17 @@ import { Facebook, Twitter, Instagram, Youtube, Mail, MapPin, Phone } from "luci
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-export function Footer() {
+interface ContactDetails {
+  address: string;
+  phone: string;
+  email: string;
+}
+
+interface FooterProps {
+  contactDetails: ContactDetails;
+}
+
+export function Footer({ contactDetails }: FooterProps) {
   return (
     <footer className="bg-gray-50 pt-16 border-t border-gray-100">
       <div className="container mx-auto px-4">
@@ -54,19 +64,19 @@ export function Footer() {
 
           {/* Newsletter */}
           <div>
-            <h4 className="font-display font-bold text-lg mb-6 text-gray-900">Contact Us</h4>
+            <h4 className="font-display font-bold text-lg mb-6 text-gray-900">Contact Info</h4>
             <ul className="space-y-4 text-sm text-gray-500 mb-6">
               <li className="flex items-start gap-3">
                 <MapPin className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                <span>123 Commerce, Cape Town, SA</span>
+                <p className="leading-relaxed whitespace-pre-wrap">{contactDetails.address}</p>
               </li>
               <li className="flex items-center gap-3">
                 <Phone className="w-5 h-5 text-primary shrink-0" />
-                <span>+27 66 666 6666</span>
+                <span>{contactDetails.phone}</span>
               </li>
               <li className="flex items-center gap-3">
                 <Mail className="w-5 h-5 text-primary shrink-0" />
-                <span>support@lumoelectrical.co.za</span>
+                <span>{contactDetails.email}</span>
               </li>
             </ul>
             

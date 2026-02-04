@@ -6,11 +6,12 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 // List of public endpoints that don't require authentication
 const PUBLIC_ENDPOINTS = [
-  '/products/',
   '/categories/',
   '/core/',
   '/home/',
+  '/layout/',
   '/message/',
+  '/products/',
 ];
 
 interface FetchOptions extends RequestInit {

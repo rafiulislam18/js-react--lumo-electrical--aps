@@ -32,6 +32,10 @@ interface CategoriesResponse {
   categories: Category[];
 }
 
+interface NavbarProps {
+  categories: Category[];
+}
+
 // Recursive category menu item component for desktop
 function CategoryMenuItem({ category }: { category: Category }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -62,6 +66,45 @@ function CategoryMenuItem({ category }: { category: Category }) {
       <div className="absolute left-full top-0 -ml-1 w-1 h-full pointer-events-none" />
       {isOpen && (
         <div className="absolute left-full top-0 bg-white border border-gray-200 rounded-lg shadow-xl p-1 min-w-max z-[999]">
+          {category.children.map((child) => (
+            <CategoryMenuItem key={child.id} category={child} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Hoverable quick category menu item component for desktop
+function QuickCategoryMenuItem({ category }: { category: Category }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  if (!category.children || category.children.length === 0) {
+    return (
+      <a 
+        href={`/${category.slug}`} 
+        className="text-sm font-medium text-gray-600 hover:text-primary transition-colors whitespace-nowrap"
+      >
+        {category.name}
+      </a>
+    );
+  }
+
+  return (
+    <div
+      className="relative"
+      onMouseEnter={() => setIsOpen(true)}
+      onMouseLeave={() => setIsOpen(false)}
+    >
+      <a 
+        href={`/${category.slug}`} 
+        className="text-sm font-medium text-gray-600 hover:text-primary transition-colors whitespace-nowrap flex items-center gap-1 py-3"
+      >
+        {category.name}
+        <ChevronDown className="w-3 h-3" />
+      </a>
+      {isOpen && (
+        <div className="absolute left-0 top-full bg-white border border-gray-200 rounded-lg shadow-xl p-1 min-w-max z-[999] mt-0">
           {category.children.map((child) => (
             <CategoryMenuItem key={child.id} category={child} />
           ))}
@@ -107,7 +150,7 @@ function MobileCategoryItem({ category, level = 0 }: { category: Category; level
   );
 }
 
-export function Navbar() {
+export function Navbar({ categories }: NavbarProps) {
   const navigate = useNavigate();
   const { isAuthenticated, user, logout } = useAuth();
   const { toast } = useToast();
@@ -122,13 +165,7 @@ export function Navbar() {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
 
-  // Fetch categories from backend
-  const { data: categoriesData } = useQuery<CategoriesResponse>({
-    queryKey: ['categories-tree'],
-    queryFn: () => apiGet<CategoriesResponse>('/categories/tree/'),
-  });
-
-  const allCategories = categoriesData?.categories || [];
+  const allCategories = categories || [];
   const firstEightCategories = allCategories.slice(0, 8);
 
   useEffect(() => {
@@ -356,7 +393,8 @@ export function Navbar() {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <Link to="/contact-us" className="p-1.5 sm:p-2 rounded-full hover:bg-secondary transition-colors" title="Contact Us">
+            {/* Contact Us - If not mobile view, show as a button */}
+            <Link to="/contact-us" className="hidden md:block p-1.5 sm:p-2 rounded-full hover:bg-secondary transition-colors" title="Contact Us">
               <PhoneCall className="w-4 h-4 sm:w-5 sm:h-5 text-foreground" />
             </Link>
 
@@ -372,36 +410,31 @@ export function Navbar() {
         </div>
 
       {/* Bottom Row: Categories Navigation */}
-      <div className="hidden md:block border-t border-gray-100 bg-white/50">
-        <div className="container mx-auto h-12 flex items-center gap-8">
+      <div className="hidden md:block border-t border-gray-100 bg-white/50 overflow-visible">
+        <div className="container mx-auto h-12 flex items-center gap-8 overflow-visible">
           <DropdownMenu modal={false} open={openDropdown === 'categories'} onOpenChange={(open) => setOpenDropdown(open ? 'categories' : null)}>
             <DropdownMenuTrigger asChild>
               <Button 
                 variant="null" 
                 className="h-full rounded-none hover:text-primary hover:bg-transparent font-medium flex items-center gap-2 transition-all"
                 onMouseEnter={() => setOpenDropdown('categories')}
+                onMouseLeave={() => setOpenDropdown(null)}
               >
                 <Menu className="w-4 h-4" />
                 All Categories
                 <ChevronDown className="w-3 h-3 ml-1" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-80 rounded-xl p-2 shadow-lg border-gray-100 overflow-visible" onOpenAutoFocus={(e: any) => e.preventDefault()} onMouseLeave={() => setOpenDropdown(null)}>
+            <DropdownMenuContent align="start" className="w-80 rounded-xl p-2 shadow-lg border-gray-100 overflow-visible" onOpenAutoFocus={(e: any) => e.preventDefault()} onMouseLeave={() => setOpenDropdown(null)} onMouseEnter={() => setOpenDropdown('categories')}>
               {allCategories.map((cat: Category) => (
                 <CategoryMenuItem key={cat.id} category={cat} />
               ))}
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <div className="flex items-center gap-6 overflow-x-auto no-scrollbar">
+          <div className="flex items-center gap-6 overflow-visible">
             {firstEightCategories.map((cat: Category) => (
-              <a 
-                key={cat.id} 
-                href={`/${cat.slug}`} 
-                className="text-sm font-medium text-gray-600 hover:text-primary transition-colors whitespace-nowrap"
-              >
-                {cat.name}
-              </a>
+              <QuickCategoryMenuItem key={cat.id} category={cat} />
             ))}
           </div>
         </div>
@@ -484,9 +517,18 @@ export function Navbar() {
         <div className="md:hidden border-t border-gray-100 bg-white animate-slide-in-down">
           <div className="container mx-auto px-4 py-4">
 
+            {/* Mobile Contact Us */}
+            <Link
+              to="/contact-us"
+              className="block px-3 py-2.5 text-sm font-medium text-gray-700 hover:text-primary transition-colors mb-4 border-b border-gray-200 pb-4"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Contact Us
+            </Link>
+
             {/* Mobile Categories */}
             <div className="space-y-1 pt-4">
-              <p className="text-xs font-bold text-gray-500 uppercase tracking-widest px-3 mb-2">Categories</p>
+              <p className="text-xs font-bold text-gray-500 uppercase tracking-widest px-3 mb-2">All Categories</p>
               {allCategories.map((cat: Category) => (
                 <MobileCategoryItem key={cat.id} category={cat} />
               ))}
