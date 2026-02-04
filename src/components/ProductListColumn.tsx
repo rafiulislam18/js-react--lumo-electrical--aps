@@ -187,6 +187,7 @@ export function ProductListColumn({ title, products, linkTo }: ProductListColumn
                   src={product.image} 
                   alt={product.name} 
                   className="w-full h-full object-cover group-hover:scale-110 transition-smooth" 
+                  loading="lazy"
                 />
                 
                 {/* Discount Badge */}

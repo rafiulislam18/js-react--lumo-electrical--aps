@@ -1,10 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { CategoryCard } from "@/components/CategoryCard";
 import { ProductListColumn } from "@/components/ProductListColumn";
-import { categories, faqs } from "@/data/dummyData";
 import { Button } from "@/components/ui/button";
-import { Loader } from "lucide-react";
+import { Loader, ArrowRight } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
@@ -32,6 +30,13 @@ interface Product {
   };
 }
 
+interface Category {
+  id: number;
+  name: string;
+  slug: string;
+  image: string | null;
+}
+
 interface FeaturedProduct {
   product: Product;
   created_at: string;
@@ -49,6 +54,7 @@ interface HomeResponse {
   featured_products: FeaturedProduct[];
   best_sellers: Product[];
   new_arrivals: Product[];
+  parent_categories: Category[];
   faqs: FAQ[];
 }
 
@@ -84,6 +90,7 @@ export default function Home() {
   const featuredProducts = homeData?.featured_products?.map(fp => transformProduct(fp.product)) || [];
   const bestSellers = homeData?.best_sellers?.map(transformProduct) || [];
   const newArrivals = homeData?.new_arrivals?.map(transformProduct) || [];
+  const parentCategories = homeData?.parent_categories || [];
   const faqsData = homeData?.faqs || [];
 
   const handleScrollToCategories = () => {
@@ -100,12 +107,13 @@ export default function Home() {
         <div className="absolute inset-0 z-0">
           {/* add fade in effect in this img below */}
           <img 
-            src="/images/home/hero-bg3.jpeg" 
+            // src="/images/home/hero-bg3.jpeg" 
+            src="https://images.pexels.com/photos/11074957/pexels-photo-11074957.jpeg" 
             alt="Hero Background"
             className="w-full h-full object-cover animate-in fade-in duration-1000"
             loading="lazy"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/50 to-black/50 animate-in fade-in duration-1000" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-black/40 to-black/40 animate-in fade-in duration-1000" />
         </div>
 
         {/* Content */}
@@ -127,11 +135,11 @@ export default function Home() {
               <Button size="lg" className="bg-primary-gradient border-0 hover:opacity-90 transition-smooth h-10 sm:h-12 px-6 sm:px-8 rounded-full text-sm sm:text-base font-semibold shadow-lg shadow-green-900/20 w-full sm:w-auto" onClick={handleScrollToCategories}>
                 Shop Now
               </Button>
-              <a href="https://maps.app.goo.gl/6bGNaMY9HfjoUy3M7" target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
+              {/* <a href="https://maps.app.goo.gl/6bGNaMY9HfjoUy3M7" target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
                 <Button size="lg" variant="outline" className="bg-white/10 backdrop-blur-sm border-white/30 text-white hover:bg-white hover:text-gray-900 h-10 sm:h-12 px-6 sm:px-8 rounded-full text-sm sm:text-base font-semibold transition-smooth w-full">
                   Our Store
                 </Button>
-              </a>
+              </a> */}
             </div>
           </div>
         </div>
@@ -170,9 +178,9 @@ export default function Home() {
         <SectionHeader title="Explore by Category" subtitle="Browse our diverse collection of high-quality products" center />
         
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 lg:gap-6 mt-12 animate-stagger">
-          {categories.map((cat: any) => (
+          {parentCategories.map((cat: Category) => (
             <div key={cat.id} className="animate-slide-in-up">
-              <CategoryCard category={cat} />
+              <CategoryCardWithImage category={cat} />
             </div>
           ))}
         </div>
@@ -240,5 +248,45 @@ function SectionHeader({ title, subtitle, center = false }: { title: string, sub
       </h2>
       <p className="text-gray-500 text-lg max-w-2xl">{subtitle}</p>
     </div>
+  );
+}
+
+function CategoryCardWithImage({ category }: { category: Category }) {
+  const categoryImage = category.image ? getImageUrl(category.image) : null;
+  
+  return (
+    <a 
+      href={`/${category.slug}`}
+      className="group relative h-32 md:h-40 lg:h-48 rounded-xl overflow-hidden bg-gradient-to-br from-gray-100 to-gray-50 shadow-sm hover:shadow-lg transition-all duration-300 flex items-end"
+    >
+      {/* Background Image */}
+      {categoryImage && (
+        <img
+          src={categoryImage}
+          alt={category.name}
+          className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+          loading="lazy"
+        />
+      )}
+      
+      {/* Overlay gradient */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent transition-all duration-300" />
+      
+      {/* Content */}
+      <div className="relative z-10 w-full p-4 flex items-center justify-center grid grid-rows">
+        <h3 className="text-white text-sm md:text-base lg:text-lg font-semibold text-center group-hover:text-primary-light transition-colors duration-300 line-clamp-2">
+          {category.name}
+        </h3>
+        {/* Shop now text */}
+        <p className="text-primary text-center text-xs md:text-sm mt-1">
+          Shop Now
+          {/* a right arrow that moves a bit right upon hover with animation */}
+          <ArrowRight className="inline-block ml-1 group-hover:translate-x-1 transition-transform duration-300 w-3 h-3" />
+        </p>
+      </div>
+      
+      {/* Hover indicator */}
+      <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-gradient transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
+    </a>
   );
 }
