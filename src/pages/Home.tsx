@@ -107,8 +107,7 @@ export default function Home() {
         <div className="absolute inset-0 z-0">
           {/* add fade in effect in this img below */}
           <img 
-            // src="/images/home/hero-bg3.jpeg" 
-            src="https://images.pexels.com/photos/11074957/pexels-photo-11074957.jpeg" 
+            src="/images/home/new-hero-bg.jpeg"
             alt="Hero Background"
             className="w-full h-full object-cover animate-in fade-in duration-1000"
             loading="lazy"
@@ -135,11 +134,11 @@ export default function Home() {
               <Button size="lg" className="bg-primary-gradient border-0 hover:opacity-90 transition-smooth h-10 sm:h-12 px-6 sm:px-8 rounded-full text-sm sm:text-base font-semibold shadow-lg shadow-green-900/20 w-full sm:w-auto" onClick={handleScrollToCategories}>
                 Shop Now
               </Button>
-              {/* <a href="https://maps.app.goo.gl/6bGNaMY9HfjoUy3M7" target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
+              <a href="/contact-us" target="_blank" className="w-full sm:w-auto">
                 <Button size="lg" variant="outline" className="bg-white/10 backdrop-blur-sm border-white/30 text-white hover:bg-white hover:text-gray-900 h-10 sm:h-12 px-6 sm:px-8 rounded-full text-sm sm:text-base font-semibold transition-smooth w-full">
-                  Our Store
+                  Contact Us
                 </Button>
-              </a> */}
+              </a>
             </div>
           </div>
         </div>
