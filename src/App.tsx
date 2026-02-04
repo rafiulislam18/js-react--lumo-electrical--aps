@@ -21,6 +21,7 @@ import Signup from "@/pages/Signup";
 import ForgotPassword from "@/pages/ForgotPassword";
 import ChangePassword from "@/pages/ChangePassword";
 import Profile from "@/pages/Profile";
+import ContactUs from "@/pages/ContactUs";
 import NotFound from "@/pages/not-found";
 
 // Payment pages
@@ -45,7 +46,7 @@ function App() {
           <TooltipProvider>
             <Toaster />
             <ScrollToTop />
-          <Routes>
+            <Routes>
             {/* Layout Routes */}
             <Route element={<Layout />}>
               <Route index path="/" element={<Home />} />
@@ -57,6 +58,7 @@ function App() {
               <Route path="/order/:orderId" element={<OrderDetail />} />
               <Route path="/wishlist" element={<Wishlist />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/contact-us" element={<ContactUs />} />
 
               {/* Auth Routes */}
               <Route path="/login" element={<Login />} />

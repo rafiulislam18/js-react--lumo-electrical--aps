@@ -9,6 +9,7 @@ const PUBLIC_ENDPOINTS = [
   '/products/',
   '/categories/',
   '/home/',
+  '/message/',
 ];
 
 interface FetchOptions extends RequestInit {
