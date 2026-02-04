@@ -297,6 +297,11 @@ export function Navbar({ categories }: NavbarProps) {
 
           {/* Action Icons */}
           <div className="flex items-center gap-1 sm:gap-3">
+            {/* Contact Us - If not mobile view, show as a button */}
+            <Link to="/contact-us" className="hidden md:block p-1.5 sm:p-2 rounded-full hover:bg-secondary transition-colors" title="Contact Us">
+              <PhoneCall className="w-4 h-4 sm:w-5 sm:h-5 text-foreground" />
+            </Link>
+
             {/* Mobile Search Icon */}
             <button 
               onClick={() => setIsSearchModalOpen(true)}
@@ -392,11 +397,6 @@ export function Navbar({ categories }: NavbarProps) {
                 )}
               </DropdownMenuContent>
             </DropdownMenu>
-
-            {/* Contact Us - If not mobile view, show as a button */}
-            <Link to="/contact-us" className="hidden md:block p-1.5 sm:p-2 rounded-full hover:bg-secondary transition-colors" title="Contact Us">
-              <PhoneCall className="w-4 h-4 sm:w-5 sm:h-5 text-foreground" />
-            </Link>
 
             <Button 
               variant="ghost" 
