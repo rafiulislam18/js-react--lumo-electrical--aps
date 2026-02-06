@@ -54,7 +54,7 @@ interface HomeResponse {
   featured_products: FeaturedProduct[];
   best_sellers: Product[];
   new_arrivals: Product[];
-  parent_categories: Category[];
+  featured_categories: Category[];
   faqs: FAQ[];
 }
 
@@ -90,7 +90,7 @@ export default function Home() {
   const featuredProducts = homeData?.featured_products?.map(fp => transformProduct(fp.product)) || [];
   const bestSellers = homeData?.best_sellers?.map(transformProduct) || [];
   const newArrivals = homeData?.new_arrivals?.map(transformProduct) || [];
-  const parentCategories = homeData?.parent_categories || [];
+  const featuredCategories = homeData?.featured_categories || [];
   const faqsData = homeData?.faqs || [];
 
   const handleScrollToCategories = () => {
@@ -177,7 +177,7 @@ export default function Home() {
         <SectionHeader title="Explore by Category" subtitle="Browse our diverse collection of high-quality products" center />
         
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 lg:gap-6 mt-12 animate-stagger">
-          {parentCategories.map((cat: Category) => (
+          {featuredCategories.map((cat: Category) => (
             <div key={cat.id} className="animate-slide-in-up">
               <CategoryCardWithImage category={cat} />
             </div>
