@@ -527,7 +527,7 @@ export function Navbar({ categories }: NavbarProps) {
             </Link>
 
             {/* Mobile Categories */}
-            <div className="space-y-1 pt-4">
+            <div className="space-y-1 pt-4 max-h-[calc(100vh-200px)] overflow-y-auto">
               <p className="text-xs font-bold text-gray-500 uppercase tracking-widest px-3 mb-2">All Categories</p>
               {allCategories.map((cat: Category) => (
                 <MobileCategoryItem key={cat.id} category={cat} />
