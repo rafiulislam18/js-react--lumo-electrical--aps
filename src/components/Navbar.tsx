@@ -446,7 +446,11 @@ export function Navbar({ categories }: NavbarProps) {
           <div className="bg-white border-b border-gray-100 pt-4 pb-2 px-4">
             <div className="flex items-center gap-2">
               <button
-                onClick={() => setIsSearchModalOpen(false)}
+                onClick={() => {
+                  setIsSearchModalOpen(false);
+                  setSearchQuery("");
+                  setShowSearchResults(false);
+                }}
                 className="p-2 rounded-full hover:bg-gray-100 transition-colors"
               >
                 <Search className="w-5 h-5 text-gray-400" />
@@ -465,7 +469,11 @@ export function Navbar({ categories }: NavbarProps) {
                 }}
               />
               <button
-                onClick={() => setIsSearchModalOpen(false)}
+                onClick={() => {
+                  setIsSearchModalOpen(false);
+                  setSearchQuery("");
+                  setShowSearchResults(false);
+                }}
                 className="px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
               >
                 Cancel
@@ -481,25 +489,33 @@ export function Navbar({ categories }: NavbarProps) {
                     onClick={() => {
                       handleProductClick(product.id);
                       setIsSearchModalOpen(false);
+                      setSearchQuery("");
+                      setShowSearchResults(false);
                     }}
                     className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 border-b border-gray-100 last:border-0 text-left transition-colors"
                   >
                     <img 
-                      src={product.image} 
+                      src={product.image ? (product.image.startsWith('http') ? product.image : `${import.meta.env.VITE_BASE_URL}${product.image}`) : '/placeholder.png'}
                       alt={product.name}
                       className="w-10 h-10 object-cover rounded"
                     />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-gray-900 truncate">{product.name}</p>
-                      <p className="text-xs text-gray-500">{product.category}</p>
+                      <p className="text-xs text-gray-500">${product.price}</p>
                     </div>
-                    <p className="text-sm font-semibold text-primary">${product.price}</p>
+                    {product.badge && (
+                      <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-1 rounded whitespace-nowrap">
+                        {product.badge}
+                      </span>
+                    )}
                   </button>
                 ))}
                 <button
                   onClick={() => {
                     handleSearchSubmit();
                     setIsSearchModalOpen(false);
+                    setSearchQuery("");
+                    setShowSearchResults(false);
                   }}
                   className="w-full py-2 text-center text-sm text-primary hover:bg-primary/5 font-medium border-t border-gray-100"
                 >
@@ -508,7 +524,14 @@ export function Navbar({ categories }: NavbarProps) {
               </div>
             )}
           </div>
-          <div className="flex-1" onClick={() => setIsSearchModalOpen(false)} />
+          <div 
+            className="flex-1" 
+            onClick={() => {
+              setIsSearchModalOpen(false);
+              setSearchQuery("");
+              setShowSearchResults(false);
+            }} 
+          />
         </div>
       )}
 
