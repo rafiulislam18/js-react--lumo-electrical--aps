@@ -1,11 +1,10 @@
 import { ShoppingCart, Heart, Star, Loader } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { type Product } from "@/data/dummyData";
 import { useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/context/AuthContext";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { apiPost, apiDelete } from "@/lib/api";
 
 interface ProductCardProps {
@@ -152,111 +151,345 @@ export function ProductCard({ product }: ProductCardProps) {
   };
 
   return (
-    <div className="group relative flex flex-col p-2 sm:p-3 bg-white rounded-lg border border-transparent hover:border-green-200 hover:shadow-lg hover:shadow-green-900/5 transition-smooth">
-      {/* Top Left Badge */}
-      {product.badge && (
-        <div className={`absolute top-2 left-2 z-20 px-2 py-1 text-xs font-bold text-white rounded-md shadow-md backdrop-blur-sm
-          ${product.badge === 'New' ? 'bg-blue-500' : ''}
-          ${product.badge === 'Sale' ? 'bg-red-500' : ''}
-          ${product.badge === 'Hot' ? 'bg-orange-500' : ''}
-        `}>
-          {product.badge}
-        </div>
-      )}
+    <>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap');
 
-      {/* Discount Badge - Top Right */}
-      {discountPercent !== null && (
-        <div className="absolute top-2 right-2 z-20 bg-red-500 text-white px-2 py-1 rounded-md text-xs font-bold shadow-md">
-          -{discountPercent}%
-        </div>
-      )}
+        .pc { 
+          font-family: 'Outfit', sans-serif; 
+          position: relative; 
+          border-radius: 10px; 
+          overflow: hidden; 
+          background: rgba(0,0,0,.03); 
+          border: 1px solid rgba(0,0,0,.08); 
+          display: flex; 
+          flex-direction: column; 
+          height: 100%; 
+          transition: all .3s cubic-bezier(.25,.46,.45,.94);
+        }
+        .dark .pc {
+          background: rgba(255,255,255,.04);
+          border-color: rgba(255,255,255,.06);
+        }
+        .pc:hover { 
+          background: rgba(0,0,0,.05); 
+          border-color: rgba(168,214,62,.25); 
+          box-shadow: 0 8px 32px rgba(168,214,62,.12);
+        }
+        .dark .pc:hover {
+          background: rgba(255,255,255,.06);
+          border-color: rgba(168,214,62,.2);
+        }
 
-      {/* Wishlist Button - Hidden until hover */}
-      <button 
-        onClick={handleWishlistToggle}
-        disabled={addToWishlistMutation.isPending || removeFromWishlistMutation.isPending}
-        className="absolute top-12 right-2 z-10 p-2 bg-white rounded-full shadow-md opacity-0 group-hover:opacity-100 translate-x-2 group-hover:translate-x-0 transition-smooth border border-gray-100 hover:border-red-200 disabled:opacity-50" 
-        title={isWishlisted ? "Remove from Wishlist" : "Add to Wishlist"}
-      >
-        {addToWishlistMutation.isPending || removeFromWishlistMutation.isPending ? (
-          <Loader className="w-4 h-4 text-gray-400 animate-spin" />
-        ) : (
-          <Heart className={`w-4 h-4 ${isWishlisted ? 'fill-red-500 text-red-500' : 'text-gray-400 hover:text-red-500'}`} />
-        )}
-      </button>
+        /* Image Container */
+        .pc-img-wrap { 
+          position: relative; 
+          width: 100%; 
+          aspect-ratio: 1; 
+          overflow: hidden; 
+          background: rgba(0,0,0,.05); 
+          border-bottom: 1px solid rgba(0,0,0,.08);
+        }
+        .dark .pc-img-wrap {
+          background: rgba(255,255,255,.02);
+          border-bottom-color: rgba(255,255,255,.05);
+        }
+        .pc-img { 
+          width: 100%; 
+          height: 100%; 
+          object-fit: cover; 
+          object-position: center;
+          transition: transform .4s cubic-bezier(.25,.46,.45,.94);
+        }
+        .pc:hover .pc-img { transform: scale(1.08); }
 
-      {/* Image Container */}
-      <div className="relative w-full aspect-square mb-2 overflow-hidden rounded-lg bg-gray-50 border border-gray-100 cursor-pointer" onClick={handleProductClick}>
-        <img 
-          src={product.image} 
-          alt={product.name} 
-          className="w-full h-full object-cover object-center group-hover:scale-110 transition-smooth ease-out"
-        />
-      </div>
+        /* Badges */
+        .pc-badge { 
+          position: absolute; 
+          top: 8px; 
+          left: 8px; 
+          background: rgba(58,170,73,.9); 
+          backdrop-filter: blur(8px);
+          color: #f0f2ed; 
+          font-size: .65rem; 
+          font-weight: 800; 
+          letter-spacing: .05em;
+          padding: 3px 6px; 
+          border-radius: 4px; 
+          text-transform: uppercase;
+          z-index: 10;
+        }
+        .pc-badge.hot { background: rgba(239,68,68,.9); }
+        .pc-badge.new { background: rgba(59,130,246,.9); }
 
-      {/* Content */}
-      <div className="w-full flex flex-col gap-1">
-        <div className="text-xs text-gray-400 font-bold uppercase tracking-widest line-clamp-1">{product.category}</div>
-        <h3 className="font-semibold text-gray-900 line-clamp-2 min-h-[2rem] group-hover:text-primary transition-smooth text-xs leading-tight cursor-pointer" onClick={handleProductClick}>
-          {product.name}
-        </h3>
-        
-        {/* Rating */}
-        <div className="flex items-center gap-1">
-          <div className="flex text-yellow-400">
-            {[...Array(5)].map((_, i) => (
-              <Star 
-                key={i} 
-                className={`w-3 h-3 ${i < Math.floor(product.rating) ? 'fill-current' : 'text-gray-200'}`} 
-              />
-            ))}
-          </div>
-          <span className="text-xs text-gray-500 font-medium">({product.reviews ?? 0})</span>
-        </div>
+        .pc-discount { 
+          position: absolute; 
+          top: 8px; 
+          right: 8px; 
+          background: rgba(239,68,68,.9); 
+          backdrop-filter: blur(8px);
+          color: #f0f2ed; 
+          font-size: .65rem; 
+          font-weight: 800; 
+          letter-spacing: .05em;
+          padding: 3px 6px; 
+          border-radius: 4px;
+          z-index: 10;
+        }
 
-        {/* Price Section */}
-        <div className="flex flex-col gap-0.5 py-1.5 border-t border-b border-gray-100">
-          <div className="flex items-baseline gap-1.5">
-            <span className="font-bold text-sm text-primary">${product.price.toFixed(2)}</span>
-            {product.oldPrice && (
-              <span className="text-xs text-gray-400 line-through">${product.oldPrice.toFixed(2)}</span>
-            )}
-          </div>
-          {discountPercent !== null && (
-            <span className="text-xs text-green-600 font-semibold">
-              Save ${(product.oldPrice! - product.price).toFixed(2)}
+        /* Wishlist Button */
+        .pc-wish-btn { 
+          position: absolute; 
+          top: 40px; 
+          right: 8px; 
+          width: 32px; 
+          height: 32px; 
+          border-radius: 6px; 
+          background: rgba(0,0,0,.92); 
+          border: 1px solid rgba(0,0,0,.2); 
+          display: grid; 
+          place-items: center; 
+          cursor: pointer; 
+          opacity: 0; 
+          transform: translateX(8px);
+          transition: all .2s;
+          z-index: 20;
+        }
+        .dark .pc-wish-btn {
+          background: rgba(255,255,255,.95);
+          border-color: rgba(255,255,255,.2);
+        }
+        .pc:hover .pc-wish-btn { 
+          opacity: 1; 
+          transform: translateX(0);
+        }
+        .pc-wish-btn:hover { background: rgba(239,68,68,.1); border-color: rgba(239,68,68,.3); }
+        .pc-wish-btn:disabled { opacity: .5; cursor: not-allowed; }
+        .pc-wish-btn svg { color: rgba(0,0,0,.5); transition: all .2s; }
+        .dark .pc-wish-btn svg { color: rgba(239,68,68,.5); }
+        .pc-wish-btn.wishlisted svg { color: #f87171; fill: #f87171; }
+
+        /* Content */
+        .pc-content { 
+          flex: 1; 
+          padding: 1rem; 
+          display: flex; 
+          flex-direction: column; 
+          gap: .5rem;
+        }
+
+        .pc-cat { 
+          font-size: .65rem; 
+          font-weight: 700; 
+          letter-spacing: .1em; 
+          text-transform: uppercase; 
+          color: rgba(0,0,0,.55);
+        }
+        .dark .pc-cat { color: rgba(168,214,62,.7); }
+
+        .pc-name { 
+          font-size: .85rem; 
+          font-weight: 500; 
+          color: rgba(0,0,0,.8); 
+          line-height: 1.35; 
+          display: -webkit-box; 
+          -webkit-line-clamp: 2; 
+          -webkit-box-orient: vertical; 
+          overflow: hidden; 
+          cursor: pointer;
+          transition: color .2s;
+        }
+        .dark .pc-name { color: rgba(240,242,237,.85); }
+        .pc:hover .pc-name { color: #a8d63e; }
+
+        /* Rating */
+        .pc-rating { 
+          display: flex; 
+          align-items: center; 
+          gap: .35rem; 
+          font-size: .75rem;
+        }
+        .pc-stars { display: flex; gap: 2px; }
+        .pc-stars svg { width: 12px; height: 12px; }
+        .pc-rating-text { color: rgba(0,0,0,.5); font-weight: 500; }
+        .dark .pc-rating-text { color: rgba(240,242,237,.5); }
+
+        /* Price */
+        .pc-price-section { 
+          padding: .75rem 0; 
+          border-top: 1px solid rgba(0,0,0,.08); 
+          border-bottom: 1px solid rgba(0,0,0,.08);
+        }
+        .dark .pc-price-section {
+          border-top-color: rgba(255,255,255,.05);
+          border-bottom-color: rgba(255,255,255,.05);
+        }
+        .pc-prices { display: flex; align-items: baseline; gap: .5rem; margin-bottom: .3rem; }
+        .pc-price-current { 
+          font-size: .95rem; 
+          font-weight: 800; 
+          color: #a8d63e;
+        }
+        .pc-price-old { 
+          font-size: .75rem; 
+          color: rgba(0,0,0,.32); 
+          text-decoration: line-through;
+        }
+        .dark .pc-price-old { color: rgba(240,242,237,.3); }
+        .pc-save { 
+          font-size: .7rem; 
+          color: rgba(168,214,62,.8); 
+          font-weight: 600;
+        }
+
+        /* Buttons */
+        .pc-buttons { 
+          display: flex; 
+          gap: .5rem; 
+          padding-top: .75rem;
+        }
+        .pc-btn { 
+          flex: 1; 
+          padding: .5rem; 
+          border-radius: 6px; 
+          border: 1px solid rgba(0,0,0,.12); 
+          background: rgba(0,0,0,.06); 
+          color: rgba(0,0,0,.7); 
+          font-size: .75rem; 
+          font-weight: 600; 
+          cursor: pointer; 
+          transition: all .2s;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: .3rem;
+        }
+        .dark .pc-btn {
+          border-color: rgba(168,214,62,.2);
+          background: rgba(168,214,62,.08);
+          color: #a8d63e;
+        }
+        .pc-btn:hover:not(:disabled) { 
+          background: rgba(0,0,0,.1); 
+          box-shadow: 0 0 12px rgba(0,0,0,.1);
+        }
+        .dark .pc-btn:hover:not(:disabled) {
+          background: rgba(168,214,62,.15);
+          box-shadow: 0 0 12px rgba(168,214,62,.2);
+        }
+        .pc-btn.cart { 
+          background: linear-gradient(135deg, #3aaa49, #a8d63e); 
+          border-color: rgba(168,214,62,.5); 
+          color: #0a0c0a;
+        }
+        .pc-btn.cart:hover:not(:disabled) { 
+          box-shadow: 0 0 16px rgba(168,214,62,.4);
+        }
+        .pc-btn.wishlisted { 
+          background: rgba(239,68,68,.12); 
+          border-color: rgba(239,68,68,.3); 
+          color: #f87171;
+        }
+        .pc-btn:disabled { opacity: .5; cursor: not-allowed; }
+      `}</style>
+
+      <div className="pc">
+        {/* Image */}
+        <div className="pc-img-wrap" onClick={handleProductClick}>
+          <img src={product.image} alt={product.name} className="pc-img" loading="lazy" />
+          
+          {product.badge && (
+            <span className={`pc-badge ${product.badge.toLowerCase()}`}>
+              {product.badge}
             </span>
           )}
-        </div>
-
-        {/* Action Buttons */}
-        <div className="flex gap-1.5 pt-1.5">
-          <Button 
-            size="sm"
-            variant="outline"
-            className={`flex-1 rounded-lg transition-smooth text-xs font-medium h-8 ${isWishlisted ? 'border-red-300 bg-red-50 text-red-500' : 'border-gray-200 hover:border-red-300 hover:bg-red-50 hover:text-red-500'}`}
-            onClick={handleWishlistToggle}
+          
+          {discountPercent !== null && (
+            <span className="pc-discount">-{discountPercent}%</span>
+          )}
+          
+          <button
+            className={`pc-wish-btn ${isWishlisted ? 'wishlisted' : ''}`}
+            onClick={(e) => { e.stopPropagation(); handleWishlistToggle(); }}
             disabled={addToWishlistMutation.isPending || removeFromWishlistMutation.isPending}
             title={isWishlisted ? "Remove from Wishlist" : "Add to Wishlist"}
           >
             {addToWishlistMutation.isPending || removeFromWishlistMutation.isPending ? (
-              <Loader className="w-3 h-3 animate-spin" />
+              <Loader size={14} style={{ animation: 'spin 1s linear infinite' }} />
             ) : (
-              <Heart className={`w-3 h-3 ${isWishlisted ? 'fill-current' : ''}`} />
+              <Heart size={14} />
             )}
-          </Button>
-          <Button 
-            size="sm"
-            className="flex-1 rounded-lg bg-primary-gradient shadow-lg shadow-green-600/20 hover:shadow-green-600/40 transition-smooth font-medium text-white h-8 text-xs disabled:opacity-50 disabled:cursor-not-allowed"
-            onClick={handleAddToCart}
-            disabled={isAdding}
-            title="Add to Cart"
-          >
-            <ShoppingCart className="w-3 h-3" />
-            <span>{isAdding ? 'Adding...' : 'Add'}</span>
-          </Button>
+          </button>
+        </div>
+
+        {/* Content */}
+        <div className="pc-content">
+          <div className="pc-cat">{product.category}</div>
+          
+          <h3 className="pc-name" onClick={handleProductClick}>
+            {product.name}
+          </h3>
+          
+          {/* Rating */}
+          <div className="pc-rating">
+            <div className="pc-stars">
+              {[...Array(5)].map((_, i) => (
+                <Star key={i} size={12} style={{ 
+                  fill: i < Math.floor(product.rating) ? '#fbbf24' : 'none',
+                  color: i < Math.floor(product.rating) ? '#fbbf24' : 'rgba(240,242,237,.2)',
+                  strokeWidth: 1.5
+                }} />
+              ))}
+            </div>
+            <span className="pc-rating-text">({product.reviews ?? 0})</span>
+          </div>
+
+          {/* Price Section */}
+          <div className="pc-price-section">
+            <div className="pc-prices">
+              <span className="pc-price-current">R {product.price.toFixed(2)}</span>
+              {product.oldPrice && (
+                <span className="pc-price-old">R {product.oldPrice.toFixed(2)}</span>
+              )}
+            </div>
+            {discountPercent !== null && (
+              <div className="pc-save">
+                Save R {(product.oldPrice! - product.price).toFixed(2)}
+              </div>
+            )}
+          </div>
+
+          {/* Action Buttons */}
+          <div className="pc-buttons">
+            <button 
+              className={`pc-btn ${isWishlisted ? 'wishlisted' : ''}`}
+              onClick={handleWishlistToggle}
+              disabled={addToWishlistMutation.isPending || removeFromWishlistMutation.isPending}
+              title={isWishlisted ? "Remove from Wishlist" : "Add to Wishlist"}
+            >
+              {addToWishlistMutation.isPending || removeFromWishlistMutation.isPending ? (
+                <Loader size={12} style={{ animation: 'spin 1s linear infinite' }} />
+              ) : (
+                <Heart size={12} />
+              )}
+            </button>
+            <button 
+              className="pc-btn cart"
+              onClick={handleAddToCart}
+              disabled={isAdding}
+            >
+              {isAdding ? (
+                <Loader size={12} style={{ animation: 'spin 1s linear infinite' }} />
+              ) : (
+                <>
+                  <ShoppingCart size={12} />
+                  <span>Add</span>
+                </>
+              )}
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

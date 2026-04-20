@@ -1,7 +1,5 @@
 import { Link } from "react-router-dom";
-import { Facebook, Twitter, Instagram, Youtube, Mail, MapPin, Phone } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Facebook, Instagram, Youtube, Mail, MapPin, Phone, ArrowRight, ClipboardList } from "lucide-react";
 
 interface ContactDetails {
   address: string;
@@ -14,100 +12,169 @@ interface FooterProps {
 }
 
 export function Footer({ contactDetails }: FooterProps) {
+  const year = new Date().getFullYear();
+
   return (
-    <footer className="bg-gray-50 pt-16 border-t border-gray-100">
-      <div className="container mx-auto px-4">
-        {/* Main Footer Content */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
-          
-          {/* Brand Column */}
-          <div className="space-y-6">
-            <Link to="/" className="inline-block">
-              <div className="flex items-center gap-2 cursor-pointer">
-                <img src="/images/logo.png" alt="logo" className="" />
+    <footer className="font-outfit bg-[#060806] text-[#f0f2ed]/60 border-t border-white/[0.06]">
+
+      {/* CTA BANNER */}
+      <div className="relative overflow-hidden bg-[#0d1a0f] px-8 py-16">
+        <div className="pointer-events-none absolute -top-24 -left-24 w-[480px] h-[480px] rounded-full bg-[#3aaa49]/20 blur-[96px]" />
+        <div className="pointer-events-none absolute -bottom-20 right-0 w-[380px] h-[380px] rounded-full bg-[#a8d63e]/15 blur-[80px]" />
+        <div
+          className="pointer-events-none absolute inset-0 opacity-[0.04]"
+          style={{ backgroundImage: 'linear-gradient(rgba(168,214,62,1) 1px, transparent 1px), linear-gradient(90deg, rgba(168,214,62,1) 1px, transparent 1px)', backgroundSize: '48px 48px' }}
+        />
+        <div className="relative max-w-[1280px] mx-auto flex items-center justify-between gap-8">
+          <div className="flex items-center gap-6">
+            <div className="flex-shrink-0 w-16 h-16 rounded-xl bg-gradient-to-br from-[#3aaa49] to-[#a8d63e] grid place-items-center shadow-[0_0_32px_rgba(168,214,62,0.35)]">
+              <ClipboardList size={28} className="text-[#0a0c0a]" />
+            </div>
+            <div>
+              <div className="text-[0.65rem] font-bold tracking-[0.2em] uppercase text-[#a8d63e]/70 mb-1">
+                Trade &amp; Contractors
               </div>
+              <div className="font-bebas text-[2rem] leading-none text-white mb-[0.35rem]">
+                Need A Quote For Trade Account?
+              </div>
+              <div className="text-[0.85rem] text-white/55 font-light">
+                Get exclusive pricing for contractors and electricians.
+              </div>
+            </div>
+          </div>
+          <a
+            href="/contact-us"
+            className="flex-shrink-0 inline-flex items-center gap-[0.6rem] font-outfit font-bold text-[0.82rem] tracking-[0.1em] uppercase px-7 py-[0.9rem] rounded-lg border border-[#a8d63e]/30 cursor-pointer bg-gradient-to-r from-[#3aaa49] to-[#a8d63e] text-[#0a0c0a] no-underline shadow-[0_0_32px_rgba(168,214,62,0.25)] transition-all duration-200 hover:shadow-[0_0_48px_rgba(168,214,62,0.45)] hover:-translate-y-0.5 whitespace-nowrap"
+          >
+            Get in Touch <ArrowRight size={15} />
+          </a>
+        </div>
+      </div>
+
+      {/* MAIN GRID */}
+      <div className="max-w-[1280px] mx-auto px-8 pt-20 pb-16">
+        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-10 lg:grid-cols-[1.6fr_1fr_1fr_1.4fr] lg:gap-16">
+
+          {/* Brand */}
+          <div>
+            <Link to="/">
+              <img src="/images/logo.png" alt="Lumo Electrical" className="h-[38px] mb-5 block" />
             </Link>
-            <p className="text-gray-500 leading-relaxed text-sm">
-              Premium electrical components, tools, and solutions for professionals and DIY enthusiasts. Everything you need for reliable installations and repairs inside Cape Town, SA.
+            <p className="text-[0.88rem] leading-[1.8] font-light max-w-[280px] mb-7 text-[#f0f2ed]/60">
+              Premium electrical components, tools and solutions trusted by professionals and DIY enthusiasts across Cape Town, South Africa.
             </p>
-            {/* <div className="flex items-center gap-4">
-              <SocialLink icon={Facebook} />
-              <SocialLink icon={Twitter} />
-              <SocialLink icon={Instagram} />
-              <SocialLink icon={Youtube} />
-            </div> */}
+            <div className="flex gap-[0.6rem]">
+              {[
+                { icon: <Facebook size={15} />, href: '#' },
+                { icon: <Instagram size={15} />, href: '#' },
+                { icon: <Youtube size={15} />, href: '#' },
+              ].map((s, i) => (
+                <a
+                  key={i}
+                  href={s.href}
+                  className="w-9 h-9 rounded-md bg-white/[0.05] border border-white/[0.08] grid place-items-center text-[#f0f2ed]/50 no-underline transition-all duration-200 hover:bg-[#a8d63e]/10 hover:border-[#a8d63e]/30 hover:text-[#a8d63e]"
+                >
+                  {s.icon}
+                </a>
+              ))}
+            </div>
           </div>
 
           {/* Quick Links */}
           <div>
-            <h4 className="font-display font-bold text-lg mb-6 text-gray-900">Quick Links</h4>
-            <ul className="space-y-4 text-sm text-gray-500">
-              <li><a href="/" className="hover:text-primary transition-colors">Home</a></li>
-              <li><a href="/products" className="hover:text-primary transition-colors">Featured Products</a></li>
-              <li><a href="/products?q=best-sellers" className="hover:text-primary transition-colors">Best Sellers</a></li>
-              <li><a href="/products?q=new-arrivals" className="hover:text-primary transition-colors">New Arrivals</a></li>
-              <li><a href="/contact-us" className="hover:text-primary transition-colors">Contact Us</a></li>
-              {/* <li><a href="#" className="hover:text-primary transition-colors">Privacy Policy</a></li> */}
+            <div className="font-bebas text-[1.1rem] tracking-[0.08em] text-[#f0f2ed] mb-5">Quick Links</div>
+            <ul className="list-none p-0 m-0 flex flex-col gap-[0.65rem]">
+              {[
+                { label: 'Home',         href: '/' },
+                { label: 'All Products', href: '/products' },
+                { label: 'Best Sellers', href: '/products?q=best-sellers' },
+                { label: 'New Arrivals', href: '/products?q=new-arrivals' },
+                { label: 'Contact Us',   href: '/contact-us' },
+              ].map(l => (
+                <li key={l.href}>
+                  <a
+                    href={l.href}
+                    className="group text-[0.85rem] text-[#f0f2ed]/45 no-underline font-normal transition-colors duration-200 hover:text-[#a8d63e] inline-flex items-center gap-[0.35rem]"
+                  >
+                    <ArrowRight size={11} className="opacity-0 -translate-x-1 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0" />
+                    {l.label}
+                  </a>
+                </li>
+              ))}
             </ul>
           </div>
 
-          {/* Account & Orders */}
+          {/* Account */}
           <div>
-            <h4 className="font-display font-bold text-lg mb-6 text-gray-900">Account & Orders</h4>
-            <ul className="space-y-4 text-sm text-gray-500">
-              <li><a href="/profile" className="hover:text-primary transition-colors">My Profile</a></li>
-              <li><a href="/orders" className="hover:text-primary transition-colors">Order History</a></li>
-              <li><a href="/wishlist" className="hover:text-primary transition-colors">Wishlist</a></li>
-              <li><a href="/#faq" className="hover:text-primary transition-colors">FAQ</a></li>
+            <div className="font-bebas text-[1.1rem] tracking-[0.08em] text-[#f0f2ed] mb-5">My Account</div>
+            <ul className="list-none p-0 m-0 flex flex-col gap-[0.65rem]">
+              {[
+                { label: 'My Profile',      href: '/profile' },
+                { label: 'Order History',   href: '/orders' },
+                { label: 'Wishlist',        href: '/wishlist' },
+                { label: 'FAQ',             href: '/#faq' },
+                { label: 'Change Password', href: '/change-password' },
+              ].map(l => (
+                <li key={l.href}>
+                  <a
+                    href={l.href}
+                    className="group text-[0.85rem] text-[#f0f2ed]/45 no-underline font-normal transition-colors duration-200 hover:text-[#a8d63e] inline-flex items-center gap-[0.35rem]"
+                  >
+                    <ArrowRight size={11} className="opacity-0 -translate-x-1 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0" />
+                    {l.label}
+                  </a>
+                </li>
+              ))}
             </ul>
           </div>
 
-          {/* Newsletter */}
+          {/* Contact */}
           <div>
-            <h4 className="font-display font-bold text-lg mb-6 text-gray-900">Contact Info</h4>
-            <ul className="space-y-4 text-sm text-gray-500 mb-6">
-              <li className="flex items-start gap-3">
-                <MapPin className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                <p className="leading-relaxed whitespace-pre-wrap">{contactDetails.address}</p>
-              </li>
-              <li className="flex items-center gap-3">
-                <Phone className="w-5 h-5 text-primary shrink-0" />
-                <span>{contactDetails.phone}</span>
-              </li>
-              <li className="flex items-center gap-3">
-                <Mail className="w-5 h-5 text-primary shrink-0" />
-                <span>{contactDetails.email}</span>
-              </li>
-            </ul>
-            
-            {/* <h5 className="font-bold text-sm mb-3 text-gray-900">Subscribe to our newsletter</h5>
-            <div className="flex gap-2">
-              <Input placeholder="Your email" className="bg-white border-gray-200" />
-              <Button className="bg-primary-gradient px-4">Join</Button>
-            </div> */}
+            <div className="font-bebas text-[1.1rem] tracking-[0.08em] text-[#f0f2ed] mb-5">Contact Info</div>
+            {[
+              { icon: <MapPin size={14} />, text: contactDetails.address, wrap: true },
+              { icon: <Phone size={14} />,  text: contactDetails.phone },
+              { icon: <Mail size={14} />,   text: contactDetails.email },
+            ].map((item, i) => (
+              <div key={i} className="flex items-start gap-[0.85rem] mb-[1.1rem]">
+                <div className="w-8 h-8 rounded-md flex-shrink-0 bg-[#a8d63e]/10 border border-[#a8d63e]/15 grid place-items-center text-[#a8d63e]">
+                  {item.icon}
+                </div>
+                <div
+                  className="text-[0.85rem] leading-[1.6] font-light text-[#f0f2ed]/50"
+                  style={item.wrap ? { whiteSpace: 'pre-wrap' } : undefined}
+                >
+                  {item.text}
+                </div>
+              </div>
+            ))}
           </div>
-        </div>
 
-        {/* Bottom Bar */}
-        <div className="border-t border-gray-200 py-8 flex flex-col md:flex-row items-center justify-center gap-4">
-          <p className="text-sm text-gray-400">
-            © {new Date().getFullYear()} Lumo Electrical. All rights reserved.
-          </p>
-          {/* <div className="flex items-center gap-6">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" className="h-4 opacity-50 grayscale hover:grayscale-0 transition-all" />
-            <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" className="h-6 opacity-50 grayscale hover:grayscale-0 transition-all" />
-            <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" className="h-5 opacity-50 grayscale hover:grayscale-0 transition-all" />
-          </div> */}
         </div>
       </div>
-    </footer>
-  );
-}
 
-function SocialLink({ icon: Icon }: { icon: React.ElementType }) {
-  return (
-    <a href="#" className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:border-primary hover:text-primary hover:bg-green-50 transition-all duration-300">
-      <Icon className="w-5 h-5" />
-    </a>
+      {/* BOTTOM BAR */}
+      <div className="border-t border-white/[0.1] px-8 py-6">
+        <div className="max-w-[1280px] mx-auto flex items-center justify-between flex-wrap gap-4">
+          <span className="text-[0.75rem] text-[#f0f2ed]/60 font-light">
+            © {year}{' '}
+            <a href="/" className="text-[#a8d63e]/70 no-underline">Lumo Electrical</a>
+            . All rights reserved. Cape Town, South Africa.
+          </span>
+          <div className="flex gap-6">
+            {['Privacy Policy', 'Terms of Use'].map(label => (
+              <a
+                key={label}
+                href="#"
+                className="text-[0.72rem] text-[#f0f2ed]/60 no-underline transition-colors duration-200 hover:text-[#f0f2ed]/55"
+              >
+                {label}
+              </a>
+            ))}
+          </div>
+        </div>
+      </div>
+
+    </footer>
   );
 }

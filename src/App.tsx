@@ -5,6 +5,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/context/AuthContext";
+import { ThemeProvider } from "@/context/ThemeContext";
 import { Layout } from "@/components/Layout";
 
 // Pages that use Layout
@@ -22,7 +23,6 @@ import ForgotPassword from "@/pages/ForgotPassword";
 import ChangePassword from "@/pages/ChangePassword";
 import Profile from "@/pages/Profile";
 import ContactUs from "@/pages/ContactUs";
-import NotFound from "@/pages/not-found";
 
 // Payment pages
 import PaymentSuccess from "@/pages/PaymentSuccess";
@@ -42,40 +42,42 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <BrowserRouter>
-          <TooltipProvider>
-            <Toaster />
-            <ScrollToTop />
-            <Routes>
-            {/* Layout Routes */}
-            <Route element={<Layout />}>
-              <Route index path="/" element={<Home />} />
-              <Route path="/:categorySlug" element={<CategorizedProducts />} />
-              <Route path="/products" element={<Products />} />
-              <Route path="/product-details/:id" element={<ProductDetail />} />
-              <Route path="/checkout" element={<Checkout />} />
-              <Route path="/orders" element={<Orders />} />
-              <Route path="/order/:orderId" element={<OrderDetail />} />
-              <Route path="/wishlist" element={<Wishlist />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/contact-us" element={<ContactUs />} />
+        <ThemeProvider>
+          <BrowserRouter>
+            <TooltipProvider>
+              <Toaster />
+              <ScrollToTop />
+              <Routes>
+                {/* Layout Routes */}
+                <Route element={<Layout />}>
+                  <Route index path="/" element={<Home />} />
+                  <Route path="/:categorySlug" element={<CategorizedProducts />} />
+                  <Route path="/products" element={<Products />} />
+                  <Route path="/product-details/:id" element={<ProductDetail />} />
+                  <Route path="/checkout" element={<Checkout />} />
+                  <Route path="/orders" element={<Orders />} />
+                  <Route path="/order/:orderId" element={<OrderDetail />} />
+                  <Route path="/wishlist" element={<Wishlist />} />
+                  <Route path="/profile" element={<Profile />} />
+                  <Route path="/contact-us" element={<ContactUs />} />
 
-              {/* Auth Routes */}
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
-              <Route path="/forgot-password" element={<ForgotPassword />} />
-              <Route path="/change-password" element={<ChangePassword />} />
+                  {/* Auth Routes */}
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/signup" element={<Signup />} />
+                  <Route path="/forgot-password" element={<ForgotPassword />} />
+                  <Route path="/change-password" element={<ChangePassword />} />
 
-              {/* Catch all undefined */}
-              <Route path="*" element={<Home />} />
-            </Route>
-            
-            {/* Payment Routes (outside Layout) */}
-            <Route path="/payment-success/:orderId" element={<PaymentSuccess />} />
-            <Route path="/payment-cancel" element={<PaymentCancel />} />
-          </Routes>
-        </TooltipProvider>
-      </BrowserRouter>
+                  {/* Catch all undefined */}
+                  <Route path="*" element={<Home />} />
+                </Route>
+                
+                {/* Payment Routes (outside Layout) */}
+                <Route path="/payment-success/:orderId" element={<PaymentSuccess />} />
+                <Route path="/payment-cancel" element={<PaymentCancel />} />
+              </Routes>
+            </TooltipProvider>
+          </BrowserRouter>
+        </ThemeProvider>
       </AuthProvider>
     </QueryClientProvider>
   );

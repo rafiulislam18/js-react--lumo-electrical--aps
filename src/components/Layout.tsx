@@ -38,7 +38,7 @@ export const Layout: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="min-h-screen bg-white dark:bg-gray-900 flex flex-col">
       <Navbar categories={categories} />
       <main className="flex-1">
         <Outlet />

@@ -1,22 +1,16 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import { 
-  Search, ShoppingCart, Heart, User, Menu, 
-  ChevronDown, LogIn, UserPlus, Package, LogOut, Lock, PhoneCall
-} from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
+  Search, ShoppingCart, Heart, User, Menu, X,
+  ChevronDown, LogIn, UserPlus, Package, LogOut, Lock, PhoneCall, Sun, Moon,
+} from "lucide-react";
+import {
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem,
+  DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { CartSidebar } from "@/components/CartSidebar";
 import { useAuth } from "@/context/AuthContext";
+import { useTheme } from "@/context/ThemeContext";
 import { useToast } from "@/hooks/use-toast";
 import { apiGet } from "@/lib/api";
 
@@ -28,122 +22,80 @@ interface Category {
   children: Category[];
 }
 
-interface CategoriesResponse {
-  categories: Category[];
-}
-
 interface NavbarProps {
   categories: Category[];
 }
 
-// Recursive category menu item component for desktop
-function CategoryMenuItem({ category }: { category: Category }) {
+function CategoryMenuItem({ category, light }: { category: Category; light: boolean }) {
   const [isOpen, setIsOpen] = useState(false);
-
-  if (!category.children || category.children.length === 0) {
-    return (
-      <div className="px-2 py-2 rounded-lg text-gray-700 hover:text-primary hover:bg-gray-50 cursor-pointer text-sm">
-        <a href={`/${category.slug}`} className="flex items-center block">
-          {category.name}
-        </a>
-      </div>
-    );
+  const itemCls = `flex items-center justify-between px-[0.7rem] py-2 rounded text-[0.82rem] no-underline cursor-pointer transition-all duration-[140ms] ${light ? "text-black/[0.68] hover:bg-[#399746]/[0.09] hover:text-[#399746]" : "text-[#f0f2ed]/[0.68] hover:bg-[#a8d63e]/[0.09] hover:text-[#a8d63e]"}`;
+  const panelCls = `absolute left-full top-0 border rounded-md p-2 min-w-[220px] z-[100] ${light ? "bg-[#f5f5f5] border-black/[0.12] shadow-[0_18px_44px_rgba(0,0,0,0.1)]" : "bg-[#111411] border-white/[0.09] shadow-[0_18px_44px_rgba(0,0,0,0.65)]"}`;
+  if (!category.children?.length) {
+    return <a href={`/${category.slug}`} className={itemCls}>{category.name}</a>;
   }
-
   return (
-    <div
-      className="relative group"
-      onMouseEnter={() => setIsOpen(true)}
-      onMouseLeave={() => setIsOpen(false)}
-    >
-      <div className="flex items-center justify-between px-2 py-2 rounded-lg text-gray-700 hover:text-primary hover:bg-gray-50 cursor-pointer text-sm">
-        <a href={`/${category.slug}`} className="flex-1 block">
-          {category.name}
-        </a>
-        <ChevronDown className="w-3 h-3 ml-2 flex-shrink-0" />
+    <div className="relative" onMouseEnter={() => setIsOpen(true)} onMouseLeave={() => setIsOpen(false)}>
+      <div className={itemCls}>
+        <a href={`/${category.slug}`} className="flex-1 no-underline text-inherit">{category.name}</a>
+        <ChevronDown size={11} className="flex-shrink-0 opacity-50" />
       </div>
-      {/* Invisible bridge to prevent gap hover trigger */}
-      <div className="absolute left-full top-0 -ml-1 w-1 h-full pointer-events-none" />
       {isOpen && (
-        <div className="absolute left-full top-0 bg-white border border-gray-200 rounded-lg shadow-xl p-1 min-w-max z-[999]">
-          {category.children.map((child) => (
-            <CategoryMenuItem key={child.id} category={child} />
-          ))}
+        <div className={panelCls}>
+          {category.children.map(c => <CategoryMenuItem key={c.id} category={c} light={light} />)}
         </div>
       )}
     </div>
   );
 }
 
-// Hoverable quick category menu item component for desktop
-function QuickCategoryMenuItem({ category }: { category: Category }) {
-  const [isOpen, setIsOpen] = useState(false);
-
-  if (!category.children || category.children.length === 0) {
-    return (
-      <a 
-        href={`/${category.slug}`} 
-        className="text-sm font-medium text-gray-600 hover:text-primary transition-colors whitespace-nowrap"
-      >
-        {category.name}
-      </a>
-    );
+function QuickCat({ category, light }: { category: Category; light: boolean }) {
+  const [open, setOpen] = useState(false);
+  const linkCls = `text-[0.77rem] font-medium no-underline flex items-center gap-[0.28rem] h-[42px] transition-colors duration-[180ms] whitespace-nowrap ${light ? "text-black/[0.52] hover:text-[#399746]" : "text-[#f0f2ed]/[0.52] hover:text-[#a8d63e]"}`;
+  const panelCls = `absolute left-0 top-[42px] border border-t-0 rounded-b-lg p-2 min-w-[220px] z-[9999] ${light ? "bg-[#f5f5f5] border-black/[0.12] shadow-[0_18px_44px_rgba(0,0,0,0.1)]" : "bg-[#111411] border-white/[0.09] shadow-[0_18px_44px_rgba(0,0,0,0.65)]"}`;
+  if (!category.children?.length) {
+    return <a href={`/${category.slug}`} className={linkCls}>{category.name}</a>;
   }
-
   return (
-    <div
-      className="relative"
-      onMouseEnter={() => setIsOpen(true)}
-      onMouseLeave={() => setIsOpen(false)}
-    >
-      <a 
-        href={`/${category.slug}`} 
-        className="text-sm font-medium text-gray-600 hover:text-primary transition-colors whitespace-nowrap flex items-center gap-1 py-3"
-      >
-        {category.name}
-        <ChevronDown className="w-3 h-3" />
+    <div className="relative" onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)}>
+      <a href={`/${category.slug}`} className={linkCls}>
+        {category.name} <ChevronDown size={11} className="opacity-50" />
       </a>
-      {isOpen && (
-        <div className="absolute left-0 top-full bg-white border border-gray-200 rounded-lg shadow-xl p-1 min-w-max z-[999] mt-0">
-          {category.children.map((child) => (
-            <CategoryMenuItem key={child.id} category={child} />
-          ))}
+      {open && (
+        <div className={panelCls}>
+          {category.children.map(c => <CategoryMenuItem key={c.id} category={c} light={light} />)}
         </div>
       )}
     </div>
   );
 }
 
-// Recursive mobile category menu component
-function MobileCategoryItem({ category, level = 0 }: { category: Category; level?: number }) {
-  const [isExpanded, setIsExpanded] = useState(false);
-
+function MobileCategoryItem({ category, level = 0, light }: { category: Category; level?: number; light: boolean }) {
+  const [expanded, setExpanded] = useState(false);
   return (
-    <div key={category.id}>
-      <div className="flex items-center justify-between">
+    <div>
+      <div className={`flex items-center border-b ${light ? "border-black/[0.08]" : "border-white/[0.04]"}`}>
         <a
           href={`/${category.slug}`}
-          className="flex-1 px-3 py-2.5 text-sm font-medium text-gray-700 hover:text-primary transition-colors"
-          style={{ paddingLeft: `${12 + level * 12}px` }}
+          className={`flex-1 py-[0.82rem] text-[0.87rem] font-medium no-underline transition-colors duration-150 ${light ? "text-black/[0.68] hover:text-[#399746]" : "text-[#f0f2ed]/[0.68] hover:text-[#a8d63e]"}`}
+          style={{ paddingLeft: `${1 + level * 0.75}rem` }}
         >
           {category.name}
         </a>
-        {category.children && category.children.length > 0 && (
+        {!!category.children?.length && (
           <button
-            onClick={() => setIsExpanded(!isExpanded)}
-            className="px-3 py-2.5"
+            className={`px-4 py-[0.82rem] bg-transparent border-none cursor-pointer ${light ? "text-black/[0.38]" : "text-[#f0f2ed]/[0.38]"}`}
+            onClick={() => setExpanded(!expanded)}
           >
             <ChevronDown
-              className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+              size={14}
+              style={{ transform: expanded ? 'rotate(180deg)' : 'none', transition: 'transform .2s' }}
             />
           </button>
         )}
       </div>
-      {isExpanded && category.children && category.children.length > 0 && (
-        <div className="bg-gray-50">
-          {category.children.map((child) => (
-            <MobileCategoryItem key={child.id} category={child} level={level + 1} />
-          ))}
+      {expanded && !!category.children?.length && (
+        <div className="bg-[#a8d63e]/[0.03]">
+          {category.children.map(c => <MobileCategoryItem key={c.id} category={c} level={level + 1} light={light} />)}
         </div>
       )}
     </div>
@@ -152,414 +104,302 @@ function MobileCategoryItem({ category, level = 0 }: { category: Category; level
 
 export function Navbar({ categories }: NavbarProps) {
   const navigate = useNavigate();
+  const location = useLocation();
   const { isAuthenticated, user, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const { toast } = useToast();
-  const [isSearchFocused, setIsSearchFocused] = useState(false);
-  const [isCartOpen, setIsCartOpen] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [cartCount, setCartCount] = useState(0);
-  const [wishlistCount, setWishlistCount] = useState(0);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState<any[]>([]);
-  const [showSearchResults, setShowSearchResults] = useState(false);
-  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
-  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
 
+  const [cartOpen,      setCartOpen]      = useState(false);
+  const [mobileOpen,    setMobileOpen]    = useState(false);
+  const [searchOpen,    setSearchOpen]    = useState(false);
+  const [allCatOpen,    setAllCatOpen]    = useState(false);
+  const [userOpen,      setUserOpen]      = useState(false);
+  const [cartCount,     setCartCount]     = useState(0);
+  const [wishlistCount, setWishlistCount] = useState(0);
+  const [query,         setQuery]         = useState('');
+  const [results,       setResults]       = useState<any[]>([]);
+  const [scrolled,      setScrolled]      = useState(false);
+
+  const isHome = location.pathname === '/';
   const allCategories = categories || [];
-  const firstEightCategories = allCategories.slice(0, 8);
+  const first8 = allCategories.slice(0, 8);
 
   useEffect(() => {
-    const updateCounts = () => {
-      const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-      const cartTotal = cart.reduce((sum: number, item: any) => sum + item.quantity, 0);
-      setCartCount(cartTotal);
-
-      const wishlist = JSON.parse(localStorage.getItem("wishlist") || "[]");
-      setWishlistCount(wishlist.length);
+    const update = () => {
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      setCartCount(cart.reduce((s: number, i: any) => s + i.quantity, 0));
+      setWishlistCount(JSON.parse(localStorage.getItem('wishlist') || '[]').length);
     };
+    update();
+    window.addEventListener('storage', update);
+    return () => window.removeEventListener('storage', update);
+  }, [cartOpen]);
 
-    updateCounts();
-    window.addEventListener("storage", updateCounts);
-    return () => window.removeEventListener("storage", updateCounts);
-  }, [isCartOpen]);
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 0);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
-  const handleSearch = async (query: string) => {
-    setSearchQuery(query);
-    
-    if (query.trim().length === 0) {
-      setSearchResults([]);
-      setShowSearchResults(false);
-      return;
-    }
-
+  const handleSearch = async (q: string) => {
+    setQuery(q);
+    if (!q.trim()) { setResults([]); return; }
     try {
-      const response = await apiGet<any>(`/products/?search=${encodeURIComponent(query)}&page_size=5`);
-      const results = Array.isArray(response.results) ? response.results : [];
-      setSearchResults(results);
-      setShowSearchResults(true);
-    } catch (error) {
-      console.error('Search failed:', error);
-      setSearchResults([]);
-      setShowSearchResults(false);
+      const res = await apiGet<any>(`/products/?search=${encodeURIComponent(q)}&page_size=5`);
+      setResults(Array.isArray(res.results) ? res.results : []);
+    } catch { setResults([]); }
+  };
+
+  const submitSearch = () => {
+    if (query.trim()) {
+      navigate(`/products?search=${encodeURIComponent(query)}`);
+      setQuery(''); setResults([]); setSearchOpen(false);
     }
   };
 
-  const handleSearchSubmit = () => {
-    if (searchQuery.trim()) {
-      navigate(`/products?search=${encodeURIComponent(searchQuery)}`);
-      setSearchQuery("");
-      setShowSearchResults(false);
-    }
+  const goProduct = (id: string) => {
+    navigate(`/product-details/${id}`);
+    setQuery(''); setResults([]); setSearchOpen(false);
   };
 
-  const handleProductClick = (productId: string) => {
-    navigate(`/product-details/${productId}`);
-    setSearchQuery("");
-    setShowSearchResults(false);
-  };
+  const imgSrc = (img: string) =>
+    img?.startsWith('http') ? img : `${import.meta.env.VITE_BASE_URL}${img}`;
+
+  const solidBg = !isHome || scrolled;
+  // Light styles only when navbar has a solid background AND user chose light mode
+  const light = solidBg && theme === 'light';
+
+  const iconBtn = `relative grid place-items-center w-[38px] h-[38px] rounded-md border-none cursor-pointer no-underline bg-transparent transition-all duration-[180ms] flex-shrink-0 ${light ? "text-black/60 hover:bg-black/[0.08] hover:text-black" : "text-[#f0f2ed]/[0.72] hover:bg-white/[0.09] hover:text-[#f0f2ed]"}`;
 
   return (
     <>
-      <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
-      
-      <nav className="sticky top-0 z-40 bg-white border-b border-gray-100 shadow-sm transition-all">
-        {/* Top Row: Logo, Search, Actions */}
-        <div className="container mx-auto px-4 h-16 sm:h-20 flex items-center justify-between gap-4 sm:gap-8">
+      <CartSidebar isOpen={cartOpen} onClose={() => setCartOpen(false)} />
+
+      <nav className={`sticky top-0 z-[40] font-outfit w-full transition-all duration-500 ${solidBg ? (light ? 'bg-white shadow-[0_1px_0_rgba(0,0,0,0.08)]' : 'bg-[#0d110d] shadow-[0_1px_0_rgba(255,255,255,0.07)]') : 'bg-transparent'}`}>
+
+        {/* TOPBAR */}
+        <div className="flex items-center h-[68px] max-w-[1280px] mx-auto px-8 gap-4">
+
           {/* Logo */}
-          <Link to="/" className="flex-shrink-0">
-            <div className="flex items-center gap-2 cursor-pointer group">
-              <img src="/images/logo.png" alt="logo" className="h-8 sm:h-10 md:h-12" />
-            </div>
+          <Link to="/" className="flex-shrink-0 flex items-center no-underline">
+            <img src="/images/logo.png" alt="Lumo Electrical" className="h-[38px] block" />
           </Link>
 
-          {/* Search Bar - Center */}
-          <div className="hidden md:flex flex-1 max-w-2xl relative group">
-            <div className={`absolute inset-y-0 left-3 flex items-center pointer-events-none transition-colors ${isSearchFocused ? 'text-primary' : 'text-gray-400'}`}>
-              <Search className="w-5 h-5" />
-            </div>
-            <Input 
-              className="pl-10 pr-4 h-11 rounded-full border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-300" 
-              placeholder="Search for products, brands and categories..." 
-              value={searchQuery}
-              onChange={(e) => handleSearch(e.target.value)}
-              onFocus={() => setIsSearchFocused(true)}
-              onBlur={() => {
-                setIsSearchFocused(false);
-                setTimeout(() => setShowSearchResults(false), 200);
-              }}
-              onKeyPress={(e) => {
-                if (e.key === 'Enter') {
-                  handleSearchSubmit();
-                }
-              }}
+          {/* Search — desktop */}
+          <div className="hidden md:block flex-1 min-w-0 max-w-[520px] relative">
+            <input
+              className={`w-full h-10 border rounded-md pr-[5.5rem] pl-4 font-outfit text-[0.875rem] outline-none transition-all duration-200 box-border ${light ? "bg-white border-black/[0.12] text-[#222] placeholder:text-black/30 focus:border-[#399746]/55 focus:bg-white" : "bg-white/[0.08] border-white/[0.12] text-[#f0f2ed] placeholder:text-[#f0f2ed]/30 focus:border-[#a8d63e]/55 focus:bg-white/[0.11]"}`}
+              placeholder="Search products, brands, categories…"
+              value={query}
+              onChange={e => handleSearch(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && submitSearch()}
+              onBlur={() => setTimeout(() => setResults([]), 180)}
             />
-            <button 
-              onClick={handleSearchSubmit}
-              className="absolute right-1.5 top-1.5 bottom-1.5 px-4 bg-primary-gradient text-white rounded-full text-sm font-medium hover:opacity-90 transition-opacity"
+            <button
+              className={`absolute right-[5px] top-[5px] bottom-[5px] px-[0.85rem] rounded bg-gradient-to-r from-[#3aaa49] to-[#a8d63e] font-outfit text-[0.68rem] font-bold tracking-[0.08em] uppercase border-none cursor-pointer transition-opacity duration-200 whitespace-nowrap hover:opacity-85 ${light ? "text-white" : "text-[#0a0c0a]"}`}
+              onClick={submitSearch}
             >
               Search
             </button>
-
-            {/* Search Results Dropdown */}
-            {showSearchResults && searchResults.length > 0 && (
-              <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg z-50 overflow-hidden">
-                {searchResults.map((product) => (
+            {results.length > 0 && (
+              <div className={`absolute top-[calc(100%+6px)] left-0 right-0 border rounded-lg overflow-hidden z-[200] ${light ? "bg-[#f5f5f5] border-black/[0.12] shadow-[0_20px_50px_rgba(0,0,0,0.1)]" : "bg-[#141814] border-[#a8d63e]/20 shadow-[0_20px_50px_rgba(0,0,0,0.7)]"}`}>
+                {results.map(p => (
                   <button
-                    key={product.id}
-                    onClick={() => handleProductClick(product.id)}
-                    className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 border-b border-gray-100 last:border-0 text-left transition-colors"
+                    key={p.id}
+                    className={`w-full flex items-center gap-[0.85rem] px-4 py-[0.7rem] bg-transparent border-none border-b last:border-b-0 cursor-pointer text-left transition-colors duration-150 ${light ? "border-black/[0.08] text-[#222] hover:bg-[#399746]/[0.06]" : "border-white/[0.05] text-[#f0f2ed] hover:bg-[#a8d63e]/[0.06]"}`}
+                    onMouseDown={() => goProduct(p.id)}
                   >
-                    <img 
-                      src={product.image ? (product.image.startsWith('http') ? product.image : `${import.meta.env.VITE_BASE_URL}${product.image}`) : '/placeholder.png'}
-                      alt={product.name}
-                      className="w-10 h-10 object-cover rounded"
-                    />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900 truncate">{product.name}</p>
-                      <p className="text-xs text-gray-500">${product.price}</p>
+                    <img className="w-9 h-9 object-cover rounded bg-[#222] flex-shrink-0" src={imgSrc(p.image)} alt={p.name} />
+                    <div>
+                      <div className="text-[0.84rem] font-medium text-left">{p.name}</div>
+                      <div className={`text-[0.73rem] ${light ? "text-black/40" : "text-[#f0f2ed]/40"}`}>R {p.price}</div>
                     </div>
-                    {product.badge && (
-                      <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-1 rounded whitespace-nowrap">
-                        {product.badge}
-                      </span>
-                    )}
                   </button>
                 ))}
                 <button
-                  onClick={handleSearchSubmit}
-                  className="w-full py-2 text-center text-sm text-primary hover:bg-primary/5 font-medium"
+                  className={`block w-full text-center px-0 py-[0.6rem] text-[0.7rem] font-bold tracking-[0.09em] uppercase bg-transparent border-none border-t cursor-pointer transition-colors duration-150 ${light ? "text-[#399746] border-black/[0.06] hover:bg-[#399746]/[0.05]" : "text-[#a8d63e] border-white/[0.06] hover:bg-[#a8d63e]/[0.05]"}`}
+                  onMouseDown={submitSearch}
                 >
-                  View all results
+                  View all results →
                 </button>
               </div>
             )}
           </div>
 
-          {/* Action Icons */}
-          <div className="flex items-center gap-1 sm:gap-3">
-            {/* Contact Us - If not mobile view, show as a button */}
-            <Link to="/contact-us" className="hidden md:block p-1.5 sm:p-2 rounded-full hover:bg-secondary transition-colors" title="Contact Us">
-              <PhoneCall className="w-4 h-4 sm:w-5 sm:h-5 text-foreground" />
+          {/* Actions */}
+          <div className="flex items-center gap-[0.15rem] flex-shrink-0">
+            <Link to="/contact-us" className={`${iconBtn} hidden md:grid`} title="Contact Us">
+              <PhoneCall size={17} />
             </Link>
-
-            {/* Mobile Search Icon */}
-            <button 
-              onClick={() => setIsSearchModalOpen(true)}
-              className="md:hidden p-1.5 sm:p-2 rounded-full hover:bg-secondary transition-colors"
-            >
-              <Search className="w-4 h-4 sm:w-5 sm:h-5 text-foreground" />
+            <button className={`${iconBtn} md:hidden`} onClick={() => setSearchOpen(true)} title="Search">
+              <Search size={17} />
             </button>
-
-            <button 
-              onClick={() => setIsCartOpen(true)}
-              className="relative p-1.5 sm:p-2 rounded-full hover:bg-secondary transition-colors"
-            >
-              <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5 text-foreground" />
+            <button className={iconBtn} onClick={() => setCartOpen(true)} title="Cart">
+              <ShoppingCart size={17} />
               {cartCount > 0 && (
-                <span className="absolute -top-1 -right-1 w-5 h-5 flex items-center justify-center text-xs font-bold text-white bg-primary-gradient rounded-full">
+                <span className="absolute top-[3px] right-[3px] min-w-[15px] h-[15px] rounded-full bg-gradient-to-r from-[#3aaa49] to-[#a8d63e] text-[#0a0c0a] text-[0.5rem] font-extrabold flex items-center justify-center px-[3px] pointer-events-none">
                   {cartCount}
                 </span>
               )}
             </button>
-
-            <Link to="/wishlist" className="relative p-1.5 sm:p-2 rounded-full hover:bg-secondary transition-colors" title="Wishlist">
-              <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-foreground" />
+            <Link to="/wishlist" className={iconBtn} title="Wishlist">
+              <Heart size={17} />
               {wishlistCount > 0 && (
-                <span className="absolute -top-1 -right-1 w-5 h-5 flex items-center justify-center text-xs font-bold text-white bg-red-500 rounded-full">
+                <span className="absolute top-[3px] right-[3px] min-w-[15px] h-[15px] rounded-full bg-red-500 text-white text-[0.5rem] font-extrabold flex items-center justify-center px-[3px] pointer-events-none">
                   {wishlistCount}
                 </span>
               )}
             </Link>
 
-            <DropdownMenu modal={false} open={openDropdown === 'user'} onOpenChange={(open) => setOpenDropdown(open ? 'user' : null)}>
+            <DropdownMenu modal={false} open={userOpen} onOpenChange={setUserOpen}>
               <DropdownMenuTrigger asChild>
-                <button className="p-1.5 sm:p-2 rounded-full hover:bg-secondary transition-colors" onMouseEnter={() => setOpenDropdown('user')}>
-                  <User className="w-4 h-4 sm:w-5 sm:h-5 text-foreground" />
+                <button className={iconBtn} title="Account" onMouseEnter={() => setUserOpen(true)}>
+                  <User size={17} />
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56 rounded-xl shadow-xl border-gray-100 p-2" onOpenAutoFocus={(e: any) => e.preventDefault()} onMouseLeave={() => setOpenDropdown(null)}>
+              <DropdownMenuContent
+                align="end"
+                className={`w-52 border rounded-lg p-[0.35rem] ${light ? "bg-[#f5f5f5] border-black/[0.12] text-[#222]" : "bg-[#111411] border-white/[0.09] text-[#f0f2ed]"}`}
+                onMouseLeave={() => setUserOpen(false)}
+              >
                 {isAuthenticated ? (
                   <>
-                    <DropdownMenuLabel className="px-2 py-2 text-sm text-gray-500 font-medium">
+                    <DropdownMenuLabel className={`text-[0.74rem] px-2 py-1.5 ${light ? "text-black/[0.38]" : "text-[#f0f2ed]/[0.38]"}`}>
                       {user?.first_name} {user?.last_name}
                     </DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem className="rounded-lg cursor-pointer text-gray-700 hover:text-primary hover:bg-gray-50 focus:text-primary focus:bg-gray-50" asChild>
-                      <Link to="/profile">
-                        <User className="mr-2 h-4 w-4" />
-                        <span>Profile</span>
-                      </Link>
+                    <DropdownMenuSeparator className={light ? "bg-black/[0.07]" : "bg-white/[0.07]"} />
+                    <DropdownMenuItem className={`rounded font-outfit text-[0.82rem] cursor-pointer ${light ? "text-black/70 hover:bg-[#399746]/[0.09] hover:text-[#399746] focus:bg-[#399746]/[0.09] focus:text-[#399746]" : "text-[#f0f2ed]/70 hover:bg-[#a8d63e]/[0.09] hover:text-[#a8d63e] focus:bg-[#a8d63e]/[0.09] focus:text-[#a8d63e]"}`} asChild>
+                      <Link to="/profile"><User size={13} className="mr-2" />Profile</Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem className="rounded-lg cursor-pointer text-gray-700 hover:text-primary hover:bg-gray-50 focus:text-primary focus:bg-gray-50" asChild>
-                      <Link to="/orders">
-                        <Package className="mr-2 h-4 w-4" />
-                        <span>Orders</span>
-                      </Link>
+                    <DropdownMenuItem className={`rounded font-outfit text-[0.82rem] cursor-pointer ${light ? "text-black/70 hover:bg-[#399746]/[0.09] hover:text-[#399746] focus:bg-[#399746]/[0.09] focus:text-[#399746]" : "text-[#f0f2ed]/70 hover:bg-[#a8d63e]/[0.09] hover:text-[#a8d63e] focus:bg-[#a8d63e]/[0.09] focus:text-[#a8d63e]"}`} asChild>
+                      <Link to="/orders"><Package size={13} className="mr-2" />Orders</Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem className="rounded-lg cursor-pointer text-gray-700 hover:text-primary hover:bg-gray-50 focus:text-primary focus:bg-gray-50" asChild>
-                      <Link to="/change-password">
-                        <Lock className="mr-2 h-4 w-4" />
-                        <span>Change Password</span>
-                      </Link>
+                    <DropdownMenuItem className={`rounded font-outfit text-[0.82rem] cursor-pointer ${light ? "text-black/70 hover:bg-[#399746]/[0.09] hover:text-[#399746] focus:bg-[#399746]/[0.09] focus:text-[#399746]" : "text-[#f0f2ed]/70 hover:bg-[#a8d63e]/[0.09] hover:text-[#a8d63e] focus:bg-[#a8d63e]/[0.09] focus:text-[#a8d63e]"}`} asChild>
+                      <Link to="/change-password"><Lock size={13} className="mr-2" />Change Password</Link>
                     </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem 
-                      className="text-red-600 focus:text-red-600 focus:bg-red-50 rounded-lg cursor-pointer"
+                    <DropdownMenuSeparator className={light ? "bg-black/[0.07]" : "bg-white/[0.07]"} />
+                    <DropdownMenuItem
+                      className="rounded font-outfit text-[0.82rem] cursor-pointer text-red-400 hover:bg-red-400/[0.09] hover:text-red-400 focus:bg-red-400/[0.09] focus:text-red-400"
                       onClick={() => {
                         logout();
-                        toast({
-                          title: "Logged Out",
-                          description: "You have been logged out successfully.",
-                          className: "bg-green-600 text-white border-green-700",
-                        });
+                        toast({ title: 'Logged out', className: 'bg-green-700 text-white' });
                       }}
                     >
-                      <LogOut className="mr-2 h-4 w-4" />
-                      <span>Log out</span>
+                      <LogOut size={13} className="mr-2" />Log out
                     </DropdownMenuItem>
                   </>
                 ) : (
                   <>
-                    <DropdownMenuLabel className="px-2 py-2 text-sm text-gray-500 font-medium">My Account</DropdownMenuLabel>
-                    <DropdownMenuItem className="rounded-lg cursor-pointer text-gray-700 hover:text-primary hover:bg-gray-50 focus:text-primary focus:bg-gray-50" asChild>
-                      <Link to="/login">
-                        <LogIn className="mr-2 h-4 w-4" />
-                        <span>Log In</span>
-                      </Link>
+                    <DropdownMenuLabel className={`text-[0.74rem] px-2 py-1.5 ${light ? "text-black/[0.38]" : "text-[#f0f2ed]/[0.38]"}`}>My Account</DropdownMenuLabel>
+                    <DropdownMenuItem className={`rounded font-outfit text-[0.82rem] cursor-pointer ${light ? "text-black/70 hover:bg-[#399746]/[0.09] hover:text-[#399746] focus:bg-[#399746]/[0.09] focus:text-[#399746]" : "text-[#f0f2ed]/70 hover:bg-[#a8d63e]/[0.09] hover:text-[#a8d63e] focus:bg-[#a8d63e]/[0.09] focus:text-[#a8d63e]"}`} asChild>
+                      <Link to="/login"><LogIn size={13} className="mr-2" />Log In</Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem className="rounded-lg cursor-pointer text-gray-700 hover:text-primary hover:bg-gray-50 focus:text-primary focus:bg-gray-50" asChild>
-                      <Link to="/signup">
-                        <UserPlus className="mr-2 h-4 w-4" />
-                        <span>Sign Up</span>
-                      </Link>
+                    <DropdownMenuItem className={`rounded font-outfit text-[0.82rem] cursor-pointer ${light ? "text-black/70 hover:bg-[#399746]/[0.09] hover:text-[#399746] focus:bg-[#399746]/[0.09] focus:text-[#399746]" : "text-[#f0f2ed]/70 hover:bg-[#a8d63e]/[0.09] hover:text-[#a8d63e] focus:bg-[#a8d63e]/[0.09] focus:text-[#a8d63e]"}`} asChild>
+                      <Link to="/signup"><UserPlus size={13} className="mr-2" />Sign Up</Link>
                     </DropdownMenuItem>
                   </>
                 )}
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="md:hidden"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            <button className={iconBtn} onClick={toggleTheme} title={theme === 'dark' ? 'Light Mode' : 'Dark Mode'}>
+              {theme === 'dark' ? <Sun size={17} /> : <Moon size={17} />}
+            </button>
+            <button className={`${iconBtn} md:hidden`} onClick={() => setMobileOpen(!mobileOpen)} title="Menu">
+              {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
+          </div>
+        </div>
+
+        {/* CATEGORY BAR — desktop */}
+        <div className={`hidden md:block border-t ${light ? "border-black/[0.08] bg-black/[0.02]" : "border-white/[0.06] bg-black/[0.18]"}`}>
+          <div className="flex items-center gap-6 h-[42px] max-w-[1280px] mx-auto px-8 overflow-visible">
+            <div
+              className="relative h-[42px] flex items-center"
+              onMouseEnter={() => setAllCatOpen(true)}
+              onMouseLeave={() => setAllCatOpen(false)}
             >
-              <Menu className="w-6 h-6" />
-            </Button>
-          </div>
-        </div>
-
-      {/* Bottom Row: Categories Navigation */}
-      <div className="hidden md:block border-t border-gray-100 bg-white/50 overflow-visible">
-        <div className="container mx-auto h-12 flex items-center gap-8 overflow-visible">
-          <DropdownMenu modal={false} open={openDropdown === 'categories'} onOpenChange={(open) => setOpenDropdown(open ? 'categories' : null)}>
-            <DropdownMenuTrigger asChild>
-              <Button 
-                variant="null" 
-                className="h-full rounded-none hover:text-primary hover:bg-transparent font-medium flex items-center gap-2 transition-all"
-                onMouseEnter={() => setOpenDropdown('categories')}
-                onMouseLeave={() => setOpenDropdown(null)}
-              >
-                <Menu className="w-4 h-4" />
-                All Categories
-                <ChevronDown className="w-3 h-3 ml-1" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-80 rounded-xl p-2 shadow-lg border-gray-100 overflow-visible" onOpenAutoFocus={(e: any) => e.preventDefault()} onMouseLeave={() => setOpenDropdown(null)} onMouseEnter={() => setOpenDropdown('categories')}>
-              {allCategories.map((cat: Category) => (
-                <CategoryMenuItem key={cat.id} category={cat} />
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          <div className="flex items-center gap-6 overflow-visible">
-            {firstEightCategories.map((cat: Category) => (
-              <QuickCategoryMenuItem key={cat.id} category={cat} />
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Mobile Search Modal */}
-      {isSearchModalOpen && (
-        <div className="fixed inset-0 z-50 md:hidden bg-black/50 flex flex-col">
-          <div className="bg-white border-b border-gray-100 pt-4 pb-2 px-4">
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => {
-                  setIsSearchModalOpen(false);
-                  setSearchQuery("");
-                  setShowSearchResults(false);
-                }}
-                className="p-2 rounded-full hover:bg-gray-100 transition-colors"
-              >
-                <Search className="w-5 h-5 text-gray-400" />
+              <button className={`inline-flex items-center gap-[0.45rem] text-[0.72rem] font-bold tracking-[0.1em] uppercase bg-transparent border-none cursor-pointer whitespace-nowrap flex-shrink-0 h-full transition-opacity duration-200 hover:opacity-70 ${light ? "text-[#399746]" : "text-[#a8d63e]"}`}>
+                <Menu size={13} /> All Categories <ChevronDown size={11} />
               </button>
-              <Input 
+              {allCatOpen && (
+                <div className={`absolute top-full left-0 border border-t-0 rounded-b-lg p-2 min-w-[260px] z-[9999] ${light ? "bg-[#f5f5f5] border-black/[0.12] shadow-[0_28px_56px_rgba(0,0,0,0.1)]" : "bg-[#111411] border-white/[0.09] shadow-[0_28px_56px_rgba(0,0,0,0.75)]"}`}>
+                  {allCategories.map(cat => <CategoryMenuItem key={cat.id} category={cat} light={light} />)}
+                </div>
+              )}
+            </div>
+            <div className={`w-px h-[18px] flex-shrink-0 ${light ? "bg-black/[0.1]" : "bg-white/[0.1]"}`} />
+            <div className="flex items-center gap-6 overflow-visible">
+              {first8.map(cat => <QuickCat key={cat.id} category={cat} light={light} />)}
+            </div>
+          </div>
+        </div>
+
+        {/* MOBILE DRAWER */}
+        {mobileOpen && (
+          <div className={`md:hidden border-t max-h-[calc(100svh-68px)] overflow-y-auto ${light ? "bg-[#f5f5f5] border-black/[0.08]" : "bg-[#0d110d] border-white/[0.06]"}`}>
+            <Link
+              to="/contact-us"
+              className={`block px-4 py-4 border-b text-[0.87rem] font-medium no-underline transition-colors duration-150 ${light ? "border-black/[0.08] text-black/[0.68] hover:text-[#399746]" : "border-white/[0.06] text-[#f0f2ed]/[0.68] hover:text-[#a8d63e]"}`}
+              onClick={() => setMobileOpen(false)}
+            >
+              <PhoneCall size={13} className="inline mr-2 opacity-55" />
+              Contact Us
+            </Link>
+            <div className={`px-4 pt-4 pb-[0.45rem] text-[0.63rem] font-bold tracking-[0.18em] uppercase ${light ? "text-black/[0.22]" : "text-[#f0f2ed]/[0.22]"}`}>
+              Categories
+            </div>
+            {allCategories.map(cat => <MobileCategoryItem key={cat.id} category={cat} light={light} />)}
+          </div>
+        )}
+
+        {/* MOBILE SEARCH MODAL */}
+        {searchOpen && (
+          <div className={`fixed inset-0 z-[99999] backdrop-blur-[10px] flex flex-col ${light ? "bg-white/[0.96]" : "bg-[#040804]/[0.96]"}`}>
+            <div className={`flex items-center gap-3 px-5 py-4 border-b ${light ? "border-black/[0.08]" : "border-white/[0.07]"}`}>
+              <Search size={17} className={`flex-shrink-0 ${light ? "text-black/35" : "text-[#f0f2ed]/35"}`} />
+              <input
                 autoFocus
-                className="flex-1 h-10 rounded-full border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary" 
-                placeholder="Search products..." 
-                value={searchQuery}
-                onChange={(e) => handleSearch(e.target.value)}
-                onKeyPress={(e) => {
-                  if (e.key === 'Enter') {
-                    handleSearchSubmit();
-                    setIsSearchModalOpen(false);
-                  }
-                }}
+                className={`flex-1 h-11 border rounded-md px-4 font-outfit text-[0.95rem] outline-none ${light ? "bg-black/[0.05] border-black/[0.12] text-[#222]" : "bg-white/[0.09] border-white/[0.12] text-[#f0f2ed]"}`}
+                placeholder="Search products…"
+                value={query}
+                onChange={e => handleSearch(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && submitSearch()}
               />
               <button
-                onClick={() => {
-                  setIsSearchModalOpen(false);
-                  setSearchQuery("");
-                  setShowSearchResults(false);
-                }}
-                className="px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+                className={`bg-transparent border-none cursor-pointer font-outfit text-[0.82rem] whitespace-nowrap ${light ? "text-black/[0.48]" : "text-[#f0f2ed]/[0.48]"}`}
+                onClick={() => { setSearchOpen(false); setQuery(''); setResults([]); }}
               >
                 Cancel
               </button>
             </div>
-
-            {/* Mobile Search Results */}
-            {showSearchResults && searchResults.length > 0 && (
-              <div className="mt-2 bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden max-h-64 overflow-y-auto">
-                {searchResults.map((product) => (
+            {results.length > 0 && (
+              <div className="p-2">
+                {results.map(p => (
                   <button
-                    key={product.id}
-                    onClick={() => {
-                      handleProductClick(product.id);
-                      setIsSearchModalOpen(false);
-                      setSearchQuery("");
-                      setShowSearchResults(false);
-                    }}
-                    className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 border-b border-gray-100 last:border-0 text-left transition-colors"
+                    key={p.id}
+                    className={`w-full flex items-center gap-[0.85rem] px-4 py-[0.7rem] bg-transparent border-none border-b last:border-b-0 cursor-pointer text-left transition-colors duration-150 ${light ? "border-black/[0.08] text-[#222] hover:bg-[#399746]/[0.06]" : "border-white/[0.05] text-[#f0f2ed] hover:bg-[#a8d63e]/[0.06]"}`}
+                    onClick={() => goProduct(p.id)}
                   >
-                    <img 
-                      src={product.image ? (product.image.startsWith('http') ? product.image : `${import.meta.env.VITE_BASE_URL}${product.image}`) : '/placeholder.png'}
-                      alt={product.name}
-                      className="w-10 h-10 object-cover rounded"
-                    />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900 truncate">{product.name}</p>
-                      <p className="text-xs text-gray-500">${product.price}</p>
+                    <img className="w-9 h-9 object-cover rounded bg-[#222] flex-shrink-0" src={imgSrc(p.image)} alt={p.name} />
+                    <div>
+                      <div className="text-[0.84rem] font-medium">{p.name}</div>
+                      <div className={`text-[0.73rem] ${light ? "text-black/40" : "text-[#f0f2ed]/40"}`}>R {p.price}</div>
                     </div>
-                    {product.badge && (
-                      <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-1 rounded whitespace-nowrap">
-                        {product.badge}
-                      </span>
-                    )}
                   </button>
                 ))}
                 <button
-                  onClick={() => {
-                    handleSearchSubmit();
-                    setIsSearchModalOpen(false);
-                    setSearchQuery("");
-                    setShowSearchResults(false);
-                  }}
-                  className="w-full py-2 text-center text-sm text-primary hover:bg-primary/5 font-medium border-t border-gray-100"
+                  className={`block w-full text-center py-[0.6rem] text-[0.7rem] font-bold tracking-[0.09em] uppercase bg-transparent border-none border-t cursor-pointer transition-colors duration-150 ${light ? "text-[#399746] border-black/[0.06] hover:bg-[#399746]/[0.05]" : "text-[#a8d63e] border-white/[0.06] hover:bg-[#a8d63e]/[0.05]"}`}
+                  onClick={submitSearch}
                 >
-                  View all results
+                  View all results →
                 </button>
               </div>
             )}
           </div>
-          <div 
-            className="flex-1" 
-            onClick={() => {
-              setIsSearchModalOpen(false);
-              setSearchQuery("");
-              setShowSearchResults(false);
-            }} 
-          />
-        </div>
-      )}
+        )}
 
-      {/* Mobile Menu */}
-      {isMobileMenuOpen && (
-        <div className="md:hidden border-t border-gray-100 bg-white animate-slide-in-down">
-          <div className="container mx-auto px-4 py-4">
-
-            {/* Mobile Contact Us */}
-            <Link
-              to="/contact-us"
-              className="block px-3 py-2.5 text-sm font-medium text-gray-700 hover:text-primary transition-colors mb-4 border-b border-gray-200 pb-4"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Contact Us
-            </Link>
-
-            {/* Mobile Categories */}
-            <div className="space-y-1 pt-4 max-h-[calc(100vh-200px)] overflow-y-auto">
-              <p className="text-xs font-bold text-gray-500 uppercase tracking-widest px-3 mb-2">All Categories</p>
-              {allCategories.map((cat: Category) => (
-                <MobileCategoryItem key={cat.id} category={cat} />
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-    </nav>
+      </nav>
     </>
   );
 }

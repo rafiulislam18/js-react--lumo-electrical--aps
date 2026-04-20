@@ -40,7 +40,25 @@ html {
 .dark {
   --background: 222.2 84% 4.9%;
   --foreground: 210 40% 98%;
-  /* Dark mode colors would go here, defaulting to light mode for this e-com style */
+
+  --primary: 104 53% 45%; /* #399746 approx */
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 222.2 84% 9.8%;
+  --secondary-foreground: 210 40% 98%;
+
+  --muted: 217.2 32.6% 17.5%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+
+  --accent: 78 61% 52%; /* #A6CD3D approx */
+  --accent-foreground: 0 0% 100%;
+
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+
+  --border: 217.2 32.6% 17.5%;
+  --input: 217.2 32.6% 17.5%;
+  --ring: 104 53% 45%;
 }
 
 /* Global Animations */

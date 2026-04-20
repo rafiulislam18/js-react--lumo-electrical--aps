@@ -1,7 +1,6 @@
 import { ArrowRight, ShoppingCart, Heart, Loader } from "lucide-react";
 import { type Product } from "@/data/dummyData";
 import { Link, useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/hooks/use-toast";
@@ -14,10 +13,9 @@ interface ProductListColumnProps {
   linkTo: string;
 }
 
-// Helper function to calculate discount percentage
-const calculateDiscountPercentage = (oldPrice: number | undefined, currentPrice: number): number | null => {
-  if (!oldPrice || oldPrice <= currentPrice) return null;
-  return Math.round(((oldPrice - currentPrice) / oldPrice) * 100);
+const calcDiscount = (oldPrice: number | undefined, price: number) => {
+  if (!oldPrice || oldPrice <= price) return null;
+  return Math.round(((oldPrice - price) / oldPrice) * 100);
 };
 
 export function ProductListColumn({ title, products, linkTo }: ProductListColumnProps) {
@@ -25,239 +23,164 @@ export function ProductListColumn({ title, products, linkTo }: ProductListColumn
   const { isAuthenticated } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [wishlistStates, setWishlistStates] = useState<{ [key: string]: { isWishlisted: boolean; id: number | null } }>({});
 
-  // Add to cart mutation
   const addToCartMutation = useMutation({
-    mutationFn: async (productId: string) => {
-      return apiPost('/cart/add/', {
-        product_id: productId,
-        quantity: 1,
-      });
-    },
-    onSuccess: (data, productId) => {
-      const product = products.find(p => p.id === productId);
+    mutationFn: async (productId: string) =>
+      apiPost('/cart/add/', { product_id: productId, quantity: 1 }),
+    onSuccess: (_, productId) => {
       toast({
         title: 'Added to cart',
-        description: `${product?.name} has been added to your cart.`,
-        className: "bg-green-600 text-white border-green-700",
+        description: `${products.find(p => p.id === productId)?.name} added.`,
+        className: "bg-green-700 text-white border-green-800",
         duration: 2000,
       });
       queryClient.invalidateQueries({ queryKey: ['cart'] });
     },
     onError: (error: Error) => {
-      toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: error.message,
-        duration: 3000,
-      });
+      toast({ variant: 'destructive', title: 'Error', description: error.message, duration: 3000 });
     },
   });
 
-  const handleAddToCart = (e: React.MouseEvent<HTMLButtonElement>, productId: string) => {
-    e.stopPropagation();
-    
-    if (!isAuthenticated) {
-      toast({
-        title: 'Authentication required',
-        description: 'Please log in to add items to your cart.',
-        duration: 3000,
-      });
-      navigate('/login');
-      return;
-    }
-    
-    addToCartMutation.mutate(productId);
-  };
-
-  // Wishlist state management
-  const [wishlistStates, setWishlistStates] = useState<{ [key: string]: { isWishlisted: boolean; id: number | null } }>({});
-
-  // Add to wishlist mutation
   const addToWishlistMutation = useMutation({
-    mutationFn: async (productId: string) => {
-      return apiPost('/wishlist/', {
-        product_id: parseInt(productId),
-      });
-    },
+    mutationFn: async (productId: string) =>
+      apiPost('/wishlist/', { product_id: parseInt(productId) }),
     onSuccess: (data: any, productId: string) => {
-      setWishlistStates(prev => ({
-        ...prev,
-        [productId]: { isWishlisted: true, id: data.id }
-      }));
-      const product = products.find(p => p.id === productId);
+      setWishlistStates(prev => ({ ...prev, [productId]: { isWishlisted: true, id: data.id } }));
       toast({
-        title: 'Added to wishlist',
-        description: `${product?.name} has been added to your wishlist.`,
-        className: "bg-green-600 text-white border-green-700",
+        title: 'Saved to wishlist',
+        className: "bg-green-700 text-white border-green-800",
         duration: 2000,
       });
       queryClient.invalidateQueries({ queryKey: ['wishlist'] });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.detail || error.message || 'Failed to add to wishlist';
-      toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: errorMessage,
-        duration: 3000,
-      });
+      toast({ variant: 'destructive', title: 'Error', description: error?.response?.data?.detail || error.message, duration: 3000 });
     },
   });
 
-  // Remove from wishlist mutation
   const removeFromWishlistMutation = useMutation({
     mutationFn: async (productId: string) => {
-      const wishlistId = wishlistStates[productId]?.id;
-      if (!wishlistId) throw new Error('Wishlist item not found');
-      return apiDelete(`/wishlist/${wishlistId}/`);
+      const id = wishlistStates[productId]?.id;
+      if (!id) throw new Error('Not found');
+      return apiDelete(`/wishlist/${id}/`);
     },
-    onSuccess: (data, productId: string) => {
-      setWishlistStates(prev => ({
-        ...prev,
-        [productId]: { isWishlisted: false, id: null }
-      }));
-      const product = products.find(p => p.id === productId);
-      toast({
-        title: 'Removed from wishlist',
-        description: `${product?.name} has been removed from your wishlist.`,
-        className: "bg-blue-600 text-white border-blue-700",
-        duration: 2000,
-      });
+    onSuccess: (_, productId) => {
+      setWishlistStates(prev => ({ ...prev, [productId]: { isWishlisted: false, id: null } }));
+      toast({ title: 'Removed from wishlist', duration: 2000 });
       queryClient.invalidateQueries({ queryKey: ['wishlist'] });
     },
     onError: (error: Error) => {
-      toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: error.message,
-        duration: 3000,
-      });
+      toast({ variant: 'destructive', title: 'Error', description: error.message, duration: 3000 });
     },
   });
 
-  const handleWishlistToggle = (e: React.MouseEvent<HTMLButtonElement>, productId: string) => {
+  const handleCart = (e: React.MouseEvent<HTMLButtonElement>, productId: string) => {
     e.stopPropagation();
-    
-    if (!isAuthenticated) {
-      toast({
-        title: 'Authentication required',
-        description: 'Please log in to add items to your wishlist.',
-        duration: 3000,
-      });
-      navigate('/login');
-      return;
-    }
+    if (!isAuthenticated) { toast({ title: 'Login required', duration: 2500 }); navigate('/login'); return; }
+    addToCartMutation.mutate(productId);
+  };
 
-    const currentState = wishlistStates[productId];
-    if (currentState?.isWishlisted) {
-      removeFromWishlistMutation.mutate(productId);
-    } else {
-      addToWishlistMutation.mutate(productId);
-    }
+  const handleWishlist = (e: React.MouseEvent<HTMLButtonElement>, productId: string) => {
+    e.stopPropagation();
+    if (!isAuthenticated) { toast({ title: 'Login required', duration: 2500 }); navigate('/login'); return; }
+    wishlistStates[productId]?.isWishlisted
+      ? removeFromWishlistMutation.mutate(productId)
+      : addToWishlistMutation.mutate(productId);
   };
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex items-center justify-between mb-6 border-b border-gray-100 pb-2">
-        <h3 className="font-display font-bold text-xl text-gray-900 relative">
-          {title}
-          <span className="absolute -bottom-2.5 left-0 w-12 h-1 bg-primary-gradient rounded-full"></span>
-        </h3>
-        <Link to={linkTo} className="text-sm font-medium text-gray-400 hover:text-primary flex items-center gap-1 transition-colors">
-          View All <ArrowRight className="w-4 h-4" />
-        </Link>
-      </div>
+      {products.slice(0, 4).map((product) => {
+        const discount = calcDiscount(product.oldPrice, product.price);
+        const wishlisted = wishlistStates[product.id]?.isWishlisted;
+        const cartPending = addToCartMutation.isPending;
+        const wishPending = addToWishlistMutation.isPending || removeFromWishlistMutation.isPending;
 
-      <div className="flex flex-col gap-3">
-        {products.slice(0, 4).map((product) => {
-          const discountPercent = calculateDiscountPercentage(product.oldPrice, product.price);
+        return (
+          <div
+            key={product.id}
+            className={[
+              "group flex items-center gap-[0.9rem] py-[0.85rem] px-2 -mx-2",
+              "rounded-md cursor-pointer transition-colors duration-150",
+              "bg-white/[0.02] dark:bg-white/[0.01]",
+              "border-b border-black/[0.06] dark:border-white/[0.1]",
+              "last:border-b-0",
+              "hover:bg-[#a8d63e]/[0.08] dark:hover:bg-[#a8d63e]/[0.04]",
+            ].join(' ')}
+            onClick={() => navigate(`/product-details/${product.id}`)}
+            role="button"
+            tabIndex={0}
+            onKeyDown={e => e.key === 'Enter' && navigate(`/product-details/${product.id}`)}
+          >
+            {/* Image */}
+            <div className="relative flex-shrink-0 w-16 h-16 rounded-md overflow-hidden bg-black/[0.05] dark:bg-white/[0.04] border border-black/[0.1] dark:border-white/[0.06]">
+              <img
+                src={product.image}
+                alt={product.name}
+                className="w-full h-full object-cover transition-transform duration-[400ms] ease-[cubic-bezier(.25,.46,.45,.94)] group-hover:scale-[1.08]"
+                loading="lazy"
+              />
+              {discount !== null && (
+                <span className="absolute top-[3px] left-[3px] bg-red-500 text-white text-[0.52rem] font-extrabold tracking-[0.04em] px-[5px] py-[2px] rounded-[3px] leading-[1.4]">
+                  -{discount}%
+                </span>
+              )}
+            </div>
 
-          return (
-            <div 
-              key={product.id} 
-              className="group flex flex-col sm:flex-row gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl hover:bg-white hover:shadow-lg hover:shadow-green-900/5 transition-smooth border border-transparent hover:border-green-200 cursor-pointer"
-              onClick={() => navigate(`/product-details/${product.id}`)}
-              role="button"
-              tabIndex={0}
-            >
-              {/* Product Image */}
-              <div className="relative w-full sm:w-24 h-32 sm:h-24 shrink-0 bg-gray-50 rounded-lg overflow-hidden">
-                <img 
-                  src={product.image} 
-                  alt={product.name} 
-                  className="w-full h-full object-cover group-hover:scale-110 transition-smooth" 
-                  loading="lazy"
-                />
-                
-                {/* Discount Badge */}
-                {discountPercent !== null && (
-                  <div className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded-md text-xs font-bold shadow-md">
-                    -{discountPercent}%
-                  </div>
+            {/* Info */}
+            <div className="flex-1 min-w-0">
+              <div className="text-[0.62rem] font-semibold tracking-[0.12em] uppercase text-black/[0.32] dark:text-[#f0f2ed]/[0.28] mb-[0.2rem]">
+                {product.category}
+              </div>
+              <div className="font-outfit text-[0.83rem] font-medium text-black/[0.75] dark:text-[#f0f2ed]/[0.8] leading-[1.35] line-clamp-2 transition-colors duration-150 group-hover:text-[#a8d63e]">
+                {product.name}
+              </div>
+              <div className="flex items-baseline gap-[0.45rem] mt-[0.35rem]">
+                <span className="font-outfit font-bold text-[0.9rem] text-[#a8d63e]">
+                  R {product.price.toFixed(2)}
+                </span>
+                {product.oldPrice && (
+                  <span className="text-[0.72rem] text-black/[0.28] dark:text-[#f0f2ed]/[0.25] line-through">
+                    R {product.oldPrice.toFixed(2)}
+                  </span>
                 )}
               </div>
-
-              {/* Product Info */}
-              <div className="flex flex-col justify-between flex-1 min-w-0">
-                {/* Top Section */}
-                <div className="flex flex-col gap-1">
-                  <span className="text-xs text-gray-400 font-medium uppercase tracking-wider">{product.category}</span>
-                  <h4 className="font-semibold text-gray-900 text-xs sm:text-sm line-clamp-2 group-hover:text-primary transition-colors">
-                    {product.name}
-                  </h4>
-                </div>
-
-                {/* Bottom Section - Price & Actions */}
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mt-2 sm:mt-0">
-                  <div className="flex flex-col">
-                    <div className="flex items-baseline gap-2">
-                      <span className="font-bold text-base sm:text-lg text-primary">${product.price.toFixed(2)}</span>
-                      {product.oldPrice && (
-                        <span className="text-xs text-gray-400 line-through">${product.oldPrice.toFixed(2)}</span>
-                      )}
-                    </div>
-                    {discountPercent !== null && (
-                      <span className="text-xs text-green-600 font-semibold">Save ${(product.oldPrice! - product.price).toFixed(2)}</span>
-                    )}
-                  </div>
-
-                  {/* Action Buttons - Always Visible */}
-                  <div className="flex gap-1.5 shrink-0">
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      className={`h-8 w-8 sm:h-9 sm:w-9 rounded-full transition-smooth shadow-sm border ${wishlistStates[product.id]?.isWishlisted ? 'border-red-300 bg-red-50 text-red-500' : 'border-gray-200 hover:bg-red-50 hover:text-red-500'} disabled:opacity-50`}
-                      onClick={(e) => handleWishlistToggle(e, product.id)}
-                      disabled={addToWishlistMutation.isPending || removeFromWishlistMutation.isPending}
-                      title={wishlistStates[product.id]?.isWishlisted ? "Remove from Wishlist" : "Add to Wishlist"}
-                    >
-                      {addToWishlistMutation.isPending || removeFromWishlistMutation.isPending ? (
-                        <Loader className="w-4 h-4 animate-spin" />
-                      ) : (
-                        <Heart className={`w-4 h-4 ${wishlistStates[product.id]?.isWishlisted ? 'fill-current' : ''}`} />
-                      )}
-                    </Button>
-                    <Button
-                      size="icon"
-                      className="h-8 w-8 sm:h-9 sm:w-9 rounded-full bg-primary-gradient hover:shadow-lg hover:shadow-green-600/30 transition-smooth shadow-md disabled:opacity-50"
-                      disabled={addToCartMutation.isPending}
-                      onClick={(e) => handleAddToCart(e, product.id)}
-                      title="Add to Cart"
-                    >
-                      {addToCartMutation.isPending ? (
-                        <Loader className="w-4 h-4 text-white animate-spin" />
-                      ) : (
-                        <ShoppingCart className="w-4 h-4 text-white" />
-                      )}
-                    </Button>
-                  </div>
-                </div>
-              </div>
             </div>
-          );
-        })}
-      </div>
+
+            {/* Actions */}
+            <div className="flex flex-col gap-[0.35rem] flex-shrink-0">
+              <button
+                className={[
+                  "w-[30px] h-[30px] rounded-[5px] border grid place-items-center cursor-pointer transition-all duration-150 active:scale-[0.92]",
+                  wishlisted
+                    ? "bg-red-500/[0.15] text-red-400 border-red-500/[0.3]"
+                    : "bg-white dark:bg-white/[0.06] text-black/[0.7] dark:text-[#f0f2ed]/[0.7] border-black/[0.2] dark:border-white/[0.2] hover:bg-red-500/[0.12] hover:text-red-400 hover:border-red-500/[0.25] dark:hover:bg-red-500/[0.12] dark:hover:text-red-400 dark:hover:border-red-500/[0.25]",
+                ].join(' ')}
+                onClick={e => handleWishlist(e, product.id)}
+                disabled={wishPending}
+                title={wishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
+              >
+                {wishPending
+                  ? <Loader size={12} className="animate-spin" />
+                  : <Heart size={12} style={{ fill: wishlisted ? 'currentColor' : 'none' }} />
+                }
+              </button>
+              <button
+                className="w-[30px] h-[30px] rounded-[5px] grid place-items-center cursor-pointer transition-all duration-150 active:scale-[0.92] bg-gradient-to-br from-[#3aaa49] to-[#a8d63e] text-white dark:text-[#0a0c0a] hover:shadow-[0_0_14px_rgba(168,214,62,0.35)] disabled:opacity-45 disabled:cursor-not-allowed"
+                onClick={e => handleCart(e, product.id)}
+                disabled={cartPending}
+                title="Add to cart"
+              >
+                {cartPending
+                  ? <Loader size={12} className="animate-spin" />
+                  : <ShoppingCart size={12} />
+                }
+              </button>
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }
