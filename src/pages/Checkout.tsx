@@ -1,17 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ChevronLeft, Truck, CreditCard } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { ChevronLeft, Truck, CreditCard, Loader } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const SOUTH_AFRICAN_PROVINCES = [
@@ -287,10 +276,10 @@ export default function Checkout() {
 
   if (initialLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="font-outfit bg-white dark:bg-dark-surface min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="inline-block animate-spin">⚙️</div>
-          <p className="text-gray-600 mt-2">Loading checkout data...</p>
+          <Loader className="w-8 h-8 text-lime-brand animate-spin mx-auto mb-3" />
+          <p className="text-[.9rem] text-black/60 dark:text-[rgba(240,242,237,.6)]">Loading checkout data...</p>
         </div>
       </div>
     );
@@ -298,60 +287,66 @@ export default function Checkout() {
 
   if (items.length === 0) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="font-outfit bg-white dark:bg-dark-surface min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-600 mb-4">Your cart is empty</p>
-          <Button onClick={() => navigate("/products")}>
+          <p className="text-black/60 dark:text-[rgba(240,242,237,.6)] mb-4 text-[.9rem]">Your cart is empty</p>
+          <button
+            onClick={() => navigate("/products")}
+            className="bg-gradient-to-br from-green-brand to-lime-brand text-dark-surface font-semibold py-2 px-6 rounded-lg transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)]"
+          >
             Continue Shopping
-          </Button>
+          </button>
         </div>
       </div>
     );
   }
 
+  const inputCls = "w-full px-4 py-3 text-[.85rem] bg-white dark:bg-black/[.05] border border-black/[.1] dark:border-white/[.08] rounded-lg text-black/80 dark:text-[rgba(240,242,237,.8)] placeholder-black/40 dark:placeholder-[rgba(240,242,237,.4)] focus:outline-none focus:border-lime-brand/30 focus:bg-lime-brand/[.05] transition-all duration-150";
+  const labelCls = "block text-[.8rem] font-medium text-black/70 dark:text-[rgba(240,242,237,.7)] mb-2";
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">Checkout</h1>
+    <div className="font-outfit bg-white dark:bg-dark-surface min-h-screen">
+      <div className="max-w-[1280px] mx-auto px-4 py-8">
+        <h1 className="font-bebas text-[2.5rem] tracking-[.08em] text-black/85 dark:text-[#f0f2ed] mb-8">Checkout</h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2">
-            <form onSubmit={handleSubmit} className="space-y-8">
+            <form onSubmit={handleSubmit} className="space-y-6">
               {/* Shipping Information */}
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+              <div className="bg-white dark:bg-black/[.02] rounded-lg border border-black/[.08] dark:border-white/[.06] p-6">
+                <h2 className="text-lg font-semibold text-black/85 dark:text-[#f0f2ed] mb-6 flex items-center gap-2">
                   <Truck className="w-5 h-5" />
                   Shipping Information
                 </h2>
 
-                <div className="space-y-6">
+                <div className="space-y-5">
                   {/* Name Fields */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="firstName" className="text-gray-700 font-medium mb-2 block">
-                        First Name <span className="text-red-600">*</span>
-                      </Label>
-                      <Input
+                      <label htmlFor="firstName" className={labelCls}>
+                        First Name <span className="text-red-500">*</span>
+                      </label>
+                      <input
                         id="firstName"
                         name="firstName"
                         value={formData.firstName}
                         onChange={handleInputChange}
                         placeholder="John"
-                        className="border-gray-300 text-sm"
+                        className={inputCls}
                       />
                     </div>
                     <div>
-                      <Label htmlFor="lastName" className="text-gray-700 font-medium mb-2 block">
-                        Last Name <span className="text-red-600">*</span>
-                      </Label>
-                      <Input
+                      <label htmlFor="lastName" className={labelCls}>
+                        Last Name <span className="text-red-500">*</span>
+                      </label>
+                      <input
                         id="lastName"
                         name="lastName"
                         value={formData.lastName}
                         onChange={handleInputChange}
                         placeholder="Doe"
-                        className="border-gray-300 text-sm"
+                        className={inputCls}
                       />
                     </div>
                   </div>
@@ -359,105 +354,106 @@ export default function Checkout() {
                   {/* Email & Phone */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="email" className="text-gray-700 font-medium mb-2 block">
-                        Email <span className="text-red-600">*</span>
-                      </Label>
-                      <Input
+                      <label htmlFor="email" className={labelCls}>
+                        Email <span className="text-red-500">*</span>
+                      </label>
+                      <input
                         id="email"
                         name="email"
                         type="email"
                         value={formData.email}
                         onChange={handleInputChange}
                         placeholder="john@example.com"
-                        className="border-gray-300 text-sm"
+                        className={inputCls}
                       />
                     </div>
                     <div>
-                      <Label htmlFor="phone" className="text-gray-700 font-medium mb-2 block">
-                        Phone <span className="text-red-600">*</span>
-                      </Label>
-                      <Input
+                      <label htmlFor="phone" className={labelCls}>
+                        Phone <span className="text-red-500">*</span>
+                      </label>
+                      <input
                         id="phone"
                         name="phone"
                         value={formData.phone}
                         onChange={handleInputChange}
                         placeholder="+27 123 456 7890"
-                        className="border-gray-300 text-sm"
+                        className={inputCls}
                       />
                     </div>
                   </div>
 
                   {/* Address */}
                   <div>
-                    <Label htmlFor="address" className="text-gray-700 font-medium mb-2 block">
-                      Street Address <span className="text-red-600">*</span>
-                    </Label>
-                    <Input
+                    <label htmlFor="address" className={labelCls}>
+                      Street Address <span className="text-red-500">*</span>
+                    </label>
+                    <input
                       id="address"
                       name="address"
                       value={formData.address}
                       onChange={handleInputChange}
                       placeholder="123 Main Street"
-                      className="border-gray-300 text-sm"
+                      className={inputCls}
                     />
                   </div>
 
                   {/* City & State (Province) */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="city" className="text-gray-700 font-medium mb-2 block">
-                        City <span className="text-red-600">*</span>
-                      </Label>
-                      <Input
+                      <label htmlFor="city" className={labelCls}>
+                        City <span className="text-red-500">*</span>
+                      </label>
+                      <input
                         id="city"
                         name="city"
                         value={formData.city}
                         onChange={handleInputChange}
                         placeholder="Cape Town"
-                        className="border-gray-300 text-sm"
+                        className={inputCls}
                       />
                     </div>
                     <div>
-                      <Label htmlFor="state" className="text-gray-700 font-medium mb-2 block">
-                        Province <span className="text-red-600">*</span>
-                      </Label>
-                      <Select value={formData.state} onValueChange={(value) => handleSelectChange("state", value)}>
-                        <SelectTrigger id="state" className="border-gray-300">
-                          <SelectValue placeholder="Select a province" />
-                        </SelectTrigger>
-                        <SelectContent className="bg-white">
-                          {SOUTH_AFRICAN_PROVINCES.map((province) => (
-                            <SelectItem key={province} value={province}>
-                              {province}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <label htmlFor="state" className={labelCls}>
+                        Province <span className="text-red-500">*</span>
+                      </label>
+                      <select
+                        id="state"
+                        value={formData.state}
+                        onChange={(e) => handleSelectChange("state", e.target.value)}
+                        className={`${inputCls} appearance-none cursor-pointer`}
+                      >
+                        <option value="" disabled>Select a province</option>
+                        {SOUTH_AFRICAN_PROVINCES.map((province) => (
+                          <option key={province} value={province}>
+                            {province}
+                          </option>
+                        ))}
+                      </select>
                     </div>
                   </div>
 
                   {/* ZIP & Country */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="zipCode" className="text-gray-700 font-medium mb-2 block">
-                        Postal Code <span className="text-red-600">*</span>
-                      </Label>
-                      <Input
+                      <label htmlFor="zipCode" className={labelCls}>
+                        Postal Code <span className="text-red-500">*</span>
+                      </label>
+                      <input
                         id="zipCode"
                         name="zipCode"
                         value={formData.zipCode}
                         onChange={handleInputChange}
                         placeholder="8000"
-                        className="border-gray-300 text-sm"
+                        className={inputCls}
                       />
                     </div>
                     <div>
-                      <Label htmlFor="country" className="text-gray-700 font-medium mb-2 block">
+                      <label htmlFor="country" className={labelCls}>
                         Country
-                      </Label>
+                      </label>
                       <div
                         id="country"
-                        className="w-full h-9 px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-700 text-sm flex items-center cursor-not-allowed overflow-hidden"
+                        className={`${inputCls} bg-black/[.03] dark:bg-white/[.02] cursor-not-allowed flex items-center`}
                       >
                         South Africa
                       </div>
@@ -466,16 +462,16 @@ export default function Checkout() {
 
                   {/* Order Comments */}
                   <div>
-                    <Label htmlFor="comment" className="text-gray-700 font-medium mb-2 block">
+                    <label htmlFor="comment" className={labelCls}>
                       Comment (Optional)
-                    </Label>
-                    <Textarea
+                    </label>
+                    <textarea
                       id="comment"
                       name="comment"
                       value={formData.comment}
                       onChange={(e) => setFormData((prev) => ({ ...prev, comment: e.target.value }))}
                       placeholder="Add any special instructions or comments for your order..."
-                      className="border-gray-300 text-sm resize-none"
+                      className={`${inputCls} resize-none`}
                       rows={4}
                     />
                   </div>
@@ -486,32 +482,29 @@ export default function Checkout() {
 
           {/* Order Summary Sidebar */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg border border-gray-200 p-6 sticky top-32">
-              <h2 className="text-xl font-bold text-gray-900 mb-6">Order Summary</h2>
+            <div className="bg-white dark:bg-black/[.02] rounded-lg border border-black/[.08] dark:border-white/[.06] p-6 sticky top-8">
+              <h2 className="text-lg font-semibold text-black/85 dark:text-[#f0f2ed] mb-6">Order Summary</h2>
 
               {/* Items List */}
-              <div className="space-y-4 mb-6 max-h-72 overflow-y-auto">
+              <div className="space-y-3 mb-6 max-h-72 overflow-y-auto">
                 {items.map((item) => (
                   <div
                     key={item.id}
-                    className="flex gap-4 pb-4 border-b border-gray-100 last:border-0"
+                    className="flex gap-3 pb-3 border-b border-black/[.08] dark:border-white/[.06] last:border-0"
                   >
                     {item.image && (
                       <img
                         src={item.image}
                         alt={item.product_name}
-                        className="w-16 h-16 object-cover rounded-lg"
+                        className="w-14 h-14 object-cover rounded-lg"
                       />
                     )}
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-medium text-gray-900 line-clamp-2 text-sm">
+                      <h3 className="font-medium text-black/85 dark:text-[#f0f2ed] line-clamp-2 text-[.85rem]">
                         {item.product_name}
                       </h3>
-                      {/* <p className="text-sm font-bold text-gray-600 mt-1">x{item.quantity}</p> */}
-                      <p className="font-bold text-gray-900 text-sm mt-2">
-                        ${item.price}
-                        <span className="font-normal"> x {item.quantity} = {" "}</span>
-                        <span className="text-green-600">${item.subtotal.toFixed(2)}</span>
+                      <p className="font-semibold text-black/85 dark:text-[#f0f2ed] text-[.8rem] mt-1">
+                        ${item.price} <span className="font-normal text-black/60 dark:text-[rgba(240,242,237,.6)]">x {item.quantity}</span> = <span className="text-lime-brand">${item.subtotal.toFixed(2)}</span>
                       </p>
                     </div>
                   </div>
@@ -519,60 +512,60 @@ export default function Checkout() {
               </div>
 
               {/* Pricing Summary */}
-              <div className="space-y-3 border-t border-gray-200 pt-6 text-sm">
-                <div className="flex justify-between text-gray-700">
+              <div className="space-y-2 border-t border-black/[.08] dark:border-white/[.06] pt-4 text-[.85rem]">
+                <div className="flex justify-between text-black/60 dark:text-[rgba(240,242,237,.6)]">
                   <span>Subtotal</span>
                   <span>${pricing.subtotal.toFixed(2)}</span>
                 </div>
-                <div className="flex justify-between text-gray-700">
+                <div className="flex justify-between text-black/60 dark:text-[rgba(240,242,237,.6)]">
                   <span>Tax (10%)</span>
                   <span>${pricing.tax.toFixed(2)}</span>
                 </div>
-                <div className="flex justify-between text-gray-700">
+                <div className="flex justify-between text-black/60 dark:text-[rgba(240,242,237,.6)]">
                   <span>Shipping</span>
-                  <span className={pricing.shipping === 0 ? "text-green-600 font-semibold" : ""}>
+                  <span className={pricing.shipping === 0 ? "text-lime-brand font-semibold" : ""}>
                     {pricing.shipping === 0 ? "Free" : `$${pricing.shipping.toFixed(2)}`}
                   </span>
                 </div>
 
                 {pricing.shipping === 0 && (
-                  <p className="text-xs text-green-600 font-medium">
+                  <p className="text-[.75rem] text-lime-brand font-medium mt-1">
                     You've qualified for free shipping!
                   </p>
                 )}
 
-                <div className="border-t border-gray-200 pt-3 flex justify-between items-center">
-                  <span className="font-bold text-gray-900 text-lg">Total</span>
-                  <span className="text-lg font-bold text-green-600">
+                <div className="border-t border-black/[.08] dark:border-white/[.06] pt-3 flex justify-between items-center">
+                  <span className="font-bold text-black/85 dark:text-[#f0f2ed]">Total</span>
+                  <span className="font-bold text-lime-brand text-lg">
                     ${pricing.total.toFixed(2)}
                   </span>
                 </div>
               </div>
 
               {/* Submit Button */}
-              <form onSubmit={handleSubmit} className="mt-2">
-                <Button
+              <form onSubmit={handleSubmit} className="mt-6">
+                <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-primary-gradient hover:opacity-90 text-white font-bold py-3 rounded-lg transition-all"
+                  className="w-full bg-gradient-to-br from-green-brand to-lime-brand text-dark-surface font-semibold py-3 rounded-lg transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   {loading ? (
                     <>
-                      <span className="animate-spin mr-2">⚙️</span>
+                      <Loader size={18} className="animate-spin" />
                       Processing...
                     </>
                   ) : (
                     <>
-                      <CreditCard className="w-5 h-5 mr-2" />
+                      <CreditCard className="w-5 h-5" />
                       Proceed to Payment
                     </>
                   )}
-                </Button>
+                </button>
               </form>
             </div>
+          </div>
         </div>
       </div>
     </div>
-  </div>
   );
 }

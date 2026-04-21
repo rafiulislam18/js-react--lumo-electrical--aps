@@ -1,7 +1,5 @@
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { User, Lock, ShoppingBag, Heart, LogOut, Edit3, DollarSign, ArrowRight } from "lucide-react";
+import { User, Lock, ShoppingBag, Heart, LogOut, Edit3, DollarSign, ArrowRight, Loader } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { apiGet, apiPut } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
@@ -113,7 +111,6 @@ export default function Profile() {
     trade_docs: null,
   });
 
-  // Fetch user profile on component mount
   useEffect(() => {
     const accessToken = localStorage.getItem('access_token');
     if (!accessToken) {
@@ -129,20 +126,18 @@ export default function Profile() {
       const profile: UserProfile = await apiGet("/users/profile/");
 
       setUserEmail(profile.email);
-      
-      // Extract and store the trade docs URL if it exists
+
       const tradeDocsUrl = profile.customer_profile.trade_docs || null;
       if (tradeDocsUrl) {
         setExistingTradeDocsUrl(tradeDocsUrl);
       }
 
-      // Store stats
       setStats({
         total_orders: profile.total_orders,
         wishlist_items: profile.wishlist_items,
         total_spent: profile.total_spent,
       });
-      
+
       setFormData({
         first_name: profile.first_name,
         last_name: profile.last_name,
@@ -165,7 +160,6 @@ export default function Profile() {
         monthly_statement_preference: profile.customer_profile.monthly_statement_preference || false,
       });
     } catch (err) {
-      // console.error("Error fetching profile:", err);
       toast({
         variant: "destructive",
         title: "Error",
@@ -188,7 +182,6 @@ export default function Profile() {
     try {
       setIsSaving(true);
 
-      // Validation
       if (!formData.first_name?.trim()) {
         toast({
           variant: "destructive",
@@ -219,7 +212,6 @@ export default function Profile() {
         return;
       }
 
-      // Trade-specific validation
       if (formData.customer_type === "Trade") {
         const tradeRequiredFields: (keyof FormData)[] = [
           "billing_address",
@@ -249,7 +241,6 @@ export default function Profile() {
         }
       }
 
-      // Build the nested customer profile data
       const customerProfileData = {
         phone: formData.phone,
         customer_type: formData.customer_type,
@@ -270,13 +261,11 @@ export default function Profile() {
         monthly_statement_preference: formData.monthly_statement_preference,
       };
 
-      // If there's a trade document, use FormData for multipart upload
       if (formData.trade_docs) {
         const updateFormData = new FormData();
         updateFormData.append("first_name", formData.first_name);
         updateFormData.append("last_name", formData.last_name);
 
-        // Append each customer profile field individually
         Object.entries(customerProfileData).forEach(([key, value]) => {
           updateFormData.append(`customer_profile.${key}`, String(value));
         });
@@ -284,7 +273,7 @@ export default function Profile() {
         updateFormData.append("customer_profile.trade_docs", formData.trade_docs);
 
         const token = localStorage.getItem("access_token");
-        const API_URL = import.meta.env.VITE_API_URL;
+        const API_URL = (import.meta as any).env.VITE_API_URL;
 
         const response = await fetch(`${API_URL}/users/profile/update/`, {
           method: "PUT",
@@ -299,9 +288,8 @@ export default function Profile() {
           throw new Error(errorData.detail || "Failed to save profile");
         }
       } else {
-        // Use JSON for non-file updates (more efficient and cleaner)
         const token = localStorage.getItem("access_token");
-        const API_URL = import.meta.env.VITE_API_URL;
+        const API_URL = (import.meta as any).env.VITE_API_URL;
 
         const payload = {
           first_name: formData.first_name,
@@ -332,7 +320,6 @@ export default function Profile() {
       setIsEditingProfile(false);
       await fetchUserProfile();
     } catch (err) {
-      // console.error("Error saving profile:", err);
       const errorMessage = err instanceof Error ? err.message : "Failed to save profile. Please try again.";
       toast({
         variant: "destructive",
@@ -349,666 +336,630 @@ export default function Profile() {
     navigate("/login");
   };
 
-  const statsData = [
-    { label: "Total Orders", value: stats.total_orders.toString(), icon: ShoppingBag, color: "text-blue-600" },
-    { label: "Wishlist Items", value: stats.wishlist_items.toString(), icon: Heart, color: "text-red-500" },
-    { label: "Total Spent", value: `$${stats.total_spent.toFixed(2)}`, icon: DollarSign, color: "text-green-600" }
-  ];
-
-  const actionButtons = [
-    { label: "View Orders", icon: ShoppingBag, onClick: () => navigate("/orders") },
-    { label: "View Wishlist", icon: Heart, onClick: () => navigate("/wishlist") },
-    { label: "Change Password", icon: Lock, onClick: () => navigate("/change-password") }
-  ];
+  const inputCls = "w-full px-4 py-3 text-[.85rem] bg-white dark:bg-black/[.05] border border-black/[.1] dark:border-white/[.08] rounded-lg text-black/80 dark:text-[rgba(240,242,237,.8)] placeholder-black/40 dark:placeholder-[rgba(240,242,237,.4)] focus:outline-none focus:border-lime-brand/30 focus:bg-lime-brand/[.05] dark:focus:bg-lime-brand/[.05] transition-all duration-150";
+  const labelCls = "block text-[.8rem] font-medium text-black/70 dark:text-[rgba(240,242,237,.7)] mb-2";
+  const sectionTitleCls = "text-[.95rem] font-semibold text-black/80 dark:text-[rgba(240,242,237,.8)] mb-4";
+  const dividerCls = "border-t border-black/[.08] dark:border-white/[.06]";
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
-      {/* Header Section */}
-      {/* <div className="bg-gradient-to-r from-[#399746] to-[#A6CD3D] text-white py-10 px-4">
-        <div className="container mx-auto max-w-6xl">
-          <div className="flex items-center gap-3 mb-2">
-            <User className="w-8 h-8" />
-            <h1 className="text-3xl md:text-4xl font-bold">My Account</h1>
-          </div>
-          <p className="text-green-50 text-sm md:text-base max-w-2xl">Manage your profile, addresses, and account settings</p>
+    <div className="font-outfit bg-white dark:bg-dark-surface min-h-screen flex flex-col">
+      {/* Page Header */}
+      <section className="bg-black/[.03] dark:bg-lime-brand/[.02] border-b border-black/[.06] dark:border-lime-brand/[.06] px-8 py-6 max-sm:px-4 max-sm:py-4">
+        <div className="max-w-[1280px] mx-auto">
+          <h1 className="font-bebas text-[2rem] tracking-[.08em] text-black/85 dark:text-[#f0f2ed] mb-1">
+            My Account
+          </h1>
+          <p className="text-[.9rem] text-black/55 dark:text-[rgba(240,242,237,.55)]">
+            Manage your profile, addresses, and account settings
+          </p>
         </div>
-      </div> */}
+      </section>
 
-      <section className="py-8 px-4">
-        <div className="container mx-auto max-w-6xl">
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Right Content - Main Profile Section */}
-            <div className="lg:col-span-2 space-y-6">
-              {/* Profile Information Card */}
-              <div className="bg-white rounded-2xl border-2 border-gray-100 shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
-                {/* Header */}
-                <div className="bg-gradient-to-r from-[#399746] to-[#A6CD3D] px-6 md:px-8 py-8 text-white flex items-start justify-between gap-4">
-                  <div className="min-w-0 flex-1">
-                    <h2 className="text-2xl md:text-3xl font-bold flex items-center gap-2">
-                      <User className="w-7 h-7 flex-shrink-0" />
-                      <span>Personal Information</span>
-                    </h2>
-                    <p className="text-green-50 mt-2 text-sm md:text-base">Update your profile details and addresses</p>
-                  </div>
-                  {!isEditingProfile && (
-                    <button
-                      onClick={() => setIsEditingProfile(true)}
-                      className="p-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors flex-shrink-0"
-                    >
-                      <Edit3 className="w-5 h-5 text-white" />
-                    </button>
-                  )}
+      {/* Main Content */}
+      <div className="flex-1 max-w-[1280px] mx-auto w-full px-8 py-8 max-sm:px-4 max-sm:py-4">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-10">
+          {/* Main Profile Section */}
+          <div className="space-y-8">
+            {/* Profile Card */}
+            <div className="bg-white dark:bg-black/[.02] rounded-xl border border-black/[.08] dark:border-white/[.06] overflow-hidden">
+              {/* Card Header */}
+              <div className="px-6 sm:px-8 py-6 sm:py-8 flex items-center justify-between gap-4 border-b border-black/[.08] dark:border-white/[.06] bg-black/[.02] dark:bg-white/[.02]">
+                <div className="flex items-center gap-3">
+                  <User className="w-5 h-5 text-lime-brand" />
+                  <h2 className="text-[1.1rem] font-semibold text-black/80 dark:text-[rgba(240,242,237,.8)]">
+                    Personal Information
+                  </h2>
                 </div>
+                {!isEditingProfile && (
+                  <button
+                    onClick={() => setIsEditingProfile(true)}
+                    className="p-2 hover:bg-black/[.05] dark:hover:bg-white/[.05] rounded-lg transition-colors"
+                  >
+                    <Edit3 className="w-5 h-5 text-black/60 dark:text-[rgba(240,242,237,.6)]" />
+                  </button>
+                )}
+              </div>
 
-                {/* Content */}
-                <div className="p-6 md:p-8">
-                  {isLoading ? (
-                    <div className="flex items-center justify-center py-16">
-                      <div className="relative w-12 h-12">
-                        <div className="absolute inset-0 bg-gradient-to-r from-[#399746] to-[#A6CD3D] rounded-full animate-spin" style={{mask: 'radial-gradient(circle, transparent 30%, black 70%)'}}></div>
-                      </div>
-                    </div>
-                  ) : isEditingProfile ? (
-                    <div className="space-y-6">
-                      <h3 className="text-lg font-semibold text-gray-900">Personal Details</h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Card Content */}
+              <div className="p-6 sm:p-8">
+                {isLoading ? (
+                  <div className="flex items-center justify-center py-16">
+                    <Loader className="w-8 h-8 text-lime-brand animate-spin" />
+                  </div>
+                ) : isEditingProfile ? (
+                  <div className="space-y-6">
+                    {/* Personal Details */}
+                    <div>
+                      <h3 className={sectionTitleCls}>Personal Details</h3>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                         <div>
-                          <label className="block text-sm font-semibold text-gray-900 mb-2">
-                            First Name <span className="text-red-600">*</span>
-                          </label>
-                          <Input
+                          <label className={labelCls}>First Name <span className="text-red-500">*</span></label>
+                          <input
                             type="text"
                             value={formData.first_name}
                             onChange={(e) => setFormData(prev => ({ ...prev, first_name: e.target.value }))}
                             placeholder="Enter your first name"
-                            className="h-11 rounded-lg border-gray-200"
+                            className={inputCls}
                           />
                         </div>
-
                         <div>
-                          <label className="block text-sm font-semibold text-gray-900 mb-2">
-                            Last Name <span className="text-red-600">*</span>
-                          </label>
-                          <Input
+                          <label className={labelCls}>Last Name <span className="text-red-500">*</span></label>
+                          <input
                             type="text"
                             value={formData.last_name}
                             onChange={(e) => setFormData(prev => ({ ...prev, last_name: e.target.value }))}
                             placeholder="Enter your last name"
-                            className="h-11 rounded-lg border-gray-200"
+                            className={inputCls}
                           />
                         </div>
                       </div>
 
-                      <div>
-                        <label className="block text-sm font-semibold text-gray-900 mb-2">
-                          Email Address {" "}
-                          <span className="font-normal text-gray-500 italic">(can't be changed)</span>
-                        </label>
-                        <Input
+                      <div className="mb-4">
+                        <label className={labelCls}>Email Address <span className="text-black/40 dark:text-[rgba(240,242,237,.4)]">(can't be changed)</span></label>
+                        <input
                           type="email"
                           value={userEmail}
                           disabled
-                          placeholder="Your email"
-                          className="h-11 rounded-lg border-gray-200 bg-gray-50"
+                          className={`${inputCls} opacity-60 cursor-not-allowed`}
                         />
                       </div>
 
-                      <div>
-                        <label className="block text-sm font-semibold text-gray-900 mb-2">
-                          Phone Number <span className="text-red-600">*</span>
-                        </label>
-                        <Input
+                      <div className="mb-4">
+                        <label className={labelCls}>Phone Number <span className="text-red-500">*</span></label>
+                        <input
                           type="tel"
                           value={formData.phone}
                           onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
                           placeholder="Enter your phone number"
-                          className="h-11 rounded-lg border-gray-200"
+                          className={inputCls}
                         />
                       </div>
 
                       <div>
-                        <label className="block text-sm font-semibold text-gray-900 mb-2">
-                          Customer Type
-                        </label>
+                        <label className={labelCls}>Customer Type</label>
                         <select
                           value={formData.customer_type}
                           onChange={(e) => setFormData(prev => ({ ...prev, customer_type: e.target.value }))}
-                          className="h-11 px-3 rounded-lg border border-gray-200 bg-white text-gray-900"
+                          className={inputCls}
                         >
                           <option value="Retail">Retail</option>
                           <option value="Trade">Trade</option>
                         </select>
                       </div>
-
-                      <div className="border-t pt-6">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-4">Billing Address</h3>
-                        <div className="space-y-4">
-                          <div>
-                            <label className="block text-sm font-semibold text-gray-900 mb-2">
-                              Street Address {formData.customer_type === "Trade" && <span className="text-red-600">*</span>}
-                            </label>
-                            <Input
-                              type="text"
-                              value={formData.billing_address}
-                              onChange={(e) => setFormData(prev => ({ ...prev, billing_address: e.target.value }))}
-                              placeholder="Enter your street address"
-                              className="h-11 rounded-lg border-gray-200"
-                            />
-                          </div>
-
-                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div>
-                              <label className="block text-sm font-semibold text-gray-900 mb-2">
-                                City {formData.customer_type === "Trade" && <span className="text-red-600">*</span>}
-                              </label>
-                              <Input
-                                type="text"
-                                value={formData.billing_city}
-                                onChange={(e) => setFormData(prev => ({ ...prev, billing_city: e.target.value }))}
-                                placeholder="City"
-                                className="h-11 rounded-lg border-gray-200"
-                              />
-                            </div>
-
-                            <div>
-                              <label className="block text-sm font-semibold text-gray-900 mb-2">
-                                Province {formData.customer_type === "Trade" && <span className="text-red-600">*</span>}
-                              </label>
-                              <select
-                                value={formData.billing_province}
-                                onChange={(e) => setFormData(prev => ({ ...prev, billing_province: e.target.value }))}
-                                className="h-11 px-3 rounded-lg border border-gray-200 bg-white text-gray-900"
-                              >
-                                <option value="">Select Province</option>
-                                {PROVINCES.map((province) => (
-                                  <option key={province} value={province}>
-                                    {province}
-                                  </option>
-                                ))}
-                              </select>
-                            </div>
-
-                            <div>
-                              <label className="block text-sm font-semibold text-gray-900 mb-2">
-                                Postal Code {formData.customer_type === "Trade" && <span className="text-red-600">*</span>}
-                              </label>
-                              <Input
-                                type="text"
-                                value={formData.billing_postal_code}
-                                onChange={(e) => setFormData(prev => ({ ...prev, billing_postal_code: e.target.value }))}
-                                placeholder="Postal Code"
-                                className="h-11 rounded-lg border-gray-200"
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="border-t pt-6">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-4">Delivery Address</h3>
-                        <div className="space-y-4">
-                          <div>
-                            <label className="block text-sm font-semibold text-gray-900 mb-2">
-                              Street Address
-                            </label>
-                            <Input
-                              type="text"
-                              value={formData.delivery_address}
-                              onChange={(e) => setFormData(prev => ({ ...prev, delivery_address: e.target.value }))}
-                              placeholder="Enter your delivery address"
-                              className="h-11 rounded-lg border-gray-200"
-                            />
-                          </div>
-
-                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div>
-                              <label className="block text-sm font-semibold text-gray-900 mb-2">
-                                City
-                              </label>
-                              <Input
-                                type="text"
-                                value={formData.delivery_city}
-                                onChange={(e) => setFormData(prev => ({ ...prev, delivery_city: e.target.value }))}
-                                placeholder="City"
-                                className="h-11 rounded-lg border-gray-200"
-                              />
-                            </div>
-
-                            <div>
-                              <label className="block text-sm font-semibold text-gray-900 mb-2">
-                                Province
-                              </label>
-                              <select
-                                value={formData.delivery_province}
-                                onChange={(e) => setFormData(prev => ({ ...prev, delivery_province: e.target.value }))}
-                                className="h-11 px-3 rounded-lg border border-gray-200 bg-white text-gray-900"
-                              >
-                                <option value="">Select Province</option>
-                                {PROVINCES.map((province) => (
-                                  <option key={province} value={province}>
-                                    {province}
-                                  </option>
-                                ))}
-                              </select>
-                            </div>
-
-                            <div>
-                              <label className="block text-sm font-semibold text-gray-900 mb-2">
-                                Postal Code
-                              </label>
-                              <Input
-                                type="text"
-                                value={formData.delivery_postal_code}
-                                onChange={(e) => setFormData(prev => ({ ...prev, delivery_postal_code: e.target.value }))}
-                                placeholder="Postal Code"
-                                className="h-11 rounded-lg border-gray-200"
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      {formData.customer_type === "Trade" && (
-                        <>
-                          <div className="border-t pt-6">
-                            <h3 className="text-lg font-semibold text-gray-900 mb-4">Business Details</h3>
-                            <div className="space-y-4">
-                              <div>
-                                <label className="block text-sm font-semibold text-gray-900 mb-2">
-                                  Company Name <span className="text-red-600">*</span>
-                                </label>
-                                <Input
-                                  type="text"
-                                  value={formData.company_name}
-                                  onChange={(e) => setFormData(prev => ({ ...prev, company_name: e.target.value }))}
-                                  placeholder="Enter company name"
-                                  className="h-11 rounded-lg border-gray-200"
-                                />
-                              </div>
-
-                              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div>
-                                  <label className="block text-sm font-semibold text-gray-900 mb-2">
-                                    VAT Number {" "}
-                                    <span className="font-normal text-gray-500 italic">(Optional)</span>
-                                  </label>
-                                  <Input
-                                    type="text"
-                                    value={formData.vat_number}
-                                    onChange={(e) => setFormData(prev => ({ ...prev, vat_number: e.target.value }))}
-                                    placeholder="VAT Number"
-                                    className="h-11 rounded-lg border-gray-200"
-                                  />
-                                </div>
-
-                                <div>
-                                  <label className="block text-sm font-semibold text-gray-900 mb-2">
-                                    Company Registration <span className="text-red-600">*</span>
-                                  </label>
-                                  <Input
-                                    type="text"
-                                    value={formData.company_registration}
-                                    onChange={(e) => setFormData(prev => ({ ...prev, company_registration: e.target.value }))}
-                                    placeholder="Registration Number"
-                                    className="h-11 rounded-lg border-gray-200"
-                                  />
-                                </div>
-
-                                <div>
-                                  <label className="block text-sm font-semibold text-gray-900 mb-2">
-                                    Business Type <span className="text-red-600">*</span>
-                                  </label>
-                                  <select
-                                    value={formData.business_type}
-                                    onChange={(e) => setFormData(prev => ({ ...prev, business_type: e.target.value }))}
-                                    className="h-11 px-3 rounded-lg border border-gray-200 bg-white text-gray-900"
-                                  >
-                                    <option value="">Select Business Type</option>
-                                    {BUSINESS_TYPES.map((type) => (
-                                      <option key={type.value} value={type.value}>
-                                        {type.label}
-                                      </option>
-                                    ))}
-                                  </select>
-                                </div>
-                              </div>
-
-                              <div>
-                                <label className="block text-sm font-semibold text-gray-900 mb-2">
-                                  Trade Documents {" "}
-                                  <span className="font-normal text-gray-500 italic">(Optional)</span>
-                                </label>
-                                
-                                {/* Show existing file if present */}
-                                {existingTradeDocsUrl && !formData.trade_docs && (
-                                  <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                                    <p className="text-sm text-blue-800">
-                                      <span className="font-semibold">Current file:</span> {existingTradeDocsUrl.split('/').pop()}
-                                    </p>
-                                    <a 
-                                      href={existingTradeDocsUrl} 
-                                      target="_blank" 
-                                      rel="noopener noreferrer"
-                                      className="text-sm text-blue-600 hover:text-blue-800 underline mt-1 inline-block"
-                                    >
-                                      View file
-                                    </a>
-                                  </div>
-                                )}
-                                
-                                <input
-                                  type="file"
-                                  onChange={(e) => setFormData(prev => ({ ...prev, trade_docs: e.target.files?.[0] || null }))}
-                                  accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                                  className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100"
-                                />
-                                <p className="text-xs text-gray-500 mt-2">PDF, DOC, DOCX, JPG, JPEG, PNG {existingTradeDocsUrl && '(Upload to replace existing file)'}</p>
-                                {formData.trade_docs && (
-                                  <p className="text-sm text-green-600 mt-2">New file selected: {formData.trade_docs.name}</p>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="border-t pt-6">
-                            <h3 className="text-lg font-semibold text-gray-900 mb-4">Procurement & Preferences</h3>
-                            <div className="space-y-4">
-                              <div>
-                                <label className="block text-sm font-semibold text-gray-900 mb-2">
-                                  PO Number <span className="text-red-600">*</span>
-                                </label>
-                                <Input
-                                  type="text"
-                                  value={formData.po_number}
-                                  onChange={(e) => setFormData(prev => ({ ...prev, po_number: e.target.value }))}
-                                  placeholder="Enter PO number"
-                                  className="h-11 rounded-lg border-gray-200"
-                                />
-                              </div>
-
-                              <div>
-                                <label className="block text-sm font-semibold text-gray-900 mb-2">
-                                  Procurement Contact <span className="text-red-600">*</span>
-                                </label>
-                                <Input
-                                  type="text"
-                                  value={formData.procurement_contact}
-                                  onChange={(e) => setFormData(prev => ({ ...prev, procurement_contact: e.target.value }))}
-                                  placeholder="Enter procurement contact"
-                                  className="h-11 rounded-lg border-gray-200"
-                                />
-                              </div>
-
-                              <div className="flex items-center gap-3">
-                                <input
-                                  type="checkbox"
-                                  id="monthly_statement"
-                                  checked={formData.monthly_statement_preference}
-                                  onChange={(e) => setFormData(prev => ({ ...prev, monthly_statement_preference: e.target.checked }))}
-                                  className="w-4 h-4 rounded border-gray-200 cursor-pointer"
-                                />
-                                <label htmlFor="monthly_statement" className="text-sm font-medium text-gray-900 cursor-pointer">
-                                  I prefer monthly statement by email
-                                </label>
-                              </div>
-                            </div>
-                          </div>
-                        </>
-                      )}
-
-                      <div className="flex gap-3 pt-6 border-t border-gray-200">
-                        <Button
-                          onClick={handleSaveProfile}
-                          disabled={isSaving}
-                          className="flex-1 h-12 bg-gradient-to-r from-[#399746] to-[#A6CD3D] text-white font-semibold hover:shadow-lg disabled:opacity-50 rounded-lg transition-all"
-                        >
-                          {isSaving ? "Saving..." : "Save Changes"}
-                        </Button>
-                        <Button
-                          onClick={() => setIsEditingProfile(false)}
-                          variant="outline"
-                          className="flex-1 h-12 rounded-lg border-2 border-gray-200"
-                        >
-                          Cancel
-                        </Button>
-                      </div>
                     </div>
-                  ) : (
-                    <div className="space-y-6">
-                      <div>
-                        <h3 className="text-lg font-semibold text-gray-900 mb-4">Personal Details</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          <div>
-                            <p className="text-sm font-medium text-gray-600 mb-1">First Name</p>
-                            <p className="text-gray-900">{formData.first_name || "—"}</p>
-                          </div>
-                          <div>
-                            <p className="text-sm font-medium text-gray-600 mb-1">Last Name</p>
-                            <p className="text-gray-900">{formData.last_name || "—"}</p>
-                          </div>
-                          <div>
-                            <p className="text-sm font-medium text-gray-600 mb-1">Email Address</p>
-                            <p className="text-gray-900">{userEmail || "—"}</p>
-                          </div>
-                          <div>
-                            <p className="text-sm font-medium text-gray-600 mb-1">Phone Number</p>
-                            <p className="text-gray-900">{formData.phone || "—"}</p>
-                          </div>
-                          <div>
-                            <p className="text-sm font-medium text-gray-600 mb-1">Customer Type</p>
-                            <p className="text-gray-900">{formData.customer_type || "—"}</p>
-                          </div>
-                        </div>
+
+                    <div className={dividerCls}></div>
+
+                    {/* Billing Address */}
+                    <div>
+                      <h3 className={sectionTitleCls}>Billing Address</h3>
+                      <div className="mb-4">
+                        <label className={labelCls}>Street Address {formData.customer_type === "Trade" && <span className="text-red-500">*</span>}</label>
+                        <input
+                          type="text"
+                          value={formData.billing_address}
+                          onChange={(e) => setFormData(prev => ({ ...prev, billing_address: e.target.value }))}
+                          placeholder="Enter your street address"
+                          className={inputCls}
+                          required={formData.customer_type === "Trade"}
+                        />
                       </div>
 
-                      <div className="border-t pt-6">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-4">Billing Address</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div>
-                            <p className="text-sm font-medium text-gray-600 mb-1">Street Address</p>
-                            <p className="text-gray-900">{formData.billing_address || "—"}</p>
-                          </div>
-                          <div>
-                            <p className="text-sm font-medium text-gray-600 mb-1">City</p>
-                            <p className="text-gray-900">{formData.billing_city || "—"}</p>
-                          </div>
-                          <div>
-                            <p className="text-sm font-medium text-gray-600 mb-1">Province</p>
-                            <p className="text-gray-900">{formData.billing_province || "—"}</p>
-                          </div>
-                          <div>
-                            <p className="text-sm font-medium text-gray-600 mb-1">Postal Code</p>
-                            <p className="text-gray-900">{formData.billing_postal_code || "—"}</p>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="border-t pt-6">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-4">Delivery Address</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div>
-                            <p className="text-sm font-medium text-gray-600 mb-1">Street Address</p>
-                            <p className="text-gray-900">{formData.delivery_address || "—"}</p>
-                          </div>
-                          <div>
-                            <p className="text-sm font-medium text-gray-600 mb-1">City</p>
-                            <p className="text-gray-900">{formData.delivery_city || "—"}</p>
-                          </div>
-                          <div>
-                            <p className="text-sm font-medium text-gray-600 mb-1">Province</p>
-                            <p className="text-gray-900">{formData.delivery_province || "—"}</p>
-                          </div>
-                          <div>
-                            <p className="text-sm font-medium text-gray-600 mb-1">Postal Code</p>
-                            <p className="text-gray-900">{formData.delivery_postal_code || "—"}</p>
-                          </div>
-                        </div>
-                      </div>
-
-                      {formData.customer_type === "Trade" && (
-                        <>
-                          <div className="border-t pt-6">
-                            <h3 className="text-lg font-semibold text-gray-900 mb-4">Business Details</h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <div>
-                                <p className="text-sm font-medium text-gray-600 mb-1">Company Name</p>
-                                <p className="text-gray-900">{formData.company_name || "—"}</p>
-                              </div>
-                              <div>
-                                <p className="text-sm font-medium text-gray-600 mb-1">VAT Number</p>
-                                <p className="text-gray-900">{formData.vat_number || "—"}</p>
-                              </div>
-                              <div>
-                                <p className="text-sm font-medium text-gray-600 mb-1">Company Registration</p>
-                                <p className="text-gray-900">{formData.company_registration || "—"}</p>
-                              </div>
-                              <div>
-                                <p className="text-sm font-medium text-gray-600 mb-1">Business Type</p>
-                                <p className="text-gray-900">{formData.business_type || "—"}</p>
-                              </div>
-                              <div>
-                                <p className="text-sm font-medium text-gray-600 mb-1">Trade Documents</p>
-                                {existingTradeDocsUrl ? (
-                                  <a 
-                                    href={existingTradeDocsUrl}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-blue-600 hover:text-blue-800 underline"
-                                  >
-                                    View Document
-                                  </a>
-                                ) : (
-                                  <p className="text-gray-500 italic">(No document uploaded)</p>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="border-t pt-6">
-                            <h3 className="text-lg font-semibold text-gray-900 mb-4">Procurement & Preferences</h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <div>
-                                <p className="text-sm font-medium text-gray-600 mb-1">PO Number</p>
-                                <p className="text-gray-900">{formData.po_number || "—"}</p>
-                              </div>
-                              <div>
-                                <p className="text-sm font-medium text-gray-600 mb-1">Procurement Contact</p>
-                                <p className="text-gray-900">{formData.procurement_contact || "—"}</p>
-                              </div>
-                              <div>
-                                <p className="text-sm font-medium text-gray-600 mb-1">Monthly Statement Preference</p>
-                                <p className="text-gray-900">{formData.monthly_statement_preference ? "Yes" : "No"}</p>
-                              </div>
-                            </div>
-                          </div>
-                        </>
-                      )}
-
-                      <Button
-                        onClick={() => setIsEditingProfile(true)}
-                        className="w-full h-12 bg-gradient-to-r from-[#399746] to-[#A6CD3D] text-white font-semibold hover:shadow-lg rounded-lg transition-all"
-                      >
-                        <Edit3 className="w-4 h-4 mr-2" />
-                        Edit Profile
-                      </Button>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Stats Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                {statsData.map((stat, index) => {
-                  const Icon = stat.icon;
-                  const colors = [
-                    'from-blue-50 to-cyan-50 border-blue-200',
-                    'from-red-50 to-pink-50 border-red-200',
-                    'from-green-50 to-emerald-50 border-green-200'
-                  ];
-                  return (
-                    <div 
-                      key={stat.label} 
-                      className={`bg-gradient-to-br ${colors[index]} rounded-xl border-2 p-5 shadow-md hover:shadow-lg transition-all hover:scale-105 transform`}
-                      style={{animation: `slideInUp 0.5s ease-out ${index * 0.1}s both`}}
-                    >
-                      <div className="flex items-center justify-between">
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <div>
-                          <p className="text-xs md:text-sm text-gray-600 font-semibold mb-1">{stat.label}</p>
-                          <p className="text-2xl md:text-3xl font-bold text-gray-900">{stat.value}</p>
+                          <label className={labelCls}>City {formData.customer_type === "Trade" && <span className="text-red-500">*</span>}</label>
+                          <input
+                            type="text"
+                            value={formData.billing_city}
+                            onChange={(e) => setFormData(prev => ({ ...prev, billing_city: e.target.value }))}
+                            placeholder="City"
+                            className={inputCls}
+                            required={formData.customer_type === "Trade"}
+                          />
                         </div>
-                        <div className={`${stat.color}`}>
-                          <Icon className="w-10 h-10 opacity-20" />
+
+                        <div>
+                          <label className={labelCls}>Province {formData.customer_type === "Trade" && <span className="text-red-500">*</span>}</label>
+                          <select
+                            value={formData.billing_province}
+                            onChange={(e) => setFormData(prev => ({ ...prev, billing_province: e.target.value }))}
+                            className={inputCls}
+                            required={formData.customer_type === "Trade"}
+                          >
+                            <option value="">Select Province</option>
+                            {PROVINCES.map((province) => (
+                              <option key={province} value={province}>
+                                {province}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className={labelCls}>Postal Code {formData.customer_type === "Trade" && <span className="text-red-500">*</span>}</label>
+                          <input
+                            type="text"
+                            value={formData.billing_postal_code}
+                            onChange={(e) => setFormData(prev => ({ ...prev, billing_postal_code: e.target.value }))}
+                            placeholder="Postal Code"
+                            className={inputCls}
+                            required={formData.customer_type === "Trade"}
+                          />
                         </div>
                       </div>
                     </div>
-                  );
-                })}
+
+                    <div className={dividerCls}></div>
+
+                    {/* Delivery Address */}
+                    <div>
+                      <h3 className={sectionTitleCls}>Delivery Address</h3>
+                      <div className="mb-4">
+                        <label className={labelCls}>Street Address</label>
+                        <input
+                          type="text"
+                          value={formData.delivery_address}
+                          onChange={(e) => setFormData(prev => ({ ...prev, delivery_address: e.target.value }))}
+                          placeholder="Enter your delivery address"
+                          className={inputCls}
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div>
+                          <label className={labelCls}>City</label>
+                          <input
+                            type="text"
+                            value={formData.delivery_city}
+                            onChange={(e) => setFormData(prev => ({ ...prev, delivery_city: e.target.value }))}
+                            placeholder="City"
+                            className={inputCls}
+                          />
+                        </div>
+
+                        <div>
+                          <label className={labelCls}>Province</label>
+                          <select
+                            value={formData.delivery_province}
+                            onChange={(e) => setFormData(prev => ({ ...prev, delivery_province: e.target.value }))}
+                            className={inputCls}
+                          >
+                            <option value="">Select Province</option>
+                            {PROVINCES.map((province) => (
+                              <option key={province} value={province}>
+                                {province}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className={labelCls}>Postal Code</label>
+                          <input
+                            type="text"
+                            value={formData.delivery_postal_code}
+                            onChange={(e) => setFormData(prev => ({ ...prev, delivery_postal_code: e.target.value }))}
+                            placeholder="Postal Code"
+                            className={inputCls}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Trade Section */}
+                    {formData.customer_type === "Trade" && (
+                      <>
+                        <div className={dividerCls}></div>
+
+                        <div>
+                          <h3 className={sectionTitleCls}>Business Details</h3>
+                          <div className="mb-4">
+                            <label className={labelCls}>Company Name <span className="text-red-500">*</span></label>
+                            <input
+                              type="text"
+                              value={formData.company_name}
+                              onChange={(e) => setFormData(prev => ({ ...prev, company_name: e.target.value }))}
+                              placeholder="Enter company name"
+                              className={inputCls}
+                              required
+                            />
+                          </div>
+
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+                            <div>
+                              <label className={labelCls}>VAT Number <span className="text-black/40 dark:text-[rgba(240,242,237,.4)]">(Optional)</span></label>
+                              <input
+                                type="text"
+                                value={formData.vat_number}
+                                onChange={(e) => setFormData(prev => ({ ...prev, vat_number: e.target.value }))}
+                                placeholder="VAT Number"
+                                className={inputCls}
+                              />
+                            </div>
+
+                            <div>
+                              <label className={labelCls}>Company Registration <span className="text-red-500">*</span></label>
+                              <input
+                                type="text"
+                                value={formData.company_registration}
+                                onChange={(e) => setFormData(prev => ({ ...prev, company_registration: e.target.value }))}
+                                placeholder="Registration Number"
+                                className={inputCls}
+                                required
+                              />
+                            </div>
+
+                            <div>
+                              <label className={labelCls}>Business Type <span className="text-red-500">*</span></label>
+                              <select
+                                value={formData.business_type}
+                                onChange={(e) => setFormData(prev => ({ ...prev, business_type: e.target.value }))}
+                                className={inputCls}
+                                required
+                              >
+                                <option value="">Select Business Type</option>
+                                {BUSINESS_TYPES.map((type) => (
+                                  <option key={type.value} value={type.value}>
+                                    {type.label}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                          </div>
+
+                          <div>
+                            <label className={labelCls}>Trade Documents <span className="text-black/40 dark:text-[rgba(240,242,237,.4)]">(Optional)</span></label>
+
+                            {existingTradeDocsUrl && !formData.trade_docs && (
+                              <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-500/[.08] rounded-lg border border-blue-200 dark:border-blue-500/20">
+                                <p className="text-[.8rem] text-blue-800 dark:text-blue-400">
+                                  <span className="font-semibold">Current file:</span> {existingTradeDocsUrl.split('/').pop()}
+                                </p>
+                                <a
+                                  href={existingTradeDocsUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-[.75rem] text-blue-600 dark:text-blue-400 hover:underline mt-1 inline-block"
+                                >
+                                  View file
+                                </a>
+                              </div>
+                            )}
+
+                            <input
+                              type="file"
+                              onChange={(e) => setFormData(prev => ({ ...prev, trade_docs: e.target.files?.[0] || null }))}
+                              accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                              className={inputCls}
+                            />
+                            <p className="text-[.7rem] text-black/50 dark:text-[rgba(240,242,237,.5)] mt-1">PDF, DOC, DOCX, JPG, PNG {existingTradeDocsUrl && '(Upload to replace)'}</p>
+                            {formData.trade_docs && (
+                              <p className="text-[.8rem] text-lime-brand mt-1">New file selected: {formData.trade_docs.name}</p>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className={dividerCls}></div>
+
+                        <div>
+                          <h3 className={sectionTitleCls}>Procurement & Preferences</h3>
+                          <div className="mb-4">
+                            <label className={labelCls}>PO Number <span className="text-red-500">*</span></label>
+                            <input
+                              type="text"
+                              value={formData.po_number}
+                              onChange={(e) => setFormData(prev => ({ ...prev, po_number: e.target.value }))}
+                              placeholder="Enter PO number"
+                              className={inputCls}
+                              required
+                            />
+                          </div>
+
+                          <div className="mb-4">
+                            <label className={labelCls}>Procurement Contact <span className="text-red-500">*</span></label>
+                            <input
+                              type="text"
+                              value={formData.procurement_contact}
+                              onChange={(e) => setFormData(prev => ({ ...prev, procurement_contact: e.target.value }))}
+                              placeholder="Enter procurement contact"
+                              className={inputCls}
+                              required
+                            />
+                          </div>
+
+                          <div className="flex items-center gap-3">
+                            <input
+                              type="checkbox"
+                              id="monthly_statement"
+                              checked={formData.monthly_statement_preference}
+                              onChange={(e) => setFormData(prev => ({ ...prev, monthly_statement_preference: e.target.checked }))}
+                              className="w-4 h-4 rounded accent-lime-brand cursor-pointer"
+                            />
+                            <label htmlFor="monthly_statement" className="text-[.8rem] text-black/60 dark:text-[rgba(240,242,237,.6)] cursor-pointer">
+                              I prefer monthly statement by email
+                            </label>
+                          </div>
+                        </div>
+                      </>
+                    )}
+
+                    {/* Action Buttons */}
+                    <div className={`flex gap-3 pt-4 ${dividerCls}`}>
+                      <button
+                        onClick={handleSaveProfile}
+                        disabled={isSaving}
+                        className="flex-1 py-3 px-4 bg-gradient-to-br from-green-brand to-lime-brand text-dark-surface font-semibold text-[.9rem] rounded-lg cursor-pointer transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                      >
+                        {isSaving ? (
+                          <>
+                            <Loader size={16} className="animate-spin" />
+                            Saving...
+                          </>
+                        ) : (
+                          'Save Changes'
+                        )}
+                      </button>
+                      <button
+                        onClick={() => setIsEditingProfile(false)}
+                        className="flex-1 py-3 px-4 bg-black/[.06] dark:bg-white/[.05] text-black/70 dark:text-[rgba(240,242,237,.7)] font-semibold text-[.9rem] rounded-lg cursor-pointer transition-all duration-200 hover:bg-black/[.1] dark:hover:bg-white/[.08]"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-6">
+                    <div>
+                      <h3 className={sectionTitleCls}>Personal Details</h3>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div>
+                          <p className="text-[.75rem] text-black/50 dark:text-[rgba(240,242,237,.5)] font-medium mb-1">First Name</p>
+                          <p className="text-[.9rem] text-black/80 dark:text-[rgba(240,242,237,.8)]">{formData.first_name || "—"}</p>
+                        </div>
+                        <div>
+                          <p className="text-[.75rem] text-black/50 dark:text-[rgba(240,242,237,.5)] font-medium mb-1">Last Name</p>
+                          <p className="text-[.9rem] text-black/80 dark:text-[rgba(240,242,237,.8)]">{formData.last_name || "—"}</p>
+                        </div>
+                        <div>
+                          <p className="text-[.75rem] text-black/50 dark:text-[rgba(240,242,237,.5)] font-medium mb-1">Email Address</p>
+                          <p className="text-[.9rem] text-black/80 dark:text-[rgba(240,242,237,.8)]">{userEmail || "—"}</p>
+                        </div>
+                        <div>
+                          <p className="text-[.75rem] text-black/50 dark:text-[rgba(240,242,237,.5)] font-medium mb-1">Phone Number</p>
+                          <p className="text-[.9rem] text-black/80 dark:text-[rgba(240,242,237,.8)]">{formData.phone || "—"}</p>
+                        </div>
+                        <div>
+                          <p className="text-[.75rem] text-black/50 dark:text-[rgba(240,242,237,.5)] font-medium mb-1">Customer Type</p>
+                          <p className="text-[.9rem] text-black/80 dark:text-[rgba(240,242,237,.8)]">{formData.customer_type || "—"}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className={dividerCls}></div>
+
+                    <div>
+                      <h3 className={sectionTitleCls}>Billing Address</h3>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div>
+                          <p className="text-[.75rem] text-black/50 dark:text-[rgba(240,242,237,.5)] font-medium mb-1">Street Address</p>
+                          <p className="text-[.9rem] text-black/80 dark:text-[rgba(240,242,237,.8)]">{formData.billing_address || "—"}</p>
+                        </div>
+                        <div>
+                          <p className="text-[.75rem] text-black/50 dark:text-[rgba(240,242,237,.5)] font-medium mb-1">City</p>
+                          <p className="text-[.9rem] text-black/80 dark:text-[rgba(240,242,237,.8)]">{formData.billing_city || "—"}</p>
+                        </div>
+                        <div>
+                          <p className="text-[.75rem] text-black/50 dark:text-[rgba(240,242,237,.5)] font-medium mb-1">Province</p>
+                          <p className="text-[.9rem] text-black/80 dark:text-[rgba(240,242,237,.8)]">{formData.billing_province || "—"}</p>
+                        </div>
+                        <div>
+                          <p className="text-[.75rem] text-black/50 dark:text-[rgba(240,242,237,.5)] font-medium mb-1">Postal Code</p>
+                          <p className="text-[.9rem] text-black/80 dark:text-[rgba(240,242,237,.8)]">{formData.billing_postal_code || "—"}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className={dividerCls}></div>
+
+                    <div>
+                      <h3 className={sectionTitleCls}>Delivery Address</h3>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div>
+                          <p className="text-[.75rem] text-black/50 dark:text-[rgba(240,242,237,.5)] font-medium mb-1">Street Address</p>
+                          <p className="text-[.9rem] text-black/80 dark:text-[rgba(240,242,237,.8)]">{formData.delivery_address || "—"}</p>
+                        </div>
+                        <div>
+                          <p className="text-[.75rem] text-black/50 dark:text-[rgba(240,242,237,.5)] font-medium mb-1">City</p>
+                          <p className="text-[.9rem] text-black/80 dark:text-[rgba(240,242,237,.8)]">{formData.delivery_city || "—"}</p>
+                        </div>
+                        <div>
+                          <p className="text-[.75rem] text-black/50 dark:text-[rgba(240,242,237,.5)] font-medium mb-1">Province</p>
+                          <p className="text-[.9rem] text-black/80 dark:text-[rgba(240,242,237,.8)]">{formData.delivery_province || "—"}</p>
+                        </div>
+                        <div>
+                          <p className="text-[.75rem] text-black/50 dark:text-[rgba(240,242,237,.5)] font-medium mb-1">Postal Code</p>
+                          <p className="text-[.9rem] text-black/80 dark:text-[rgba(240,242,237,.8)]">{formData.delivery_postal_code || "—"}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {formData.customer_type === "Trade" && (
+                      <>
+                        <div className={dividerCls}></div>
+
+                        <div>
+                          <h3 className={sectionTitleCls}>Business Details</h3>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            <div>
+                              <p className="text-[.75rem] text-black/50 dark:text-[rgba(240,242,237,.5)] font-medium mb-1">Company Name</p>
+                              <p className="text-[.9rem] text-black/80 dark:text-[rgba(240,242,237,.8)]">{formData.company_name || "—"}</p>
+                            </div>
+                            <div>
+                              <p className="text-[.75rem] text-black/50 dark:text-[rgba(240,242,237,.5)] font-medium mb-1">VAT Number</p>
+                              <p className="text-[.9rem] text-black/80 dark:text-[rgba(240,242,237,.8)]">{formData.vat_number || "—"}</p>
+                            </div>
+                            <div>
+                              <p className="text-[.75rem] text-black/50 dark:text-[rgba(240,242,237,.5)] font-medium mb-1">Company Registration</p>
+                              <p className="text-[.9rem] text-black/80 dark:text-[rgba(240,242,237,.8)]">{formData.company_registration || "—"}</p>
+                            </div>
+                            <div>
+                              <p className="text-[.75rem] text-black/50 dark:text-[rgba(240,242,237,.5)] font-medium mb-1">Business Type</p>
+                              <p className="text-[.9rem] text-black/80 dark:text-[rgba(240,242,237,.8)]">{formData.business_type || "—"}</p>
+                            </div>
+                            <div>
+                              <p className="text-[.75rem] text-black/50 dark:text-[rgba(240,242,237,.5)] font-medium mb-1">Trade Documents</p>
+                              {existingTradeDocsUrl ? (
+                                <a
+                                  href={existingTradeDocsUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-lime-brand hover:text-lime-brand/80 underline text-[.9rem]"
+                                >
+                                  View Document
+                                </a>
+                              ) : (
+                                <p className="text-[.9rem] text-black/50 dark:text-[rgba(240,242,237,.5)] italic">(No document)</p>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className={dividerCls}></div>
+
+                        <div>
+                          <h3 className={sectionTitleCls}>Procurement & Preferences</h3>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            <div>
+                              <p className="text-[.75rem] text-black/50 dark:text-[rgba(240,242,237,.5)] font-medium mb-1">PO Number</p>
+                              <p className="text-[.9rem] text-black/80 dark:text-[rgba(240,242,237,.8)]">{formData.po_number || "—"}</p>
+                            </div>
+                            <div>
+                              <p className="text-[.75rem] text-black/50 dark:text-[rgba(240,242,237,.5)] font-medium mb-1">Procurement Contact</p>
+                              <p className="text-[.9rem] text-black/80 dark:text-[rgba(240,242,237,.8)]">{formData.procurement_contact || "—"}</p>
+                            </div>
+                            <div>
+                              <p className="text-[.75rem] text-black/50 dark:text-[rgba(240,242,237,.5)] font-medium mb-1">Monthly Statement</p>
+                              <p className="text-[.9rem] text-black/80 dark:text-[rgba(240,242,237,.8)]">{formData.monthly_statement_preference ? "Yes" : "No"}</p>
+                            </div>
+                          </div>
+                        </div>
+                      </>
+                    )}
+
+                    <button
+                      onClick={() => setIsEditingProfile(true)}
+                      className="w-full py-3 px-4 bg-gradient-to-br from-green-brand to-lime-brand text-dark-surface font-semibold text-[.9rem] rounded-lg cursor-pointer transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)] flex items-center justify-center gap-2 mt-6"
+                    >
+                      <Edit3 size={16} />
+                      Edit Profile
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
 
-            {/* Left Sidebar - Action Buttons */}
-            <div className="lg:col-span-1 space-y-3">
-              {actionButtons.map((btn, index) => {
-                const Icon = btn.icon;
-                return (
-                  <button
-                    key={btn.label}
-                    onClick={btn.onClick}
-                    className="w-full flex items-center justify-between px-4 py-3.5 bg-white border-2 border-gray-200 rounded-xl hover:border-[#399746] hover:bg-gradient-to-r hover:from-green-50 hover:to-lime-50 transition-all hover:shadow-md group"
-                    style={{animation: `slideInRight 0.5s ease-out ${index * 0.1}s both`}}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 bg-gradient-to-br from-[#399746]/10 to-[#A6CD3D]/10 rounded-lg group-hover:bg-gradient-to-br group-hover:from-[#399746]/20 group-hover:to-[#A6CD3D]/20 transition-colors">
-                        <Icon className="w-5 h-5 text-[#399746] group-hover:text-[#399746]" />
-                      </div>
-                      <span className="font-semibold text-gray-700 group-hover:text-gray-900">{btn.label}</span>
-                    </div>
-                    <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-[#399746] group-hover:translate-x-1 transition-all" />
-                  </button>
-                );
-              })}
-
-              {/* Logout Button */}
-              <button
-                onClick={handleLogout}
-                className="w-full flex items-center justify-between px-4 py-3.5 bg-gradient-to-r from-red-50 to-red-100 border-2 border-red-200 rounded-xl hover:border-red-400 hover:shadow-md transition-all group"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-red-200/30 rounded-lg group-hover:bg-red-200/50 transition-colors">
-                    <LogOut className="w-5 h-5 text-red-600" />
+            {/* Stats Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="p-6 bg-white dark:bg-black/[.02] rounded-lg border border-black/[.08] dark:border-white/[.06]">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-[.75rem] text-black/50 dark:text-[rgba(240,242,237,.5)] font-medium mb-1">Total Orders</p>
+                    <p className="text-2xl font-bold text-black/80 dark:text-[rgba(240,242,237,.8)]">{stats.total_orders}</p>
                   </div>
-                  <span className="font-semibold text-red-600 group-hover:text-red-700">Logout</span>
+                  <ShoppingBag size={28} className="text-blue-500/20" />
                 </div>
-                <ArrowRight className="w-4 h-4 text-red-400 group-hover:text-red-600 group-hover:translate-x-1 transition-all" />
-              </button>
+              </div>
+
+              <div className="p-6 bg-white dark:bg-black/[.02] rounded-lg border border-black/[.08] dark:border-white/[.06]">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-[.75rem] text-black/50 dark:text-[rgba(240,242,237,.5)] font-medium mb-1">Wishlist Items</p>
+                    <p className="text-2xl font-bold text-black/80 dark:text-[rgba(240,242,237,.8)]">{stats.wishlist_items}</p>
+                  </div>
+                  <Heart size={28} className="text-red-500/20" />
+                </div>
+              </div>
+
+              <div className="p-6 bg-white dark:bg-black/[.02] rounded-lg border border-black/[.08] dark:border-white/[.06]">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-[.75rem] text-black/50 dark:text-[rgba(240,242,237,.5)] font-medium mb-1">Total Spent</p>
+                    <p className="text-2xl font-bold text-black/80 dark:text-[rgba(240,242,237,.8)]">R {stats.total_spent.toFixed(2)}</p>
+                  </div>
+                  <DollarSign size={28} className="text-lime-brand/20" />
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
 
-      <style>{`
-        @keyframes slideInUp {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        @keyframes slideInRight {
-          from {
-            opacity: 0;
-            transform: translateX(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateX(0);
-          }
-        }
-      `}</style>
+          {/* Sidebar - Actions */}
+          <div className="space-y-3">
+            <button
+              onClick={() => navigate("/orders")}
+              className="w-full flex items-center justify-between px-4 py-3 bg-white dark:bg-black/[.02] border border-black/[.08] dark:border-white/[.06] rounded-lg hover:border-lime-brand/30 dark:hover:border-lime-brand/20 transition-all duration-200 group"
+            >
+              <div className="flex items-center gap-3">
+                <ShoppingBag size={18} className="text-lime-brand" />
+                <span className="text-[.85rem] font-medium text-black/70 dark:text-[rgba(240,242,237,.7)]">View Orders</span>
+              </div>
+              <ArrowRight size={16} className="text-black/40 dark:text-[rgba(240,242,237,.4)] group-hover:text-lime-brand transition-colors" />
+            </button>
+
+            <button
+              onClick={() => navigate("/wishlist")}
+              className="w-full flex items-center justify-between px-4 py-3 bg-white dark:bg-black/[.02] border border-black/[.08] dark:border-white/[.06] rounded-lg hover:border-lime-brand/30 dark:hover:border-lime-brand/20 transition-all duration-200 group"
+            >
+              <div className="flex items-center gap-3">
+                <Heart size={18} className="text-lime-brand" />
+                <span className="text-[.85rem] font-medium text-black/70 dark:text-[rgba(240,242,237,.7)]">View Wishlist</span>
+              </div>
+              <ArrowRight size={16} className="text-black/40 dark:text-[rgba(240,242,237,.4)] group-hover:text-lime-brand transition-colors" />
+            </button>
+
+            <button
+              onClick={() => navigate("/change-password")}
+              className="w-full flex items-center justify-between px-4 py-3 bg-white dark:bg-black/[.02] border border-black/[.08] dark:border-white/[.06] rounded-lg hover:border-lime-brand/30 dark:hover:border-lime-brand/20 transition-all duration-200 group"
+            >
+              <div className="flex items-center gap-3">
+                <Lock size={18} className="text-lime-brand" />
+                <span className="text-[.85rem] font-medium text-black/70 dark:text-[rgba(240,242,237,.7)]">Change Password</span>
+              </div>
+              <ArrowRight size={16} className="text-black/40 dark:text-[rgba(240,242,237,.4)] group-hover:text-lime-brand transition-colors" />
+            </button>
+
+            <button
+              onClick={handleLogout}
+              className="w-full flex items-center justify-between px-4 py-3 bg-red-50 dark:bg-red-500/[.08] border border-red-200 dark:border-red-500/20 rounded-lg hover:border-red-300 dark:hover:border-red-500/30 transition-all duration-200 group"
+            >
+              <div className="flex items-center gap-3">
+                <LogOut size={18} className="text-red-600" />
+                <span className="text-[.85rem] font-medium text-red-600">Logout</span>
+              </div>
+              <ArrowRight size={16} className="text-red-400 group-hover:text-red-600 transition-colors" />
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

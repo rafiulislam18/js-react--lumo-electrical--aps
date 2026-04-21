@@ -1,5 +1,4 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 import { CheckCircle, Package, ArrowRight } from "lucide-react";
 
 export default function PaymentSuccess() {
@@ -7,98 +6,96 @@ export default function PaymentSuccess() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-lime-50 flex items-center justify-center px-3 py-8 sm:px-4 sm:py-12">
-      <div className="w-full max-w-xl">
+    <div className="font-outfit bg-white dark:bg-dark-surface min-h-screen flex items-center justify-center px-4 py-8">
+      <div className="w-full max-w-md">
         {/* Success Container */}
-        <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg border border-green-100 p-6 sm:p-8 text-center animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div className="bg-white dark:bg-black/[.02] rounded-xl border border-black/[.08] dark:border-white/[.06] p-8 text-center">
           {/* Success Icon */}
-          <div className="flex justify-center mb-4 sm:mb-6">
+          <div className="flex justify-center mb-6">
             <div className="relative">
-              <div className="absolute inset-0 bg-primary-gradient rounded-full blur-lg opacity-30 animate-pulse" />
-              <div className="relative bg-primary-gradient rounded-full p-2.5 sm:p-4">
-                <CheckCircle className="w-12 sm:w-16 h-12 sm:h-16 text-white" strokeWidth={1.5} />
+              <div className="absolute inset-0 bg-gradient-to-br from-green-brand to-lime-brand rounded-full blur-xl opacity-20 animate-pulse" />
+              <div className="relative bg-gradient-to-br from-green-brand to-lime-brand rounded-full p-4">
+                <CheckCircle className="w-16 h-16 text-dark-surface" strokeWidth={1.5} />
               </div>
             </div>
           </div>
 
           {/* Heading */}
-          <h1 className="text-3xl sm:text-4xl font-display font-bold text-gray-900 mb-2 sm:mb-3">
+          <h1 className="font-bebas text-[2rem] tracking-[.08em] text-black/85 dark:text-[#f0f2ed] mb-2">
             Payment Successful!
           </h1>
-          <p className="text-sm sm:text-base text-gray-600 mb-6 sm:mb-8">
+          <p className="text-[.9rem] text-black/60 dark:text-[rgba(240,242,237,.6)] mb-8">
             Your order has been placed and payment has been received successfully.
           </p>
 
           {/* Order Info Card */}
-          <div className="bg-gradient-to-br from-green-50 to-lime-50 border border-green-200 rounded-lg sm:rounded-xl p-4 sm:p-6 mb-5 sm:mb-6">
-            <div className="flex items-center justify-center gap-2 mb-4 sm:mb-6">
-              <Package className="w-5 sm:w-6 h-5 sm:h-6 text-green-600" />
-              <span className="text-xs sm:text-sm text-gray-600 font-medium">Order Number</span>
+          <div className="bg-green-brand/[.05] dark:bg-green-brand/[.08] border border-green-brand/[.1] dark:border-green-brand/[.15] rounded-lg p-6 mb-6">
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <Package className="w-5 h-5 text-green-700 dark:text-green-300" />
+              <span className="text-[.8rem] text-black/60 dark:text-[rgba(240,242,237,.6)] font-medium">Order Number</span>
             </div>
-            <p className="text-2xl sm:text-3xl font-bold text-green-600 font-display mb-3 sm:mb-4">
+            <p className="font-bebas text-3xl tracking-[.08em] text-green-700 dark:text-green-300 mb-4">
               #{orderId}
             </p>
-            <div className="space-y-2 text-xs sm:text-sm text-gray-600 border-t border-green-200 pt-4 sm:pt-6">
+            <div className="space-y-2 text-[.85rem] text-black/60 dark:text-[rgba(240,242,237,.6)] border-t border-green-brand/[.2] pt-4">
               <div className="flex justify-between">
                 <span>Status:</span>
-                <span className="font-semibold text-green-600">✓ Payment Received</span>
+                <span className="font-semibold text-green-700 dark:text-green-300">✓ Payment Received</span>
               </div>
               <div className="flex justify-between">
                 <span>Next Step:</span>
-                <span className="font-semibold text-gray-900">Order Processing</span>
+                <span className="font-semibold text-black/80 dark:text-[rgba(240,242,237,.8)]">Order Processing</span>
               </div>
             </div>
           </div>
 
           {/* Information Box */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 sm:p-5 mb-5 sm:mb-6 text-left">
-            <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-              <span>ℹ️</span> <span className="text-sm sm:text-base">What's Next?</span>
+          <div className="bg-blue-500/[.05] dark:bg-blue-500/[.08] border border-blue-500/[.1] dark:border-blue-500/[.15] rounded-lg p-5 mb-6 text-left">
+            <h3 className="font-semibold text-black/85 dark:text-[#f0f2ed] mb-3 flex items-center gap-2 text-[.9rem]">
+              <span>ℹ️</span> What's Next?
             </h3>
-            <ul className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm text-gray-700">
-              <li className="flex gap-2 sm:gap-3">
-                <span className="text-green-600 font-bold flex-shrink-0">1.</span>
+            <ul className="space-y-2 text-[.85rem] text-black/70 dark:text-[rgba(240,242,237,.7)]">
+              <li className="flex gap-3">
+                <span className="text-green-700 dark:text-green-300 font-bold flex-shrink-0">1.</span>
                 <span>You'll receive a confirmation email shortly with your order details</span>
               </li>
-              <li className="flex gap-2 sm:gap-3">
-                <span className="text-green-600 font-bold flex-shrink-0">2.</span>
+              <li className="flex gap-3">
+                <span className="text-green-700 dark:text-green-300 font-bold flex-shrink-0">2.</span>
                 <span>Our team will process your order and prepare it for shipment</span>
               </li>
-              <li className="flex gap-2 sm:gap-3">
-                <span className="text-green-600 font-bold flex-shrink-0">3.</span>
+              <li className="flex gap-3">
+                <span className="text-green-700 dark:text-green-300 font-bold flex-shrink-0">3.</span>
                 <span>You can track your order status in your account dashboard</span>
               </li>
             </ul>
           </div>
 
           {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
-            <Button
+          <div className="flex flex-col gap-3 justify-center mb-6">
+            <button
               onClick={() => navigate(`/orders`)}
-              className="bg-primary-gradient hover:opacity-90 text-white font-semibold py-2 sm:py-3 px-6 sm:px-8 rounded-lg text-sm sm:text-base transition-all flex items-center justify-center gap-2"
+              className="bg-gradient-to-br from-green-brand to-lime-brand text-dark-surface font-semibold py-3 px-6 rounded-lg text-[.9rem] transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)] flex items-center justify-center gap-2"
             >
-              <Package className="w-4 sm:w-5 h-4 sm:h-5" />
+              <Package className="w-5 h-5" />
               View Orders
-            </Button>
-            <Button
+            </button>
+            <button
               onClick={() => navigate("/products")}
-              variant="outline"
-              className="border-2 border-green-200 text-green-600 hover:bg-green-50 font-semibold py-2 sm:py-3 px-6 sm:px-8 rounded-lg text-sm sm:text-base transition-all flex items-center justify-center gap-2"
+              className="border border-lime-brand/30 dark:border-lime-brand/20 text-lime-brand dark:text-lime-brand font-semibold py-3 px-6 rounded-lg text-[.9rem] transition-all duration-200 hover:bg-lime-brand/[.05] dark:hover:bg-lime-brand/[.08] flex items-center justify-center gap-2"
             >
               Continue Shopping
-              <ArrowRight className="w-4 sm:w-5 h-4 sm:h-5" />
-            </Button>
+              <ArrowRight className="w-5 h-5" />
+            </button>
           </div>
 
           {/* Contact Info */}
-          <div className="mt-6 sm:mt-8 pt-6 sm:pt-8 border-t border-gray-200">
-            <p className="text-xs sm:text-sm text-gray-600 mb-3 sm:mb-4">Have questions about your order?</p>
-            <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 justify-center text-xs sm:text-sm">
-              <a href="mailto:support@lumoelectrical.co.za" className="text-green-600 font-semibold hover:underline break-all sm:break-normal">
+          <div className="pt-6 border-t border-black/[.08] dark:border-white/[.06]">
+            <p className="text-[.8rem] text-black/60 dark:text-[rgba(240,242,237,.6)] mb-3">Have questions about your order?</p>
+            <div className="flex flex-col gap-2 justify-center text-[.8rem]">
+              <a href="mailto:support@lumoelectrical.co.za" className="text-lime-brand dark:text-lime-brand hover:underline">
                 📧 support@lumoelectrical.co.za
               </a>
-              <span className="text-gray-400 hidden sm:inline">•</span>
-              <a href="tel:+27666666666" className="text-green-600 font-semibold hover:underline">
+              <a href="tel:+27666666666" className="text-lime-brand dark:text-lime-brand hover:underline">
                 📞 +27 66 666 6666
               </a>
             </div>
@@ -106,7 +103,7 @@ export default function PaymentSuccess() {
         </div>
 
         {/* Trust Badges */}
-        <div className="mt-6 sm:mt-8 text-center text-gray-500 text-xs sm:text-sm">
+        <div className="mt-6 text-center text-black/60 dark:text-[rgba(240,242,237,.6)] text-[.8rem]">
           <p>✓ Secure payment • ✓ Order confirmation sent</p>
         </div>
       </div>

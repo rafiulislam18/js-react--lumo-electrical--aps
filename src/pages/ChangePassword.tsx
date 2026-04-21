@@ -1,12 +1,10 @@
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Eye, EyeOff, Lock, AlertCircle, CheckCircle } from "lucide-react";
+import { Eye, EyeOff, Lock, AlertCircle, CheckCircle, Loader } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import EmailVerificationModal from "@/components/EmailVerificationModal";
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+const API_URL = (import.meta as any).env.VITE_API_URL || 'http://localhost:8000/api';
 
 export default function ChangePassword() {
   const navigate = useNavigate();
@@ -161,154 +159,167 @@ export default function ChangePassword() {
     }
   };
 
+  const inputCls = "w-full pl-10 pr-10 py-3 text-[.85rem] bg-white dark:bg-black/[.05] border border-black/[.1] dark:border-white/[.08] rounded-lg text-black/80 dark:text-[rgba(240,242,237,.8)] placeholder-black/40 dark:placeholder-[rgba(240,242,237,.4)] focus:outline-none focus:border-lime-brand/30 focus:bg-lime-brand/[.05] transition-all duration-150";
+
   return (
-    <div className="min-h-screen bg-gray-50/30 flex flex-col font-sans">
-      <section className="flex-1 py-20 px-4">
-        <div className="container mx-auto max-w-2xl">
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-lg overflow-hidden">
-            {/* Header */}
-            <div className="bg-gradient-to-r from-green-500 to-lime-400 px-8 py-12 text-white">
-              <h1 className="text-3xl font-display font-bold mb-2">Change Password</h1>
-              <p className="text-green-50">Update your account password securely</p>
+    <div className="font-outfit bg-white dark:bg-dark-surface min-h-screen flex flex-col items-center justify-center px-4 py-12">
+      {/* Header */}
+      <div className="mb-12 text-center">
+        <h1 className="font-bebas text-[2.5rem] tracking-[.08em] text-black/85 dark:text-[#f0f2ed] mb-2">
+          Change Password
+        </h1>
+        <p className="text-[.9rem] text-black/55 dark:text-[rgba(240,242,237,.55)]">
+          Update your account password securely
+        </p>
+      </div>
+
+      {/* Form Card */}
+      <div className="w-full max-w-md">
+        <div className="bg-white dark:bg-black/[.02] rounded-xl border border-black/[.08] dark:border-white/[.06] overflow-hidden">
+          {/* Form */}
+          <form onSubmit={handleRequestCode} className="p-8 space-y-5">
+
+            {/* Error Alert */}
+            {error && (
+              <div className="bg-red-50 dark:bg-red-950/[.2] border border-red-200 dark:border-red-900/[.3] rounded-lg p-4 flex gap-3">
+                <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+                <p className="text-red-700 dark:text-red-300 text-[.85rem]">{error}</p>
+              </div>
+            )}
+
+            {/* Current Password */}
+            <div>
+              <label className="block text-[.8rem] font-medium text-black/70 dark:text-[rgba(240,242,237,.7)] mb-2">
+                Current Password <span className="text-red-500">*</span>
+              </label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-black/40 dark:text-[rgba(240,242,237,.4)]" />
+                <input
+                  type={showPasswords.current ? "text" : "password"}
+                  name="current"
+                  value={passwords.current}
+                  onChange={handleChange}
+                  placeholder="Enter your current password"
+                  className={inputCls}
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPasswords(prev => ({ ...prev, current: !prev.current }))}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-black/40 dark:text-[rgba(240,242,237,.4)] hover:text-black/60 dark:hover:text-[rgba(240,242,237,.6)] transition-colors duration-150"
+                >
+                  {showPasswords.current ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
+                </button>
+              </div>
             </div>
 
-            {/* Form */}
-            <form onSubmit={handleRequestCode} className="p-8 space-y-6">
-              {/* Error Alert */}
-              {error && (
-                <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex gap-3">
-                  <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-                  <p className="text-red-700 text-sm">{error}</p>
+            {/* New Password */}
+            <div>
+              <label className="block text-[.8rem] font-medium text-black/70 dark:text-[rgba(240,242,237,.7)] mb-2">
+                New Password <span className="text-red-500">*</span>
+              </label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-black/40 dark:text-[rgba(240,242,237,.4)]" />
+                <input
+                  type={showPasswords.new ? "text" : "password"}
+                  name="new"
+                  value={passwords.new}
+                  onChange={handleChange}
+                  placeholder="Enter your new password"
+                  className={inputCls}
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPasswords(prev => ({ ...prev, new: !prev.new }))}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-black/40 dark:text-[rgba(240,242,237,.4)] hover:text-black/60 dark:hover:text-[rgba(240,242,237,.6)] transition-colors duration-150"
+                >
+                  {showPasswords.new ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
+                </button>
+              </div>
+              <p className="text-[.75rem] text-black/50 dark:text-[rgba(240,242,237,.5)] mt-1">At least 8 characters</p>
+            </div>
+
+            {/* Confirm Password */}
+            <div>
+              <label className="block text-[.8rem] font-medium text-black/70 dark:text-[rgba(240,242,237,.7)] mb-2">
+                Confirm New Password <span className="text-red-500">*</span>
+              </label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-black/40 dark:text-[rgba(240,242,237,.4)]" />
+                <input
+                  type={showPasswords.confirm ? "text" : "password"}
+                  name="confirm"
+                  value={passwords.confirm}
+                  onChange={handleChange}
+                  placeholder="Confirm your new password"
+                  className={inputCls}
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPasswords(prev => ({ ...prev, confirm: !prev.confirm }))}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-black/40 dark:text-[rgba(240,242,237,.4)] hover:text-black/60 dark:hover:text-[rgba(240,242,237,.6)] transition-colors duration-150"
+                >
+                  {showPasswords.confirm ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
+                </button>
+              </div>
+
+              {/* Password Match Validation */}
+              {passwords.new && passwords.confirm && (
+                <div className={`mt-2 flex items-center gap-2 text-[.8rem] ${passwords.new === passwords.confirm ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                  {passwords.new === passwords.confirm ? (
+                    <>
+                      <CheckCircle className="w-4 h-4" />
+                      <span>Passwords match</span>
+                    </>
+                  ) : (
+                    <>
+                      <AlertCircle className="w-4 h-4" />
+                      <span>Passwords do not match</span>
+                    </>
+                  )}
                 </div>
               )}
+            </div>
 
-              {/* Current Password */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Current Password <span className="text-red-600">*</span>
-                </label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-                  <Input
-                    type={showPasswords.current ? "text" : "password"}
-                    name="current"
-                    value={passwords.current}
-                    onChange={handleChange}
-                    placeholder="Enter your current password"
-                    className="pl-10 pr-10 h-11 rounded-lg border-gray-200"
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPasswords(prev => ({ ...prev, current: !prev.current }))}
-                    className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
-                  >
-                    {showPasswords.current ? (
-                      <EyeOff className="w-5 h-5" />
-                    ) : (
-                      <Eye className="w-5 h-5" />
-                    )}
-                  </button>
-                </div>
-              </div>
+            {/* Submit Button */}
+            <button
+              type="submit"
+              disabled={isLoading || !passwords.current || !passwords.new || !passwords.confirm || passwords.new !== passwords.confirm}
+              className="w-full py-3 rounded-lg bg-gradient-to-br from-green-brand to-lime-brand text-dark-surface font-semibold text-[.9rem] cursor-pointer transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-6"
+            >
+              {isLoading ? (
+                <>
+                  <Loader size={16} className="animate-spin" />
+                  Verifying...
+                </>
+              ) : (
+                'Send Verification Code'
+              )}
+            </button>
 
-              {/* New Password */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  New Password <span className="text-red-600">*</span>
-                </label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-                  <Input
-                    type={showPasswords.new ? "text" : "password"}
-                    name="new"
-                    value={passwords.new}
-                    onChange={handleChange}
-                    placeholder="Enter your new password"
-                    className="pl-10 pr-10 h-11 rounded-lg border-gray-200"
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPasswords(prev => ({ ...prev, new: !prev.new }))}
-                    className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
-                  >
-                    {showPasswords.new ? (
-                      <EyeOff className="w-5 h-5" />
-                    ) : (
-                      <Eye className="w-5 h-5" />
-                    )}
-                  </button>
-                </div>
-                <p className="text-xs text-gray-500 mt-1">At least 8 characters</p>
-              </div>
-
-              {/* Confirm Password */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Confirm New Password <span className="text-red-600">*</span>
-                </label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-                  <Input
-                    type={showPasswords.confirm ? "text" : "password"}
-                    name="confirm"
-                    value={passwords.confirm}
-                    onChange={handleChange}
-                    placeholder="Confirm your new password"
-                    className="pl-10 pr-10 h-11 rounded-lg border-gray-200"
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPasswords(prev => ({ ...prev, confirm: !prev.confirm }))}
-                    className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
-                  >
-                    {showPasswords.confirm ? (
-                      <EyeOff className="w-5 h-5" />
-                    ) : (
-                      <Eye className="w-5 h-5" />
-                    )}
-                  </button>
-                </div>
-                
-                {/* Password Match Validation */}
-                {passwords.new && passwords.confirm && (
-                  <div className={`mt-2 flex items-center gap-2 text-sm ${passwords.new === passwords.confirm ? 'text-green-600' : 'text-red-600'}`}>
-                    {passwords.new === passwords.confirm ? (
-                      <>
-                        <CheckCircle className="w-4 h-4" />
-                        <span>Passwords match</span>
-                      </>
-                    ) : (
-                      <>
-                        <AlertCircle className="w-4 h-4" />
-                        <span>Passwords do not match</span>
-                      </>
-                    )}
-                  </div>
-                )}
-              </div>
-
-              {/* Actions */}
-              <div className="flex gap-3 pt-4">
-                <Button
-                  type="submit"
-                  disabled={isLoading || !passwords.current || !passwords.new || !passwords.confirm || passwords.new !== passwords.confirm}
-                  className="flex-1 bg-primary-gradient text-white font-semibold hover:opacity-90 border-0"
-                >
-                  {isLoading ? "Verifying..." : "Send Verification Code"}
-                </Button>
-              </div>
-
-              {/* Info */}
-              <p className="text-sm text-gray-600 bg-blue-50 border border-blue-200 rounded-lg p-3">
+            {/* Info Message */}
+            <div className="bg-blue-50 dark:bg-blue-950/[.2] border border-blue-200 dark:border-blue-900/[.3] rounded-lg p-3">
+              <p className="text-[.8rem] text-blue-700 dark:text-blue-300">
                 We'll send a verification code to your email for security. You'll need it to complete the password change.
               </p>
-            </form>
-          </div>
+            </div>
+          </form>
         </div>
-      </section>
+      </div>
 
       {/* Email Verification Modal */}
       {showVerificationModal && (

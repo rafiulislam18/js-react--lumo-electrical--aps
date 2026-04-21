@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
 import { Package, ArrowRight, CheckCircle, Truck, ShoppingBag, Calendar, DollarSign } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { apiGet } from "@/lib/api";
@@ -53,32 +52,6 @@ export default function Orders() {
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "order_placed":
-        return "bg-blue-50 border-blue-200";
-      case "out_for_delivery":
-        return "bg-orange-50 border-orange-200";
-      case "delivered":
-        return "bg-green-50 border-green-200";
-      default:
-        return "bg-gray-50 border-gray-200";
-    }
-  };
-
-  const getStatusBadgeColor = (status: string) => {
-    switch (status) {
-      case "order_placed":
-        return "bg-blue-100 text-blue-700 border border-blue-300";
-      case "out_for_delivery":
-        return "bg-orange-100 text-orange-700 border border-orange-300";
-      case "delivered":
-        return "bg-green-100 text-green-700 border border-green-300";
-      default:
-        return "bg-gray-100 text-gray-700 border border-gray-300";
-    }
-  };
-
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "order_placed":
@@ -115,63 +88,66 @@ export default function Orders() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
+    <div className="font-outfit bg-white dark:bg-dark-surface min-h-screen">
       {/* Header Section */}
-      <div className="bg-gradient-to-r from-[#399746] to-[#A6CD3D] text-white py-8 px-4">
-        <div className="container mx-auto max-w-5xl">
-          <div className="flex items-center gap-2 mb-2">
+      <div className="bg-gradient-to-br from-green-brand to-lime-brand text-dark-surface py-8 px-4">
+        <div className="max-w-[1280px] mx-auto">
+          <div className="flex items-center gap-3 mb-2">
             <ShoppingBag className="w-7 h-7" />
-            <h1 className="text-3xl md:text-4xl font-bold">My Orders</h1>
+            <h1 className="font-bebas text-[2.5rem] tracking-[.08em]">My Orders</h1>
           </div>
-          <p className="text-green-50 text-sm md:text-base max-w-2xl">Track and manage all your orders. View status, details, and delivery updates.</p>
+          <p className="text-[.95rem] opacity-90 max-w-2xl">Track and manage all your orders. View status, details, and delivery updates.</p>
         </div>
       </div>
 
       {/* Main Content */}
-      <section className="py-8 px-4">
-        <div className="container mx-auto max-w-5xl">
+      <section className="py-12 px-4">
+        <div className="max-w-[1280px] mx-auto">
           {/* Orders List */}
           {isLoading ? (
             <div className="flex flex-col items-center justify-center py-12">
-              <div className="relative w-12 h-12 mb-3">
-                <div className="absolute inset-0 bg-gradient-to-r from-[#399746] to-[#A6CD3D] rounded-full animate-spin" style={{mask: 'radial-gradient(circle, transparent 30%, black 70%)'}}></div>
-              </div>
-              <p className="text-gray-600 text-sm">Loading your orders...</p>
+              <div className="relative w-12 h-12 mb-3 rounded-full border-2 border-lime-brand border-t-green-brand animate-spin" />
+              <p className="text-[.9rem] text-black/60 dark:text-[rgba(240,242,237,.6)]">Loading your orders...</p>
             </div>
           ) : orders.length > 0 ? (
             <div className="space-y-4">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold text-gray-900">All Orders ({orders.length})</h2>
-                <div className="h-1 flex-1 ml-4 bg-gradient-to-r from-[#399746] to-[#A6CD3D] rounded-full"></div>
+              <div className="flex items-center gap-4 mb-6">
+                <h2 className="text-xl font-bold text-black/85 dark:text-[#f0f2ed]">All Orders ({orders.length})</h2>
+                <div className="flex-1 h-px bg-lime-brand/30" />
               </div>
 
-              {orders.map((order, index) => (
+              {orders.map((order) => (
                 <div
                   key={order.id}
-                  className={`group bg-white rounded-xl border-2 transition-all duration-300 hover:shadow-lg hover:border-[#399746] overflow-hidden ${getStatusColor(order.status)}`}
-                  style={{animation: `fadeInUp 0.5s ease-out ${index * 0.1}s both`}}
+                  className="bg-white dark:bg-black/[.02] rounded-lg border border-black/[.08] dark:border-white/[.06] overflow-hidden transition-all duration-300 hover:border-lime-brand/25 dark:hover:border-lime-brand/20 hover:shadow-[0_8px_32px_rgba(168,214,62,.12)]"
                 >
                   {/* Order Header */}
-                  <div className="px-3 py-2.5 border-b border-gray-100">
-                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-                      <div className="flex items-start gap-2">
-                        <div className="bg-gradient-to-br from-[#399746] to-[#A6CD3D] rounded p-1.5 text-white flex-shrink-0">
-                          <ShoppingBag className="w-4 h-4" />
+                  <div className="px-4 py-4 border-b border-black/[.08] dark:border-white/[.06]">
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                      <div className="flex items-start gap-3">
+                        <div className="bg-gradient-to-br from-green-brand to-lime-brand rounded-lg p-2 text-dark-surface flex-shrink-0">
+                          <ShoppingBag className="w-5 h-5" />
                         </div>
-                        <div className="min-w-0">
-                          <h3 className="text-sm font-bold text-gray-900">Order #{order.id}</h3>
-                          <div className="flex flex-wrap items-center gap-2 mt-0.5 text-xs text-gray-600">
+                        <div>
+                          <h3 className="text-[.95rem] font-semibold text-black/85 dark:text-[#f0f2ed]">Order #{order.id}</h3>
+                          <div className="flex flex-wrap items-center gap-2 mt-1 text-[.8rem] text-black/60 dark:text-[rgba(240,242,237,.6)]">
                             <div className="flex items-center gap-1">
-                              <Calendar className="w-3 h-3" />
+                              <Calendar className="w-3.5 h-3.5" />
                               <span>{formatDate(order.created_at)}</span>
                             </div>
-                            <span className="inline-block px-2 py-0.5 bg-gray-100 rounded-full text-xs font-medium text-gray-700">
+                            <span className="px-2 py-0.5 bg-black/[.05] dark:bg-white/[.05] rounded-full text-[.75rem] font-medium text-black/70 dark:text-[rgba(240,242,237,.7)]">
                               {order.paid ? "✓ Paid" : "Pending"}
                             </span>
                           </div>
                         </div>
                       </div>
-                      <div className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-semibold ${getStatusBadgeColor(order.status)} whitespace-nowrap flex-shrink-0`}>
+                      <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[.8rem] font-semibold whitespace-nowrap flex-shrink-0 ${
+                        order.status === 'delivered'
+                          ? 'bg-green-brand/[.1] dark:bg-green-brand/[.15] text-green-700 dark:text-green-300 border border-green-brand/20'
+                          : order.status === 'out_for_delivery'
+                          ? 'bg-orange-500/[.1] dark:bg-orange-500/[.15] text-orange-700 dark:text-orange-300 border border-orange-500/20'
+                          : 'bg-blue-500/[.1] dark:bg-blue-500/[.15] text-blue-700 dark:text-blue-300 border border-blue-500/20'
+                      }`}>
                         {getStatusIcon(order.status)}
                         {getStatusDisplay(order.status)}
                       </div>
@@ -179,49 +155,49 @@ export default function Orders() {
                   </div>
 
                   {/* Order Details */}
-                  <div className="px-3 py-2.5">
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-2.5">
+                  <div className="px-4 py-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
                       {/* Items Count */}
-                      <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded p-2 border border-blue-100">
+                      <div className="bg-blue-500/[.05] dark:bg-blue-500/[.08] rounded-lg p-3 border border-blue-500/[.1] dark:border-blue-500/[.15]">
                         <div className="flex items-center justify-between">
                           <div>
-                            <p className="text-xs text-gray-600 font-medium">Items Ordered</p>
-                            <p className="text-lg font-bold text-blue-700 mt-0.5">{order.items_count}</p>
+                            <p className="text-[.75rem] text-black/60 dark:text-[rgba(240,242,237,.6)] font-medium">Items Ordered</p>
+                            <p className="text-lg font-bold text-blue-700 dark:text-blue-300 mt-1">{order.items_count}</p>
                           </div>
-                          <Package className="w-6 h-6 text-blue-200" />
+                          <Package className="w-6 h-6 text-blue-500/30" />
                         </div>
                       </div>
 
                       {/* Total Amount */}
-                      <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded p-2 border border-green-100">
+                      <div className="bg-green-brand/[.05] dark:bg-green-brand/[.08] rounded-lg p-3 border border-green-brand/[.1] dark:border-green-brand/[.15]">
                         <div className="flex items-center justify-between">
                           <div>
-                            <p className="text-xs text-gray-600 font-medium">Order Total</p>
-                            <p className="text-lg font-bold text-green-700 mt-0.5">${parseFloat(order.total).toFixed(2)}</p>
+                            <p className="text-[.75rem] text-black/60 dark:text-[rgba(240,242,237,.6)] font-medium">Order Total</p>
+                            <p className="text-lg font-bold text-green-700 dark:text-green-300 mt-1">${typeof order.total === 'number' ? order.total.toFixed(2) : parseFloat(order.total as any).toFixed(2)}</p>
                           </div>
-                          <DollarSign className="w-6 h-6 text-green-200" />
+                          <DollarSign className="w-6 h-6 text-green-brand/30" />
                         </div>
                       </div>
 
                       {/* Status Info */}
-                      <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded p-2 border border-purple-100">
+                      <div className="bg-purple-500/[.05] dark:bg-purple-500/[.08] rounded-lg p-3 border border-purple-500/[.1] dark:border-purple-500/[.15]">
                         <div className="flex items-center justify-between">
                           <div>
-                            <p className="text-xs text-gray-600 font-medium">Status</p>
-                            <p className="text-xs font-bold text-purple-700 mt-0.5">{getStatusDisplay(order.status)}</p>
+                            <p className="text-[.75rem] text-black/60 dark:text-[rgba(240,242,237,.6)] font-medium">Status</p>
+                            <p className="text-[.8rem] font-bold text-purple-700 dark:text-purple-300 mt-1">{getStatusDisplay(order.status)}</p>
                           </div>
-                          <Truck className="w-6 h-6 text-purple-200" />
+                          <Truck className="w-6 h-6 text-purple-500/30" />
                         </div>
                       </div>
                     </div>
 
                     {/* Action Button */}
-                    <div className="flex justify-end pt-2 border-t border-gray-100">
+                    <div className="flex justify-end pt-3 border-t border-black/[.08] dark:border-white/[.06]">
                       <Link to={`/order/${order.id}`}>
-                        <Button className="bg-gradient-to-r from-[#399746] to-[#A6CD3D] text-white border-0 hover:shadow-md transition-all duration-300 group/btn text-xs px-2.5 py-1.5">
+                        <button className="bg-gradient-to-br from-green-brand to-lime-brand text-dark-surface font-semibold text-[.85rem] px-3 py-2 rounded-lg transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)] flex items-center gap-1.5">
                           View Details
-                          <ArrowRight className="w-3 h-3 ml-1 group-hover/btn:translate-x-0.5 transition-transform" />
-                        </Button>
+                          <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                        </button>
                       </Link>
                     </div>
                   </div>
@@ -229,37 +205,24 @@ export default function Orders() {
               ))}
             </div>
           ) : (
-            <div className="bg-white rounded-2xl border-2 border-gray-200 p-10 text-center">
-              <div className="mb-4 flex justify-center">
-                <div className="bg-gradient-to-br from-gray-100 to-gray-200 rounded-full p-5">
-                  <Package className="w-16 h-16 text-gray-400" />
+            <div className="bg-white dark:bg-black/[.02] rounded-xl border border-black/[.08] dark:border-white/[.06] p-12 text-center">
+              <div className="mb-6 flex justify-center">
+                <div className="bg-black/[.05] dark:bg-white/[.05] rounded-full p-5">
+                  <Package className="w-16 h-16 text-black/30 dark:text-white/[.2]" />
                 </div>
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">No Orders Yet</h3>
-              <p className="text-gray-500 mb-6 text-sm max-w-md mx-auto">Start your shopping journey and discover our amazing products. Your orders will appear here.</p>
+              <h3 className="font-bebas text-2xl tracking-[.08em] text-black/85 dark:text-[#f0f2ed] mb-2">No Orders Yet</h3>
+              <p className="text-[.9rem] text-black/60 dark:text-[rgba(240,242,237,.6)] mb-8 max-w-md mx-auto">Start your shopping journey and discover our amazing products. Your orders will appear here.</p>
               <Link to="/products">
-                <Button className="bg-gradient-to-r from-[#399746] to-[#A6CD3D] border-0 text-white px-6 py-3 hover:shadow-md transition-all duration-300 text-sm">
+                <button className="bg-gradient-to-br from-green-brand to-lime-brand text-dark-surface font-semibold text-[.9rem] px-6 py-3 rounded-lg transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)] inline-flex items-center gap-2">
                   Start Shopping
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
               </Link>
             </div>
           )}
         </div>
       </section>
-
-      <style>{`
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-      `}</style>
     </div>
   );
 }

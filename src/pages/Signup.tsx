@@ -1,14 +1,11 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Eye, EyeOff, Mail, Lock, User, Phone, MapPin, AlertCircle } from "lucide-react";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Eye, EyeOff, Mail, Lock, User, Phone, MapPin, Loader } from "lucide-react";
 import EmailVerificationModal from "@/components/EmailVerificationModal";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/context/AuthContext";
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+const API_URL = (import.meta as any).env.VITE_API_URL || 'http://localhost:8000/api';
 
 export default function Signup() {
   const navigate = useNavigate();
@@ -17,41 +14,33 @@ export default function Signup() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
   const [showVerification, setShowVerification] = useState(false);
   const [verificationEmail, setVerificationEmail] = useState("");
   const [formData, setFormData] = useState({
-    // Customer Type
     customerType: "Retail",
-    // Personal Details
     firstName: "",
     lastName: "",
     email: "",
     phone: "",
     password: "",
     confirmPassword: "",
-    // Business Details (Trade Only)
     companyName: "",
     vatNumber: "",
     companyRegistration: "",
     businessType: "",
     tradeDocs: null as File | null,
-    // Procurement & Preferences (Trade Only)
     poNumber: "",
     procurementContact: "",
     monthlyStatementPreference: false,
-    // Billing Address
     billingAddress: "",
     billingCity: "",
     billingProvince: "",
     billingPostalCode: "",
-    // Delivery Address
     sameAsDelivery: true,
     deliveryAddress: "",
     deliveryCity: "",
     deliveryProvince: "",
     deliveryPostalCode: "",
-    // Agreement
     agreeTerms: false
   });
 
@@ -74,8 +63,7 @@ export default function Signup() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
-    
+
     if (formData.password !== formData.confirmPassword) {
       toast({
         variant: "destructive",
@@ -85,39 +73,25 @@ export default function Signup() {
       return;
     }
 
-    // if (!formData.agreeTerms) {
-    //   toast({
-    //     variant: "destructive",
-    //     title: "Error",
-    //     description: "Please agree to terms and conditions",
-    //   });
-    //   return;
-    // }
-
     setIsLoading(true);
-    
-    // Build FormData for multipart submission (includes file upload)
+
     const formDataToSend = new FormData();
-    
-    // Personal Details
+
     formDataToSend.append('first_name', formData.firstName);
     formDataToSend.append('last_name', formData.lastName);
     formDataToSend.append('email', formData.email);
     formDataToSend.append('phone', formData.phone);
     formDataToSend.append('password', formData.password);
     formDataToSend.append('confirm_password', formData.confirmPassword);
-    
-    // Customer Type
+
     formDataToSend.append('customer_type', formData.customerType);
-    
-    // Billing Address (only required for Trade)
+
     if (formData.customerType === "Trade") {
       formDataToSend.append('billing_address', formData.billingAddress);
       formDataToSend.append('billing_city', formData.billingCity);
       formDataToSend.append('billing_province', formData.billingProvince);
       formDataToSend.append('billing_postal_code', formData.billingPostalCode);
     } else {
-      // Optional for Retail
       if (formData.billingAddress) {
         formDataToSend.append('billing_address', formData.billingAddress);
         formDataToSend.append('billing_city', formData.billingCity);
@@ -126,9 +100,7 @@ export default function Signup() {
       }
     }
 
-    // Delivery Address
     formDataToSend.append('same_as_billing', String(formData.sameAsDelivery));
-    // Only send delivery address fields if NOT same as billing
     if (!formData.sameAsDelivery) {
       formDataToSend.append('delivery_address', formData.deliveryAddress);
       formDataToSend.append('delivery_city', formData.deliveryCity);
@@ -136,24 +108,20 @@ export default function Signup() {
       formDataToSend.append('delivery_postal_code', formData.deliveryPostalCode);
     }
 
-    // Business Details (Trade Only)
     if (formData.customerType === "Trade") {
       formDataToSend.append('company_name', formData.companyName);
       formDataToSend.append('vat_number', formData.vatNumber);
       formDataToSend.append('company_registration', formData.companyRegistration);
       formDataToSend.append('business_type', formData.businessType);
-      
-      // Trade Documents (optional)
+
       if (formData.tradeDocs) {
         formDataToSend.append('trade_docs', formData.tradeDocs);
       }
-      
-      // Procurement Details
+
       formDataToSend.append('po_number', formData.poNumber);
       formDataToSend.append('procurement_contact', formData.procurementContact);
       formDataToSend.append('monthly_statement_preference', formData.monthlyStatementPreference ? 'true' : 'false');
     } else {
-      // For Retail, still send the preference
       formDataToSend.append('monthly_statement_preference', formData.monthlyStatementPreference ? 'true' : 'false');
     }
 
@@ -174,19 +142,16 @@ export default function Signup() {
       console.log('Backend Response:', { status: response.status, data });
 
       if (!response.ok) {
-        // Handle field-specific errors
         let errorMessage = 'Registration failed. Please check your information.';
-        
-        // Check for errors object (field validation errors)
+
         if (data?.errors && typeof data.errors === 'object') {
           const errorMessages: string[] = [];
-          for (const [field, messages] of Object.entries(data.errors)) {
+          for (const messages of Object.values(data.errors)) {
             if (Array.isArray(messages)) {
               errorMessages.push(...messages.map(m => String(m)));
             } else if (typeof messages === 'string') {
               errorMessages.push(messages);
             } else if (messages && typeof messages === 'object') {
-              // Handle nested error objects
               const msg = String(Object.values(messages)[0]);
               if (msg) errorMessages.push(msg);
             }
@@ -195,13 +160,11 @@ export default function Signup() {
             errorMessage = errorMessages.join(' | ');
           }
         }
-        
-        // Check for detail field (general error message)
+
         if (data?.detail && errorMessage === 'Registration failed. Please check your information.') {
           errorMessage = String(data.detail);
         }
-        
-        // Check for non-field errors array
+
         if (data?.non_field_errors && Array.isArray(data.non_field_errors)) {
           const nonFieldErrors = data.non_field_errors.map((e: any) => String(e)).join(' | ');
           if (nonFieldErrors) {
@@ -209,12 +172,12 @@ export default function Signup() {
           }
         }
 
-        console.error('Error details:', { 
-          status: response.status, 
-          errorMessage, 
-          fullData: data 
+        console.error('Error details:', {
+          status: response.status,
+          errorMessage,
+          fullData: data
         });
-        
+
         toast({
           variant: "destructive",
           title: "Registration Error",
@@ -224,7 +187,6 @@ export default function Signup() {
         return;
       }
 
-      // Success - show verification modal
       setVerificationEmail(formData.email);
       setShowVerification(true);
       toast({
@@ -236,7 +198,7 @@ export default function Signup() {
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred';
       console.error('Registration error:', err);
-      
+
       toast({
         variant: "destructive",
         title: "Network Error",
@@ -248,13 +210,11 @@ export default function Signup() {
 
   const handleVerificationSuccess = (tokens?: { access: string; refresh: string; user: any }) => {
     setShowVerification(false);
-    
+
     if (tokens) {
-      // Auto-login for registration verification
       login(tokens.user, tokens.access, tokens.refresh);
       navigate("/");
     } else {
-      // For other flows, navigate as needed
       navigate("/");
     }
   };
@@ -263,579 +223,503 @@ export default function Signup() {
     setShowVerification(false);
   };
 
+  const inputCls = "w-full px-4 py-3 text-[.85rem] bg-white dark:bg-black/[.05] border border-black/[.1] dark:border-white/[.08] rounded-lg text-black/80 dark:text-[rgba(240,242,237,.8)] placeholder-black/40 dark:placeholder-[rgba(240,242,237,.4)] focus:outline-none focus:border-lime-brand/30 focus:bg-lime-brand/[.05] dark:focus:bg-lime-brand/[.05] transition-all duration-150";
+  const labelCls = "block text-[.8rem] font-medium text-black/70 dark:text-[rgba(240,242,237,.7)] mb-2";
+  const sectionTitleCls = "text-[.9rem] font-semibold text-black/80 dark:text-[rgba(240,242,237,.8)] mb-4";
+  const dividerCls = "border-t border-black/[.08] dark:border-white/[.06]";
+
   return (
-    <div className="min-h-screen bg-gray-50/30 flex flex-col font-sans">
-      <section className="flex-1 py-20 px-4">
-        <div className="container mx-auto max-w-md">
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-lg overflow-hidden animate-in fade-in slide-in-from-bottom-10 duration-700">
-            {/* Header */}
-            <div className="bg-gradient-to-r from-green-500 to-lime-400 px-8 py-12 text-white text-center">
-              <h1 className="text-3xl font-display font-bold mb-2">Create Account</h1>
-              <p className="text-green-50">Join us for the best electrical supplies</p>
+    <div className="font-outfit bg-white dark:bg-dark-surface min-h-screen flex flex-col items-center justify-center px-4 py-12">
+      {/* Header */}
+      <div className="mb-8 text-center max-w-md">
+        <h1 className="font-bebas text-[2.5rem] tracking-[.08em] text-black/85 dark:text-[#f0f2ed] mb-2">
+          Create Account
+        </h1>
+        <p className="text-[.9rem] text-black/55 dark:text-[rgba(240,242,237,.55)]">
+          Join us for premium electrical supplies
+        </p>
+      </div>
+
+      {/* Form Card */}
+      <div className="w-full max-w-2xl">
+        <div className="bg-white dark:bg-black/[.02] rounded-xl border border-black/[.08] dark:border-white/[.06] overflow-hidden">
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="p-8 space-y-6">
+
+            {/* Customer Type Selection */}
+            <div>
+              <label className={labelCls}>Customer Type <span className="text-red-500">*</span></label>
+              <div className="flex gap-4">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="customerType"
+                    value="Retail"
+                    checked={formData.customerType === "Retail"}
+                    onChange={handleChange}
+                    className="w-4 h-4 accent-lime-brand cursor-pointer"
+                  />
+                  <span className="text-[.85rem] text-black/70 dark:text-[rgba(240,242,237,.7)]">Retail</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="customerType"
+                    value="Trade"
+                    checked={formData.customerType === "Trade"}
+                    onChange={handleChange}
+                    className="w-4 h-4 accent-lime-brand cursor-pointer"
+                  />
+                  <span className="text-[.85rem] text-black/70 dark:text-[rgba(240,242,237,.7)]">Trade (Business)</span>
+                </label>
+              </div>
             </div>
 
-            {/* Form */}
-            <form onSubmit={handleSubmit} className="p-8 space-y-6">
-              {/* Customer Type Selection */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-3">
-                  Customer Type <span className="text-red-600">*</span>
-                </label>
-                <div className="flex gap-4">
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="radio"
-                      name="customerType"
-                      value="Retail"
-                      checked={formData.customerType === "Retail"}
-                      onChange={handleChange}
-                      className="w-4 h-4 accent-green-600"
-                    />
-                    <span className="text-sm text-gray-700">Retail</span>
-                  </label>
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="radio"
-                      name="customerType"
-                      value="Trade"
-                      checked={formData.customerType === "Trade"}
-                      onChange={handleChange}
-                      className="w-4 h-4 accent-green-600"
-                    />
-                    <span className="text-sm text-gray-700">Trade (Business)</span>
-                  </label>
-                </div>
-              </div>
+            <div className={dividerCls}></div>
 
-              {/* Divider */}
-              <div className="border-t border-gray-200"></div>
+            {/* Personal Details */}
+            <div>
+              <h3 className={sectionTitleCls}>Personal Details</h3>
 
-              {/* Personal Details Section */}
-              <div>
-                <h3 className="text-sm font-semibold text-gray-900 mb-4">Personal Details</h3>
-                
-                {/* Name Fields */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      First Name <span className="text-red-600">*</span>
-                    </label>
-                    <div className="relative">
-                      <User className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-                      <Input
-                        type="text"
-                        name="firstName"
-                        value={formData.firstName}
-                        onChange={handleChange}
-                        placeholder="John"
-                        className="pl-10 h-11 text-sm rounded-lg border-gray-200"
-                        required
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Last Name <span className="text-red-600">*</span>
-                    </label>
-                    <div className="relative">
-                      <User className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-                      <Input
-                        type="text"
-                        name="lastName"
-                        value={formData.lastName}
-                        onChange={handleChange}
-                        placeholder="Doe"
-                        className="pl-10 h-11 text-sm rounded-lg border-gray-200"
-                        required
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Email */}
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Email Address <span className="text-red-600">*</span>
-                  </label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-                    <Input
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      placeholder="john@example.com"
-                      className="pl-10 h-11 text-sm rounded-lg border-gray-200"
-                      required
-                    />
-                  </div>
-                </div>
-
-                {/* Phone */}
+              {/* Name Fields */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Phone Number <span className="text-red-600">*</span>
-                  </label>
+                  <label className={labelCls}>First Name <span className="text-red-500">*</span></label>
                   <div className="relative">
-                    <Phone className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-                    <Input
-                      type="tel"
-                      name="phone"
-                      value={formData.phone}
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-black/40 dark:text-[rgba(240,242,237,.4)]" />
+                    <input
+                      type="text"
+                      name="firstName"
+                      value={formData.firstName}
                       onChange={handleChange}
-                      placeholder="+27 71 234 5678"
-                      className="pl-10 h-11 text-sm rounded-lg border-gray-200"
+                      placeholder="John"
+                      className={`pl-10 ${inputCls}`}
+                      required
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className={labelCls}>Last Name <span className="text-red-500">*</span></label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-black/40 dark:text-[rgba(240,242,237,.4)]" />
+                    <input
+                      type="text"
+                      name="lastName"
+                      value={formData.lastName}
+                      onChange={handleChange}
+                      placeholder="Doe"
+                      className={`pl-10 ${inputCls}`}
                       required
                     />
                   </div>
                 </div>
               </div>
 
-              {/* Divider */}
-              <div className="border-t border-gray-200"></div>
-
-              {/* Business Details Section - Trade Only */}
-              {formData.customerType === "Trade" && (
-                <>
-                  <div>
-                    <h3 className="text-sm font-semibold text-gray-900 mb-4">Business Details</h3>
-                    
-                    {/* Company Name */}
-                    <div className="mb-4">
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Company Name <span className="text-red-600">*</span>
-                      </label>
-                      <Input
-                        type="text"
-                        name="companyName"
-                        value={formData.companyName}
-                        onChange={handleChange}
-                        placeholder="Your Company Ltd"
-                        className="h-11 text-sm rounded-lg border-gray-200"
-                        required
-                      />
-                    </div>
-
-                    {/* VAT Number */}
-                    <div className="mb-4">
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        VAT Number <span className="text-gray-500">(Optional)</span>
-                      </label>
-                      <Input
-                        type="text"
-                        name="vatNumber"
-                        value={formData.vatNumber}
-                        onChange={handleChange}
-                        placeholder="e.g., 4123456789"
-                        className="h-11 text-sm rounded-lg border-gray-200"
-                      />
-                    </div>
-
-                    {/* Company Registration Number */}
-                    <div className="mb-4">
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Company Registration Number (CIPC) <span className="text-red-600">*</span>
-                      </label>
-                      <Input
-                        type="text"
-                        name="companyRegistration"
-                        value={formData.companyRegistration}
-                        onChange={handleChange}
-                        placeholder="e.g., 2023/123456"
-                        className="h-11 text-sm rounded-lg border-gray-200"
-                        required
-                      />
-                    </div>
-
-                    {/* Business Type */}
-                    <div className="mb-4">
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Business Type <span className="text-red-600">*</span>
-                      </label>
-                      <select
-                        name="businessType"
-                        value={formData.businessType}
-                        onChange={handleChange}
-                        className="w-full h-11 rounded-lg border border-gray-200 px-3 bg-white text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-                        required
-                      >
-                        <option value="">Select a business type</option>
-                        <option value="electrician">Electrician</option>
-                        <option value="contractor">Contractor</option>
-                        <option value="reseller">Reseller</option>
-                        <option value="other">Other</option>
-                      </select>
-                    </div>
-
-                    {/* Upload Trade Docs */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Upload Trade Documents <span className="text-gray-500">(Optional)</span>
-                      </label>
-                      <input
-                        type="file"
-                        name="tradeDocs"
-                        onChange={handleFileChange}
-                        className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-                        accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                      />
-                      <p className="text-xs text-gray-500 mt-1">Accepted formats: PDF, DOC, DOCX, JPG, PNG</p>
-                    </div>
-                  </div>
-
-                  {/* Divider */}
-                  <div className="border-t border-gray-200"></div>
-
-                  {/* Procurement & Preferences Section */}
-                  <div>
-                    <h3 className="text-sm font-semibold text-gray-900 mb-4">Procurement & Preferences</h3>
-                    
-                    {/* PO Number */}
-                    <div className="mb-4">
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        PO Number <span className="text-red-600">*</span>
-                      </label>
-                      <Input
-                        type="text"
-                        name="poNumber"
-                        value={formData.poNumber}
-                        onChange={handleChange}
-                        placeholder="e.g., PO-2026-001"
-                        className="h-11 text-sm rounded-lg border-gray-200"
-                        required
-                      />
-                    </div>
-
-                    {/* Procurement Contact */}
-                    <div className="mb-4">
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Procurement Contact <span className="text-red-600">*</span>
-                      </label>
-                      <Input
-                        type="text"
-                        name="procurementContact"
-                        value={formData.procurementContact}
-                        onChange={handleChange}
-                        placeholder="Contact person name or title"
-                        className="h-11 text-sm rounded-lg border-gray-200"
-                        required
-                      />
-                    </div>
-
-                    {/* Monthly Statement Preference */}
-                    <div className="flex items-center gap-3">
-                      <Checkbox
-                        id="monthlyStatement"
-                        name="monthlyStatementPreference"
-                        checked={formData.monthlyStatementPreference}
-                        onCheckedChange={(checked) =>
-                          setFormData(prev => ({ ...prev, monthlyStatementPreference: checked as boolean }))
-                        }
-                      />
-                      <label htmlFor="monthlyStatement" className="text-sm text-gray-700 cursor-pointer">
-                        Request monthly statement
-                      </label>
-                    </div>
-                  </div>
-
-                  {/* Divider */}
-                  <div className="border-t border-gray-200"></div>
-                </>
-              )}
-
-              {/* Billing Address Section */}
-              <div>
-                <h3 className="text-sm font-semibold text-gray-900 mb-4">
-                  Billing Address
-                </h3>
-                
-                {/* Billing Address */}
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Address {formData.customerType === "Trade" && <span className="text-red-600">*</span>}
-                  </label>
-                  <div className="relative">
-                    <MapPin className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-                    <Input
-                      type="text"
-                      name="billingAddress"
-                      value={formData.billingAddress}
-                      onChange={handleChange}
-                      placeholder="123 Main Street"
-                      className="pl-10 h-11 text-sm rounded-lg border-gray-200"
-                      required={formData.customerType === "Trade"}
-                    />
-                  </div>
+              {/* Email */}
+              <div className="mb-4">
+                <label className={labelCls}>Email Address <span className="text-red-500">*</span></label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-black/40 dark:text-[rgba(240,242,237,.4)]" />
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    placeholder="john@example.com"
+                    className={`pl-10 ${inputCls}`}
+                    required
+                  />
                 </div>
+              </div>
 
-                {/* Billing City, Province, Postal Code */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      City {formData.customerType === "Trade" && <span className="text-red-600">*</span>}
-                    </label>
-                    <Input
+              {/* Phone */}
+              <div>
+                <label className={labelCls}>Phone Number <span className="text-red-500">*</span></label>
+                <div className="relative">
+                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-black/40 dark:text-[rgba(240,242,237,.4)]" />
+                  <input
+                    type="tel"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    placeholder="+27 71 234 5678"
+                    className={`pl-10 ${inputCls}`}
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className={dividerCls}></div>
+
+            {/* Business Details - Trade Only */}
+            {formData.customerType === "Trade" && (
+              <>
+                <div>
+                  <h3 className={sectionTitleCls}>Business Details</h3>
+
+                  <div className="mb-4">
+                    <label className={labelCls}>Company Name <span className="text-red-500">*</span></label>
+                    <input
                       type="text"
-                      name="billingCity"
-                      value={formData.billingCity}
+                      name="companyName"
+                      value={formData.companyName}
                       onChange={handleChange}
-                      placeholder="Cape Town"
-                      className="h-11 text-sm rounded-lg border-gray-200"
-                      required={formData.customerType === "Trade"}
+                      placeholder="Your Company Ltd"
+                      className={inputCls}
+                      required
                     />
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Province {formData.customerType === "Trade" && <span className="text-red-600">*</span>}
-                    </label>
-                    <select
-                      name="billingProvince"
-                      value={formData.billingProvince}
+
+                  <div className="mb-4">
+                    <label className={labelCls}>VAT Number <span className="text-black/40 dark:text-[rgba(240,242,237,.4)]">(Optional)</span></label>
+                    <input
+                      type="text"
+                      name="vatNumber"
+                      value={formData.vatNumber}
                       onChange={handleChange}
-                      className="w-full h-11 rounded-lg border border-gray-200 px-3 bg-white text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-                      required={formData.customerType === "Trade"}
+                      placeholder="e.g., 4123456789"
+                      className={inputCls}
+                    />
+                  </div>
+
+                  <div className="mb-4">
+                    <label className={labelCls}>Company Registration (CIPC) <span className="text-red-500">*</span></label>
+                    <input
+                      type="text"
+                      name="companyRegistration"
+                      value={formData.companyRegistration}
+                      onChange={handleChange}
+                      placeholder="e.g., 2023/123456"
+                      className={inputCls}
+                      required
+                    />
+                  </div>
+
+                  <div className="mb-4">
+                    <label className={labelCls}>Business Type <span className="text-red-500">*</span></label>
+                    <select
+                      name="businessType"
+                      value={formData.businessType}
+                      onChange={handleChange}
+                      className={inputCls}
+                      required
                     >
-                      <option value="">Select a province</option>
-                      <option value="Eastern Cape">Eastern Cape</option>
-                      <option value="Free State">Free State</option>
-                      <option value="Gauteng">Gauteng</option>
-                      <option value="KwaZulu-Natal">KwaZulu-Natal</option>
-                      <option value="Limpopo">Limpopo</option>
-                      <option value="Mpumalanga">Mpumalanga</option>
-                      <option value="Northern Cape">Northern Cape</option>
-                      <option value="North West">North West</option>
-                      <option value="Western Cape">Western Cape</option>
+                      <option value="">Select a business type</option>
+                      <option value="electrician">Electrician</option>
+                      <option value="contractor">Contractor</option>
+                      <option value="reseller">Reseller</option>
+                      <option value="other">Other</option>
                     </select>
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Postal Code {formData.customerType === "Trade" && <span className="text-red-600">*</span>}
-                    </label>
-                    <Input
-                      type="text"
-                      name="billingPostalCode"
-                      value={formData.billingPostalCode}
-                      onChange={handleChange}
-                      placeholder="8000"
-                      className="h-11 text-sm rounded-lg border-gray-200"
-                      required={formData.customerType === "Trade"}
-                    />
-                  </div>
-                </div>
-
-                {/* Same as Delivery Checkbox */}
-                <div className="flex items-center gap-3 pt-2">
-                  <Checkbox
-                    id="sameAsDelivery"
-                    name="sameAsDelivery"
-                    checked={formData.sameAsDelivery}
-                    onCheckedChange={(checked) =>
-                      setFormData(prev => ({ ...prev, sameAsDelivery: checked as boolean }))
-                    }
-                  />
-                  <label htmlFor="sameAsDelivery" className="text-sm text-gray-700 cursor-pointer">
-                    Delivery address is the same as billing address
-                  </label>
-                </div>
-              </div>
-
-              {/* Delivery Address Section - Conditional */}
-              {!formData.sameAsDelivery && (
-                <>
-                  {/* Divider */}
-                  <div className="border-t border-gray-200"></div>
 
                   <div>
-                    <h3 className="text-sm font-semibold text-gray-900 mb-4">Delivery Address</h3>
-                    
-                    {/* Delivery Address */}
-                    <div className="mb-4">
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Address
-                      </label>
-                      <div className="relative">
-                        <MapPin className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-                        <Input
-                          type="text"
-                          name="deliveryAddress"
-                          value={formData.deliveryAddress}
-                          onChange={handleChange}
-                          placeholder="456 Delivery Street"
-                          className="pl-10 h-11 text-sm rounded-lg border-gray-200"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Delivery City, Province, Postal Code */}
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          City
-                        </label>
-                        <Input
-                          type="text"
-                          name="deliveryCity"
-                          value={formData.deliveryCity}
-                          onChange={handleChange}
-                          placeholder="Johannesburg"
-                          className="h-11 text-sm rounded-lg border-gray-200"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Province
-                        </label>
-                        <select
-                          name="deliveryProvince"
-                          value={formData.deliveryProvince}
-                          onChange={handleChange}
-                          className="w-full h-11 rounded-lg border border-gray-200 px-3 bg-white text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-                        >
-                          <option value="">Select a province</option>
-                          <option value="Eastern Cape">Eastern Cape</option>
-                          <option value="Free State">Free State</option>
-                          <option value="Gauteng">Gauteng</option>
-                          <option value="KwaZulu-Natal">KwaZulu-Natal</option>
-                          <option value="Limpopo">Limpopo</option>
-                          <option value="Mpumalanga">Mpumalanga</option>
-                          <option value="Northern Cape">Northern Cape</option>
-                          <option value="North West">North West</option>
-                          <option value="Western Cape">Western Cape</option>
-                        </select>
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Postal Code
-                        </label>
-                        <Input
-                          type="text"
-                          name="deliveryPostalCode"
-                          value={formData.deliveryPostalCode}
-                          onChange={handleChange}
-                          placeholder="8000"
-                          className="h-11 text-sm rounded-lg border-gray-200"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Divider */}
-                  <div className="border-t border-gray-200"></div>
-                </>
-              )}
-
-              {/* Password Section */}
-              <div>
-                <h3 className="text-sm font-semibold text-gray-900 mb-4">Security</h3>
-                
-                {/* Password */}
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Password <span className="text-red-600">*</span>
-                  </label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-                    <Input
-                      type={showPassword ? "text" : "password"}
-                      name="password"
-                      value={formData.password}
-                      onChange={handleChange}
-                      placeholder="••••••••"
-                      className="pl-10 pr-10 h-11 text-sm rounded-lg border-gray-200"
-                      required
+                    <label className={labelCls}>Upload Trade Documents <span className="text-black/40 dark:text-[rgba(240,242,237,.4)]">(Optional)</span></label>
+                    <input
+                      type="file"
+                      name="tradeDocs"
+                      onChange={handleFileChange}
+                      className={inputCls}
+                      accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
                     />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
-                    >
-                      {showPassword ? (
-                        <EyeOff className="w-5 h-5" />
-                      ) : (
-                        <Eye className="w-5 h-5" />
-                      )}
-                    </button>
+                    <p className="text-[.7rem] text-black/50 dark:text-[rgba(240,242,237,.5)] mt-1">Accepted: PDF, DOC, DOCX, JPG, PNG</p>
                   </div>
                 </div>
 
-                {/* Confirm Password */}
+                <div className={dividerCls}></div>
+
+                {/* Procurement & Preferences */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Confirm Password <span className="text-red-600">*</span>
-                  </label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-                    <Input
-                      type={showConfirmPassword ? "text" : "password"}
-                      name="confirmPassword"
-                      value={formData.confirmPassword}
+                  <h3 className={sectionTitleCls}>Procurement & Preferences</h3>
+
+                  <div className="mb-4">
+                    <label className={labelCls}>PO Number <span className="text-red-500">*</span></label>
+                    <input
+                      type="text"
+                      name="poNumber"
+                      value={formData.poNumber}
                       onChange={handleChange}
-                      placeholder="••••••••"
-                      className="pl-10 pr-10 h-11 text-sm rounded-lg border-gray-200"
+                      placeholder="e.g., PO-2026-001"
+                      className={inputCls}
                       required
                     />
-                    <button
-                      type="button"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
-                    >
-                      {showConfirmPassword ? (
-                        <EyeOff className="w-5 h-5" />
-                      ) : (
-                        <Eye className="w-5 h-5" />
-                      )}
-                    </button>
                   </div>
+
+                  <div className="mb-4">
+                    <label className={labelCls}>Procurement Contact <span className="text-red-500">*</span></label>
+                    <input
+                      type="text"
+                      name="procurementContact"
+                      value={formData.procurementContact}
+                      onChange={handleChange}
+                      placeholder="Contact person name or title"
+                      className={inputCls}
+                      required
+                    />
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="checkbox"
+                      id="monthlyStatement"
+                      name="monthlyStatementPreference"
+                      checked={formData.monthlyStatementPreference}
+                      onChange={handleChange}
+                      className="w-4 h-4 rounded accent-lime-brand cursor-pointer"
+                    />
+                    <label htmlFor="monthlyStatement" className="text-[.8rem] text-black/60 dark:text-[rgba(240,242,237,.6)] cursor-pointer">
+                      Request monthly statement
+                    </label>
+                  </div>
+                </div>
+
+                <div className={dividerCls}></div>
+              </>
+            )}
+
+            {/* Billing Address */}
+            <div>
+              <h3 className={sectionTitleCls}>Billing Address</h3>
+
+              <div className="mb-4">
+                <label className={labelCls}>Address {formData.customerType === "Trade" && <span className="text-red-500">*</span>}</label>
+                <div className="relative">
+                  <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-black/40 dark:text-[rgba(240,242,237,.4)]" />
+                  <input
+                    type="text"
+                    name="billingAddress"
+                    value={formData.billingAddress}
+                    onChange={handleChange}
+                    placeholder="123 Main Street"
+                    className={`pl-10 ${inputCls}`}
+                    required={formData.customerType === "Trade"}
+                  />
                 </div>
               </div>
 
-              {/* Divider */}
-              {/* <div className="border-t border-gray-200"></div> */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+                <div>
+                  <label className={labelCls}>City {formData.customerType === "Trade" && <span className="text-red-500">*</span>}</label>
+                  <input
+                    type="text"
+                    name="billingCity"
+                    value={formData.billingCity}
+                    onChange={handleChange}
+                    placeholder="Cape Town"
+                    className={inputCls}
+                    required={formData.customerType === "Trade"}
+                  />
+                </div>
+                <div>
+                  <label className={labelCls}>Province {formData.customerType === "Trade" && <span className="text-red-500">*</span>}</label>
+                  <select
+                    name="billingProvince"
+                    value={formData.billingProvince}
+                    onChange={handleChange}
+                    className={inputCls}
+                    required={formData.customerType === "Trade"}
+                  >
+                    <option value="">Select a province</option>
+                    <option value="Eastern Cape">Eastern Cape</option>
+                    <option value="Free State">Free State</option>
+                    <option value="Gauteng">Gauteng</option>
+                    <option value="KwaZulu-Natal">KwaZulu-Natal</option>
+                    <option value="Limpopo">Limpopo</option>
+                    <option value="Mpumalanga">Mpumalanga</option>
+                    <option value="Northern Cape">Northern Cape</option>
+                    <option value="North West">North West</option>
+                    <option value="Western Cape">Western Cape</option>
+                  </select>
+                </div>
+                <div>
+                  <label className={labelCls}>Postal Code {formData.customerType === "Trade" && <span className="text-red-500">*</span>}</label>
+                  <input
+                    type="text"
+                    name="billingPostalCode"
+                    value={formData.billingPostalCode}
+                    onChange={handleChange}
+                    placeholder="8000"
+                    className={inputCls}
+                    required={formData.customerType === "Trade"}
+                  />
+                </div>
+              </div>
 
-              {/* Terms Checkbox */}
-              {/* <div className="flex items-center gap-3 pt-2">
-                <Checkbox
-                  id="terms"
-                  name="agreeTerms"
-                  checked={formData.agreeTerms}
-                  onCheckedChange={(checked) =>
-                    setFormData(prev => ({ ...prev, agreeTerms: checked as boolean }))
-                  }
+              <div className="flex items-center gap-3 pt-2">
+                <input
+                  type="checkbox"
+                  id="sameAsDelivery"
+                  name="sameAsDelivery"
+                  checked={formData.sameAsDelivery}
+                  onChange={handleChange}
+                  className="w-4 h-4 rounded accent-lime-brand cursor-pointer"
                 />
-                <label htmlFor="terms" className="text-sm text-gray-600 cursor-pointer">
-                  I agree to the{" "}
-                  <a href="#" className="text-green-600 hover:underline font-medium">
-                    Terms & Conditions
-                  </a>
+                <label htmlFor="sameAsDelivery" className="text-[.8rem] text-black/60 dark:text-[rgba(240,242,237,.6)] cursor-pointer">
+                  Delivery address is the same as billing address
                 </label>
-              </div> */}
-
-              {/* Submit Button */}
-              <Button
-                type="submit"
-                disabled={isLoading}
-                className="w-full bg-primary-gradient border-0 text-white font-semibold h-11 rounded-lg hover:opacity-90 transition-smooth mt-6"
-              >
-                {isLoading ? "Creating Account..." : "Sign Up"}
-              </Button>
-            </form>
-
-            <div className="px-8 py-6 bg-gray-50 border-t border-gray-100 text-center">
-              <p className="text-gray-600 text-sm">
-                Already have an account?{" "}
-                <Link to="/login" className="text-green-600 hover:text-green-700 font-semibold">
-                  Sign In
-                </Link>
-              </p>
+              </div>
             </div>
-          </div>
 
-          {/* Additional Info */}
-          {/* <div className="mt-8 text-center text-sm text-gray-500 animate-in fade-in" style={{animationDelay: '0.3s'}}>
-            <p>By signing up, you agree to our privacy policy and terms of service</p>
-          </div> */}
+            {/* Delivery Address - Conditional */}
+            {!formData.sameAsDelivery && (
+              <>
+                <div className={dividerCls}></div>
+
+                <div>
+                  <h3 className={sectionTitleCls}>Delivery Address</h3>
+
+                  <div className="mb-4">
+                    <label className={labelCls}>Address</label>
+                    <div className="relative">
+                      <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-black/40 dark:text-[rgba(240,242,237,.4)]" />
+                      <input
+                        type="text"
+                        name="deliveryAddress"
+                        value={formData.deliveryAddress}
+                        onChange={handleChange}
+                        placeholder="456 Delivery Street"
+                        className={`pl-10 ${inputCls}`}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                      <label className={labelCls}>City</label>
+                      <input
+                        type="text"
+                        name="deliveryCity"
+                        value={formData.deliveryCity}
+                        onChange={handleChange}
+                        placeholder="Johannesburg"
+                        className={inputCls}
+                      />
+                    </div>
+                    <div>
+                      <label className={labelCls}>Province</label>
+                      <select
+                        name="deliveryProvince"
+                        value={formData.deliveryProvince}
+                        onChange={handleChange}
+                        className={inputCls}
+                      >
+                        <option value="">Select a province</option>
+                        <option value="Eastern Cape">Eastern Cape</option>
+                        <option value="Free State">Free State</option>
+                        <option value="Gauteng">Gauteng</option>
+                        <option value="KwaZulu-Natal">KwaZulu-Natal</option>
+                        <option value="Limpopo">Limpopo</option>
+                        <option value="Mpumalanga">Mpumalanga</option>
+                        <option value="Northern Cape">Northern Cape</option>
+                        <option value="North West">North West</option>
+                        <option value="Western Cape">Western Cape</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className={labelCls}>Postal Code</label>
+                      <input
+                        type="text"
+                        name="deliveryPostalCode"
+                        value={formData.deliveryPostalCode}
+                        onChange={handleChange}
+                        placeholder="8000"
+                        className={inputCls}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className={dividerCls}></div>
+              </>
+            )}
+
+            {/* Security */}
+            <div>
+              <h3 className={sectionTitleCls}>Security</h3>
+
+              <div className="mb-4">
+                <label className={labelCls}>Password <span className="text-red-500">*</span></label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-black/40 dark:text-[rgba(240,242,237,.4)]" />
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    placeholder="••••••••"
+                    className={`pl-10 pr-10 ${inputCls}`}
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-black/40 dark:text-[rgba(240,242,237,.4)] hover:text-black/60 dark:hover:text-[rgba(240,242,237,.6)] transition-colors duration-150"
+                  >
+                    {showPassword ? (
+                      <EyeOff className="w-5 h-5" />
+                    ) : (
+                      <Eye className="w-5 h-5" />
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className={labelCls}>Confirm Password <span className="text-red-500">*</span></label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-black/40 dark:text-[rgba(240,242,237,.4)]" />
+                  <input
+                    type={showConfirmPassword ? "text" : "password"}
+                    name="confirmPassword"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    placeholder="••••••••"
+                    className={`pl-10 pr-10 ${inputCls}`}
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-black/40 dark:text-[rgba(240,242,237,.4)] hover:text-black/60 dark:hover:text-[rgba(240,242,237,.6)] transition-colors duration-150"
+                  >
+                    {showConfirmPassword ? (
+                      <EyeOff className="w-5 h-5" />
+                    ) : (
+                      <Eye className="w-5 h-5" />
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full py-3 rounded-lg bg-gradient-to-br from-green-brand to-lime-brand text-dark-surface font-semibold text-[.9rem] cursor-pointer transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-6"
+            >
+              {isLoading ? (
+                <>
+                  <Loader size={16} className="animate-spin" />
+                  Creating Account...
+                </>
+              ) : (
+                'Sign Up'
+              )}
+            </button>
+          </form>
+
+          {/* Footer */}
+          <div className="px-8 py-5 bg-black/[.02] dark:bg-white/[.02] border-t border-black/[.08] dark:border-white/[.06] text-center">
+            <p className="text-[.8rem] text-black/60 dark:text-[rgba(240,242,237,.6)]">
+              Already have an account?{" "}
+              <Link to="/login" className="text-lime-brand hover:text-lime-brand/80 font-semibold transition-colors duration-150">
+                Sign In
+              </Link>
+            </p>
+          </div>
         </div>
-      </section>
+      </div>
 
       {/* Email Verification Modal */}
       {showVerification && (

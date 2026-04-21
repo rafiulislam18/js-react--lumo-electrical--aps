@@ -1,9 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Eye, EyeOff, Mail, Lock } from "lucide-react";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Eye, EyeOff, Mail, Lock, Loader } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/context/AuthContext";
 
@@ -40,7 +37,7 @@ export default function Login() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          username: formData.email, // Backend expects 'username' field with email
+          username: formData.email,
           password: formData.password
         })
       });
@@ -56,9 +53,8 @@ export default function Login() {
       console.log('Login Response:', { status: response.status, data });
 
       if (!response.ok) {
-        // Handle multiple error formats
         let errorMessage = 'Login failed. Please try again.';
-        
+
         if (data?.detail) {
           errorMessage = String(data.detail);
         } else if (data?.error) {
@@ -88,12 +84,10 @@ export default function Login() {
         return;
       }
 
-      // Store tokens
       localStorage.setItem('access_token', data.access);
       localStorage.setItem('refresh_token', data.refresh);
       localStorage.setItem('user', JSON.stringify(data.user));
 
-      // Use auth context to update auth state
       login(data.user, data.access, data.refresh);
 
       if (rememberMe) {
@@ -112,7 +106,7 @@ export default function Login() {
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred';
       console.error('Login error:', err);
-      
+
       toast({
         variant: "destructive",
         title: "Network Error",
@@ -123,109 +117,139 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50/30 flex flex-col font-sans">
-      <section className="flex-1 py-20 px-4">
-        <div className="container mx-auto max-w-md">
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-lg overflow-hidden animate-in fade-in slide-in-from-bottom-10 duration-700">
-            {/* Header */}
-            <div className="bg-gradient-to-r from-green-500 to-lime-400 px-8 py-12 text-white text-center">
-              <h1 className="text-3xl font-display font-bold mb-2">Welcome Back</h1>
-              <p className="text-green-50">Sign in to your account</p>
-            </div>
+    <div className="font-outfit bg-white dark:bg-dark-surface min-h-screen flex flex-col items-center justify-center px-4 py-12">
+      {/* Logo/Header */}
+      <div className="mb-12 text-center">
+        <h1 className="font-bebas text-[2.5rem] tracking-[.08em] text-black/85 dark:text-[#f0f2ed] mb-2">
+          Welcome Back
+        </h1>
+        <p className="text-[.9rem] text-black/55 dark:text-[rgba(240,242,237,.55)]">
+          Sign in to your account
+        </p>
+      </div>
 
-            {/* Form */}
-            <form onSubmit={handleSubmit} className="p-8 space-y-5">
+      {/* Form Card */}
+      <div className="w-full max-w-md">
+        <div className="bg-white dark:bg-black/[.02] rounded-xl border border-black/[.08] dark:border-white/[.06] overflow-hidden">
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="p-8 space-y-5">
 
-              {/* Email */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Email Address <span className="text-red-600">*</span>
-                </label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-                  <Input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    placeholder="your@email.com"
-                    className="pl-10 h-11 text-sm rounded-lg border-gray-200"
-                    required
-                  />
-                </div>
-              </div>
-
-              {/* Password */}
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <label className="block text-sm font-medium text-gray-700">
-                    Password <span className="text-red-600">*</span>
-                  </label>
-                  <Link
-                    to="/forgot-password"
-                    className="text-xs text-green-600 hover:text-green-700 font-medium"
-                  >
-                    Forgot password?
-                  </Link>
-                </div>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-                  <Input
-                    type={showPassword ? "text" : "password"}
-                    name="password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    placeholder="••••••••"
-                    className="pl-10 pr-10 h-11 text-sm rounded-lg border-gray-200"
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
-                  >
-                    {showPassword ? (
-                      <EyeOff className="w-5 h-5" />
-                    ) : (
-                      <Eye className="w-5 h-5" />
-                    )}
-                  </button>
-                </div>
-              </div>
-
-              {/* Remember Me */}
-              <div className="flex items-center gap-3">
-                <Checkbox
-                  id="remember"
-                  checked={rememberMe}
-                  onCheckedChange={(checked) => setRememberMe(checked as boolean)}
+            {/* Email */}
+            <div>
+              <label className="block text-[.8rem] font-medium text-black/70 dark:text-[rgba(240,242,237,.7)] mb-2">
+                Email Address <span className="text-red-500">*</span>
+              </label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-black/40 dark:text-[rgba(240,242,237,.4)]" />
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="your@email.com"
+                  className="w-full pl-10 pr-4 py-3 text-[.85rem] bg-white dark:bg-black/[.05] border border-black/[.1] dark:border-white/[.08] rounded-lg text-black/80 dark:text-[rgba(240,242,237,.8)] placeholder-black/40 dark:placeholder-[rgba(240,242,237,.4)] focus:outline-none focus:border-lime-brand/30 focus:bg-lime-brand/[.05] dark:focus:bg-lime-brand/[.05] transition-all duration-150"
+                  required
                 />
-                <label htmlFor="remember" className="text-sm text-gray-600 cursor-pointer">
-                  Remember me
-                </label>
               </div>
-
-              {/* Submit Button */}
-              <Button
-                type="submit"
-                disabled={isLoading}
-                className="w-full bg-primary-gradient border-0 text-white font-semibold h-11 rounded-lg hover:opacity-90 transition-smooth mt-6"
-              >
-                {isLoading ? "Signing In..." : "Sign In"}
-              </Button>
-            </form>
-
-            <div className="px-8 py-6 bg-gray-50 border-t border-gray-100 text-center">
-              <p className="text-gray-600 text-sm">
-                Don't have an account?{" "}
-                <Link to="/signup" className="text-green-600 hover:text-green-700 font-semibold">
-                  Sign Up
-                </Link>
-              </p>
             </div>
+
+            {/* Password */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-[.8rem] font-medium text-black/70 dark:text-[rgba(240,242,237,.7)]">
+                  Password <span className="text-red-500">*</span>
+                </label>
+                <Link
+                  to="/forgot-password"
+                  className="text-[.75rem] text-lime-brand hover:text-lime-brand/80 font-medium transition-colors duration-150"
+                >
+                  Forgot password?
+                </Link>
+              </div>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-black/40 dark:text-[rgba(240,242,237,.4)]" />
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="••••••••"
+                  className="w-full pl-10 pr-10 py-3 text-[.85rem] bg-white dark:bg-black/[.05] border border-black/[.1] dark:border-white/[.08] rounded-lg text-black/80 dark:text-[rgba(240,242,237,.8)] placeholder-black/40 dark:placeholder-[rgba(240,242,237,.4)] focus:outline-none focus:border-lime-brand/30 focus:bg-lime-brand/[.05] dark:focus:bg-lime-brand/[.05] transition-all duration-150"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-black/40 dark:text-[rgba(240,242,237,.4)] hover:text-black/60 dark:hover:text-[rgba(240,242,237,.6)] transition-colors duration-150"
+                >
+                  {showPassword ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {/* Remember Me */}
+            <div className="flex items-center gap-3">
+              <input
+                type="checkbox"
+                id="remember"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                className="w-4 h-4 rounded accent-lime-brand cursor-pointer"
+              />
+              <label htmlFor="remember" className="text-[.8rem] text-black/60 dark:text-[rgba(240,242,237,.6)] cursor-pointer">
+                Remember me
+              </label>
+            </div>
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full py-3 rounded-lg bg-gradient-to-br from-green-brand to-lime-brand text-dark-surface font-semibold text-[.9rem] cursor-pointer transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-6"
+            >
+              {isLoading ? (
+                <>
+                  <Loader size={16} className="animate-spin" />
+                  Signing In...
+                </>
+              ) : (
+                'Sign In'
+              )}
+            </button>
+          </form>
+
+          {/* Footer */}
+          <div className="px-8 py-5 bg-black/[.02] dark:bg-white/[.02] border-t border-black/[.08] dark:border-white/[.06] text-center">
+            <p className="text-[.8rem] text-black/60 dark:text-[rgba(240,242,237,.6)]">
+              Don't have an account?{" "}
+              <Link to="/signup" className="text-lime-brand hover:text-lime-brand/80 font-semibold transition-colors duration-150">
+                Sign Up
+              </Link>
+            </p>
           </div>
         </div>
-      </section>
+
+        {/* Divider */}
+        <div className="mt-8 flex items-center gap-4">
+          <div className="flex-1 h-px bg-black/[.08] dark:bg-white/[.06]" />
+          <span className="text-[.75rem] text-black/40 dark:text-[rgba(240,242,237,.4)]">OR</span>
+          <div className="flex-1 h-px bg-black/[.08] dark:bg-white/[.06]" />
+        </div>
+
+        {/* Back Home */}
+        <div className="mt-6 text-center">
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2 text-[.8rem] text-black/60 dark:text-[rgba(240,242,237,.6)] hover:text-lime-brand dark:hover:text-lime-brand transition-colors duration-150 font-medium"
+          >
+            ← Continue as Guest
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }
