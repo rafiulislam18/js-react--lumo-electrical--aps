@@ -140,7 +140,7 @@ export default function Home() {
   const revealVisible = "!opacity-100 !translate-y-0";
 
   return (
-    <div className="font-outfit bg-[#0a0c0a] text-[#f0f2ed]">
+    <div className="font-outfit bg-white dark:bg-dark-elevated-900 text-[#f0f2ed]">
 
       {/* ══ HERO ══ */}
       <section
@@ -209,9 +209,9 @@ export default function Home() {
       </div>
 
       {/* ══ TRUST BAR (simple) ══ */}
-      <div className="bg-white dark:bg-[#111411] border-t border-b border-[rgba(26,26,26,.1)] dark:border-[rgba(255,255,255,.06)]">
+      <div className="bg-white dark:bg-dark-elevated-900 border-t border-b border-[rgba(26,26,26,.1)] dark:border-[rgba(255,255,255,.06)]">
         <div className="max-w-[1280px] mx-auto px-8">
-          <div className="grid grid-cols-4 max-[640px]:grid-cols-2">
+          <div className="grid grid-cols-4 max-[1024px]:grid-cols-2 max-[480px]:grid-cols-1">
             {[
               { icon: Truck,   title: 'Cape Town Delivery',  desc: 'Fast dispatch across the metro' },
               { icon: Shield,  title: 'Quality Guaranteed',  desc: 'All products meet SA standards'  },
@@ -220,7 +220,7 @@ export default function Home() {
             ].map(({ icon: Icon, title, desc }, idx) => (
               <div
                 key={title}
-                className={`group flex flex-col items-center text-center py-10 px-6 gap-3 border-r border-[rgba(26,26,26,.1)] dark:border-[rgba(255,255,255,.06)]${idx === 3 ? ' border-r-0' : ''}`}
+                className={`group flex flex-col items-center text-center py-8 px-4 gap-3 border-r border-[rgba(26,26,26,.1)] dark:border-[rgba(255,255,255,.06)] max-[480px]:py-6 max-[480px]:px-4 max-[480px]:border-r-0${idx === 3 ? ' border-r-0' : ''}`}
               >
                 <div className="w-12 h-12 rounded-[8px] bg-[rgba(58,170,73,.1)] border border-[rgba(58,170,73,.25)] dark:bg-[rgba(168,214,62,.1)] dark:border-[rgba(168,214,62,.2)] grid place-items-center text-[#3aaa49] dark:text-[#a8d63e] transition-all duration-300 group-hover:bg-gradient-to-br group-hover:from-[#3aaa49] group-hover:to-[#a8d63e] group-hover:border-transparent group-hover:text-white dark:group-hover:text-[#0a0c0a] group-hover:shadow-[0_4px_20px_rgba(58,170,73,.35)] dark:group-hover:shadow-[0_4px_20px_rgba(168,214,62,.25)]">
                   <Icon size={20} />
@@ -236,7 +236,7 @@ export default function Home() {
       {/* ══ TRUST BAR (animated) ══ */}
       {/* <div
         ref={trustReveal.ref}
-        className={`bg-gradient-to-b from-gray-50 to-white dark:from-dark-elevated border-t border-b border-[rgba(0,0,0,.05)] dark:border-[rgba(255,255,255,.04)] ${revealBase} ${trustReveal.visible ? revealVisible : ''}`}
+        className={`bg-gradient-to-b from-gray-50 to-white dark:from-dark-elevated-900 border-t border-b border-[rgba(0,0,0,.05)] dark:border-[rgba(255,255,255,.04)] ${revealBase} ${trustReveal.visible ? revealVisible : ''}`}
       >
         <div className="max-w-[1320px] mx-auto px-8">
           <div className="grid grid-cols-4 gap-6 py-14 max-[768px]:grid-cols-2 max-[480px]:grid-cols-1">
@@ -267,7 +267,7 @@ export default function Home() {
 
       {/* ══ CATEGORIES ══ */}
       <div
-        className="bg-gradient-to-b from-gray-50 to-white dark:from-[#0a0c0a] py-28"
+        className="bg-gradient-to-b from-gray-50 to-white dark:from-dark-elevated-950 dark:to-dark-elevated-900 py-28"
         id="categories-section"
         style={{ scrollMarginTop: '5rem' }}
       >
@@ -278,7 +278,7 @@ export default function Home() {
               <div className="inline-flex items-center gap-2 text-[.68rem] font-bold tracking-[.2em] uppercase text-[#3aaa49] dark:text-[#a8d63e] mb-[.8rem] before:content-[''] before:w-6 before:h-0.5 before:bg-[#3aaa49] dark:before:bg-[#a8d63e] before:rounded-sm before:shrink-0">
                 Browse
               </div>
-              <h2 className="font-bebas text-[clamp(2.6rem,5vw,4rem)] leading-none text-[#1a1a1a] dark:text-[#f0f2ed] mb-2">Shop by Category</h2>
+              <h2 className="font-bebas text-[clamp(1.8rem,5vw,4rem)] leading-none text-[#1a1a1a] dark:text-[#f0f2ed] mb-2">Shop by Category</h2>
             </div>
             {/* <a
               href="/products"
@@ -290,10 +290,9 @@ export default function Home() {
 
           {/* Grid */}
           <div
-            className="grid gap-3"
+            className="grid gap-3 max-[768px]:gap-2"
             style={{
-              gridTemplateColumns: 'repeat(5, 1fr)',
-              gridTemplateRows: '240px 200px',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))',
             }}
           >
             {featuredCategories.map((cat: Category, i: number) => {
@@ -302,7 +301,7 @@ export default function Home() {
                 <a
                   key={cat.id}
                   href={`/${cat.slug}`}
-                  className={`group relative rounded-[8px] overflow-hidden bg-[#141814] no-underline block border border-[rgba(255,255,255,.7)] dark:border-[rgba(255,255,255,.05)] transition-[border-color] duration-300 min-h-[160px] ${i === 0 ? ' col-span-2' : ''}`}
+                  className={`group relative rounded-[8px] overflow-hidden bg-[#141814] no-underline block border border-[rgba(255,255,255,.7)] dark:border-[rgba(255,255,255,.05)] transition-[border-color] duration-300 h-[240px] max-[768px]:h-[200px] max-[480px]:h-[180px]`}
                 >
                   {img && (
                     <img
@@ -318,9 +317,9 @@ export default function Home() {
                       Featured
                     </span>
                   )} */}
-                  <div className="absolute inset-0 flex flex-col justify-end p-[1.4rem]">
-                    <div className="font-outfit font-bold text-[1rem] text-[#f0f2ed] leading-[1.2] mb-[.4rem]">{cat.name}</div>
-                    <div className="inline-flex items-center gap-[.3rem] text-[.68rem] font-semibold tracking-[.1em] uppercase text-[#a8d63e] transition-[gap] duration-200">
+                  <div className="absolute inset-0 flex flex-col justify-end p-[1.4rem] max-[480px]:p-3">
+                    <div className="font-outfit font-bold text-[1rem] max-[480px]:text-[0.85rem] text-[#f0f2ed] leading-[1.2] mb-[.4rem]">{cat.name}</div>
+                    <div className="inline-flex items-center gap-[.3rem] text-[.68rem] max-[480px]:text-[.6rem] font-semibold tracking-[.1em] uppercase text-[#a8d63e] transition-[gap] duration-200">
                       Shop <ArrowRight size={10} />
                     </div>
                   </div>
@@ -332,7 +331,7 @@ export default function Home() {
       </div>
 
       {/* ══ PRODUCTS ══ */}
-      <div className="bg-gradient-to-b from-gray-50 to-white dark:from-dark-elevated py-28">
+      <div className="bg-gradient-to-b from-gray-50 to-white dark:from-dark-elevated-950 dark:to-dark-elevated-900 py-28">
         <div className="max-w-[1280px] mx-auto px-8">
           <div className="mb-12">
             <div className="inline-flex items-center gap-2 text-[.68rem] font-bold tracking-[.2em] uppercase text-[#3aaa49] dark:text-[#a8d63e] mb-[.8rem] before:content-[''] before:w-6 before:h-0.5 before:bg-[#3aaa49] dark:before:bg-[#a8d63e] before:rounded-sm before:shrink-0">
@@ -350,18 +349,18 @@ export default function Home() {
               Failed to load products. Please try again later.
             </div>
           ) : (
-            <div className="grid grid-cols-3 gap-px max-[900px]:grid-cols-1">
+            <div className="grid grid-cols-3 gap-px max-[1024px]:grid-cols-2 max-[720px]:grid-cols-1 max-[480px]:gap-0">
               {[
                 { title: 'Featured',     products: featuredProducts, link: '/products' },
                 { title: 'Best Sellers', products: bestSellers,      link: '/products?q=best-sellers' },
                 { title: 'New Arrivals', products: newArrivals,      link: '/products?q=new-arrivals' },
               ].map(col => (
-                <div key={col.title} className="p-10">
+                <div key={col.title} className="p-10 max-[1024px]:p-8 max-[480px]:p-4">
                   <div className="flex items-center justify-between pb-[1.2rem] mb-[1.75rem] border-b border-[rgba(26,26,26,.1)] dark:border-white/[0.1]">
-                    <span className="font-bebas text-[1.4rem] text-[#1a1a1a] dark:text-[#f0f2ed] tracking-[.04em]">{col.title}</span>
+                    <span className="font-bebas text-[1.4rem] max-[480px]:text-[1rem] text-[#1a1a1a] dark:text-[#f0f2ed] tracking-[.04em]">{col.title}</span>
                     <a
                       href={col.link}
-                      className="text-[.68rem] font-semibold tracking-[.1em] uppercase text-[#3aaa49] dark:text-[#a8d63e] no-underline flex items-center gap-[.3rem] transition-[gap] duration-200 hover:gap-[.55rem]"
+                      className="text-[.68rem] max-[480px]:text-[.6rem] font-semibold tracking-[.1em] uppercase text-[#3aaa49] dark:text-[#a8d63e] no-underline flex items-center gap-[.3rem] transition-[gap] duration-200 hover:gap-[.55rem]"
                     >
                       View all <ArrowRight size={11} />
                     </a>
@@ -376,12 +375,12 @@ export default function Home() {
       </div>
 
       {/* ══ FAQ ══ */}
-      <div className="bg-gradient-to-b from-gray-50 to-white dark:from-dark-elevated py-28">
+      <div className="bg-gradient-to-b from-gray-50 to-white dark:from-dark-elevated-950 dark:to-dark-elevated-900 py-28">
         <div className="max-w-[1280px] mx-auto px-8">
           <div className="grid grid-cols-[1fr_2fr] gap-24 items-start max-[768px]:grid-cols-1 max-[768px]:gap-10">
 
             {/* Sticky sidebar */}
-            <div className="sticky top-28">
+            <div className="md:sticky top-28">
               <div className="inline-flex items-center gap-2 text-[.68rem] font-bold tracking-[.2em] uppercase text-[#3aaa49] dark:text-[#a8d63e] mb-[.8rem] before:content-[''] before:w-6 before:h-0.5 before:bg-[#3aaa49] dark:before:bg-[#a8d63e] before:rounded-sm before:shrink-0">
                 Support
               </div>
