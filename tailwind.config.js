@@ -84,6 +84,7 @@ export default {
           offline: "rgb(156 163 175)",
         },
         "green-brand": "#3aaa49",
+        "green-deep": "#399746",
         "lime-brand": "#a8d63e",
         "dark-base": "#060806",
         "dark-surface": "#0a0c0a",
