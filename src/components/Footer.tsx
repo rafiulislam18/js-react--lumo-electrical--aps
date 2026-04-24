@@ -18,15 +18,15 @@ export function Footer({ contactDetails }: FooterProps) {
     <footer className="font-outfit bg-[#060806] text-[#f0f2ed]/60 border-t border-white/[0.06]">
 
       {/* CTA BANNER */}
-      <div className="relative overflow-hidden bg-[#0d1a0f] px-8 py-16">
+      <div className="relative overflow-hidden bg-[#0d1a0f] px-4 py-12 sm:px-8 sm:py-16">
         <div className="pointer-events-none absolute -top-24 -left-24 w-[480px] h-[480px] rounded-full bg-[#3aaa49]/20 blur-[96px]" />
         <div className="pointer-events-none absolute -bottom-20 right-0 w-[380px] h-[380px] rounded-full bg-[#a8d63e]/15 blur-[80px]" />
         <div
           className="pointer-events-none absolute inset-0 opacity-[0.04]"
           style={{ backgroundImage: 'linear-gradient(rgba(168,214,62,1) 1px, transparent 1px), linear-gradient(90deg, rgba(168,214,62,1) 1px, transparent 1px)', backgroundSize: '48px 48px' }}
         />
-        <div className="relative max-w-[1280px] mx-auto flex items-center justify-between gap-8">
-          <div className="flex items-center gap-6">
+        <div className="relative max-w-[1280px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-6 sm:gap-8">
+          <div className="flex flex-col sm:flex-row items-center sm:items-center gap-4 sm:gap-6 text-center sm:text-left">
             <div className="flex-shrink-0 w-16 h-16 rounded-xl bg-gradient-to-br from-[#3aaa49] to-[#a8d63e] grid place-items-center shadow-[0_0_32px_rgba(168,214,62,0.35)]">
               <ClipboardList size={28} className="text-[#0a0c0a]" />
             </div>
@@ -34,17 +34,17 @@ export function Footer({ contactDetails }: FooterProps) {
               <div className="text-[0.65rem] font-bold tracking-[0.2em] uppercase text-[#a8d63e]/70 mb-1">
                 Trade &amp; Contractors
               </div>
-              <div className="font-bebas text-[2rem] leading-none text-white mb-[0.35rem]">
+              <div className="font-bebas text-xl sm:text-[2rem] leading-none text-white mb-[0.35rem]">
                 Need A Quote For Trade Account?
               </div>
-              <div className="text-[0.85rem] text-white/55 font-light">
+              <div className="text-[0.75rem] sm:text-[0.85rem] text-white/55 font-light">
                 Get exclusive pricing for contractors and electricians.
               </div>
             </div>
           </div>
           <a
             href="/contact-us"
-            className="flex-shrink-0 inline-flex items-center gap-[0.6rem] font-outfit font-bold text-[0.82rem] tracking-[0.1em] uppercase px-7 py-[0.9rem] rounded-lg border border-[#a8d63e]/30 cursor-pointer bg-gradient-to-r from-[#3aaa49] to-[#a8d63e] text-[#0a0c0a] no-underline shadow-[0_0_32px_rgba(168,214,62,0.25)] transition-all duration-200 hover:shadow-[0_0_48px_rgba(168,214,62,0.45)] hover:-translate-y-0.5 whitespace-nowrap"
+            className="inline-flex items-center gap-[0.6rem] font-outfit font-bold text-[0.75rem] sm:text-[0.82rem] tracking-[0.1em] uppercase px-5 sm:px-7 py-2 sm:py-[0.9rem] rounded-lg border border-[#a8d63e]/30 cursor-pointer bg-gradient-to-r from-[#3aaa49] to-[#a8d63e] text-[#0a0c0a] no-underline shadow-[0_0_32px_rgba(168,214,62,0.25)] transition-all duration-200 hover:shadow-[0_0_48px_rgba(168,214,62,0.45)] hover:-translate-y-0.5 whitespace-nowrap flex-shrink-0"
           >
             Get in Touch <ArrowRight size={15} />
           </a>
