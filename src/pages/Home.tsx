@@ -220,7 +220,7 @@ export default function Home() {
             ].map(({ icon: Icon, title, desc }, idx) => (
               <div
                 key={title}
-                className={`group flex flex-col items-center text-center py-8 px-4 gap-3 border-r border-[rgba(26,26,26,.1)] dark:border-[rgba(255,255,255,.06)] max-[480px]:py-6 max-[480px]:px-4 max-[480px]:border-r-0${idx === 3 ? ' border-r-0' : ''}`}
+                className={`group flex flex-col items-center text-center py-8 px-4 gap-3 border-r border-[rgba(26,26,26,.1)] dark:border-[rgba(255,255,255,.06)] max-[480px]:py-6 max-[480px]:px-4 max-[480px]:border-r-0 ${idx === 3 ? ' border-r-0' : ''} ${idx === 1 ? 'max-[1024px]:border-r-0' : ''}`}
               >
                 <div className="w-12 h-12 rounded-[8px] bg-[rgba(58,170,73,.1)] border border-[rgba(58,170,73,.25)] dark:bg-[rgba(168,214,62,.1)] dark:border-[rgba(168,214,62,.2)] grid place-items-center text-[#3aaa49] dark:text-[#a8d63e] transition-all duration-300 group-hover:bg-gradient-to-br group-hover:from-[#3aaa49] group-hover:to-[#a8d63e] group-hover:border-transparent group-hover:text-white dark:group-hover:text-[#0a0c0a] group-hover:shadow-[0_4px_20px_rgba(58,170,73,.35)] dark:group-hover:shadow-[0_4px_20px_rgba(168,214,62,.25)]">
                   <Icon size={20} />
