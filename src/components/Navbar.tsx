@@ -178,7 +178,7 @@ export function Navbar({ categories }: NavbarProps) {
       <nav className={`sticky top-0 z-[40] font-outfit w-full transition-all duration-500 ${solidBg ? (light ? 'bg-white shadow-[0_1px_0_rgba(0,0,0,0.08)]' : 'bg-[#0d110d] shadow-[0_1px_0_rgba(255,255,255,0.07)]') : 'bg-transparent'}`}>
 
         {/* TOPBAR */}
-        <div className="flex items-center h-[68px] max-w-[1280px] mx-auto px-8 gap-4">
+        <div className="flex items-center h-[68px] max-w-[1280px] mx-auto pl-8 pr-3 gap-4">
 
           {/* Logo */}
           <Link to="/" className="flex-shrink-0 flex items-center no-underline">
@@ -186,7 +186,7 @@ export function Navbar({ categories }: NavbarProps) {
           </Link>
 
           {/* Search — desktop */}
-          <div className="hidden md:block flex-1 min-w-0 max-w-[520px] relative">
+          <div className="hidden sm:block flex-1 min-w-0 max-w-[520px] relative md:flex-1">
             <input
               className={`w-full h-10 border rounded-md pr-[5.5rem] pl-4 font-outfit text-[0.875rem] outline-none transition-all duration-200 box-border ${light ? "bg-white border-black/[0.12] text-[#222] placeholder:text-black/30 focus:border-[#399746]/55 focus:bg-white" : "bg-white/[0.08] border-white/[0.12] text-[#f0f2ed] placeholder:text-[#f0f2ed]/30 focus:border-[#a8d63e]/55 focus:bg-white/[0.11]"}`}
               placeholder="Search products, brands, categories…"
@@ -227,11 +227,11 @@ export function Navbar({ categories }: NavbarProps) {
           </div>
 
           {/* Actions */}
-          <div className="flex items-center gap-[0.15rem] flex-shrink-0">
+          <div className="flex items-center gap-[0.15rem] flex-shrink-0 md:flex-shrink-0 ml-auto md:ml-0">
             <Link to="/contact-us" className={`${iconBtn} hidden md:grid`} title="Contact Us">
               <PhoneCall size={17} />
             </Link>
-            <button className={`${iconBtn} md:hidden`} onClick={() => setSearchOpen(true)} title="Search">
+            <button className={`${iconBtn} sm:hidden`} onClick={() => setSearchOpen(true)} title="Search">
               <Search size={17} />
             </button>
             <button className={iconBtn} onClick={() => setCartOpen(true)} title="Cart">
