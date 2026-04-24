@@ -178,12 +178,19 @@ export function Navbar({ categories }: NavbarProps) {
       <nav className={`sticky top-0 z-[40] font-outfit w-full transition-all duration-500 ${solidBg ? (light ? 'bg-white shadow-[0_1px_0_rgba(0,0,0,0.08)]' : 'bg-[#0d110d] shadow-[0_1px_0_rgba(255,255,255,0.07)]') : 'bg-transparent'}`}>
 
         {/* TOPBAR */}
-        <div className="flex items-center h-[68px] max-w-[1280px] mx-auto pl-8 pr-3 gap-4">
+        <div className="flex items-center h-[68px] max-w-[1280px] mx-auto pl-4 sm:pl-8 pr-3 gap-4">
 
-          {/* Logo */}
-          <Link to="/" className="flex-shrink-0 flex items-center no-underline">
-            <img src="/images/logo.png" alt="Lumo Electrical" className="h-[38px] block" />
-          </Link>
+          <div className="flex items-center gap-2">
+            <button className={`${iconBtn} md:hidden`} onClick={() => setMobileOpen(!mobileOpen)} title="Menu">
+              {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
+
+            {/* Logo */}
+            <Link to="/" className="flex-shrink-0 flex items-center no-underline">
+              <img src="/images/logo.png" alt="Lumo Electrical" className="h-[36px] sm:h-[38px] block" />
+            </Link>
+          </div>
+          
 
           {/* Search — desktop */}
           <div className="hidden sm:block flex-1 min-w-0 max-w-[520px] relative md:flex-1">
@@ -302,12 +309,12 @@ export function Navbar({ categories }: NavbarProps) {
               </DropdownMenuContent>
             </DropdownMenu>
 
+            {/* Divider */}
+            <div className={`w-px h-[24px] flex-shrink-0 ${light ? "bg-black/[0.1]" : "bg-white/[0.1]"}`} />
             <button className={iconBtn} onClick={toggleTheme} title={theme === 'dark' ? 'Light Mode' : 'Dark Mode'}>
               {theme === 'dark' ? <Sun size={17} /> : <Moon size={17} />}
             </button>
-            <button className={`${iconBtn} md:hidden`} onClick={() => setMobileOpen(!mobileOpen)} title="Menu">
-              {mobileOpen ? <X size={20} /> : <Menu size={20} />}
-            </button>
+            
           </div>
         </div>
 
