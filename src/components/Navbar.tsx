@@ -242,7 +242,7 @@ export function Navbar({ categories }: NavbarProps) {
                 </span>
               )}
             </button>
-            <Link to="/wishlist" className={iconBtn} title="Wishlist">
+            <Link to="/wishlist" className={`${iconBtn} hidden md:grid`} title="Wishlist">
               <Heart size={17} />
               {wishlistCount > 0 && (
                 <span className="absolute top-[3px] right-[3px] min-w-[15px] h-[15px] rounded-full bg-red-500 text-white text-[0.5rem] font-extrabold flex items-center justify-center px-[3px] pointer-events-none">
@@ -253,7 +253,7 @@ export function Navbar({ categories }: NavbarProps) {
 
             <DropdownMenu modal={false} open={userOpen} onOpenChange={setUserOpen}>
               <DropdownMenuTrigger asChild>
-                <button className={iconBtn} title="Account" onMouseEnter={() => setUserOpen(true)}>
+                <button className={`${iconBtn} hidden md:grid`} title="My Account" onMouseEnter={() => setUserOpen(true)}>
                   <User size={17} />
                 </button>
               </DropdownMenuTrigger>
@@ -337,7 +337,7 @@ export function Navbar({ categories }: NavbarProps) {
 
         {/* MOBILE DRAWER */}
         {mobileOpen && (
-          <div className={`md:hidden border-t max-h-[calc(100svh-68px)] overflow-y-auto ${light ? "bg-[#f5f5f5] border-black/[0.08]" : "bg-[#0d110d] border-white/[0.06]"}`}>
+          <div className={`md:hidden fixed top-[68px] left-0 right-0 bottom-0 border-t overflow-y-auto ${light ? "bg-[#f5f5f5] border-black/[0.08]" : "bg-[#0d110d] border-white/[0.06]"}`}>
             <Link
               to="/contact-us"
               className={`block px-4 py-4 border-b text-[0.87rem] font-medium no-underline transition-colors duration-150 ${light ? "border-black/[0.08] text-black/[0.68] hover:text-[#399746]" : "border-white/[0.06] text-[#f0f2ed]/[0.68] hover:text-[#a8d63e]"}`}
@@ -346,6 +346,93 @@ export function Navbar({ categories }: NavbarProps) {
               <PhoneCall size={13} className="inline mr-2 opacity-55" />
               Contact Us
             </Link>
+            {/* <Link
+              to="/profile"
+              className={`block px-4 py-4 border-b text-[0.87rem] font-medium no-underline transition-colors duration-150 ${light ? "border-black/[0.08] text-black/[0.68] hover:text-[#399746]" : "border-white/[0.06] text-[#f0f2ed]/[0.68] hover:text-[#a8d63e]"}`}
+              onClick={() => setMobileOpen(false)}
+            >
+              <User size={13} className="inline mr-2 opacity-55" />
+              {isAuthenticated ? 'Profile' : 'My Account'}
+            </Link> */}
+            <div className={`px-4 pt-4 pb-[0.45rem] text-[0.63rem] font-bold tracking-[0.18em] uppercase ${light ? "text-black/[0.22]" : "text-[#f0f2ed]/[0.22]"}`}>
+              My Account
+            </div>
+            { isAuthenticated ? (
+                <>
+                  <Link
+                    to="/profile"
+                    className={`block px-4 py-4 border-b text-[0.87rem] font-medium no-underline transition-colors duration-150 ${light ? "border-black/[0.08] text-black/[0.68] hover:text-[#399746]" : "border-white/[0.06] text-[#f0f2ed]/[0.68] hover:text-[#a8d63e]"}`}
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    <User size={13} className="inline mr-2 opacity-55" />
+                    Profile
+                  </Link>
+                  <Link
+                    to="/wishlist"
+                    className={`block px-4 py-4 border-b text-[0.87rem] font-medium no-underline transition-colors duration-150 ${light ? "border-black/[0.08] text-black/[0.68] hover:text-[#399746]" : "border-white/[0.06] text-[#f0f2ed]/[0.68] hover:text-[#a8d63e]"}`}
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    <Heart size={13} className="inline mr-2 opacity-55" />
+                    Wishlist {wishlistCount > 0 && `(${wishlistCount})`}
+                  </Link>
+                  <Link
+                    to="/orders"
+                    className={`block px-4 py-4 border-b text-[0.87rem] font-medium no-underline transition-colors duration-150 ${light ? "border-black/[0.08] text-black/[0.68] hover:text-[#399746]" : "border-white/[0.06] text-[#f0f2ed]/[0.68] hover:text-[#a8d63e]"}`}
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    <Package size={13} className="inline mr-2 opacity-55" />
+                    Orders
+                  </Link>
+                  <Link
+                    to="/change-password"
+                    className={`block px-4 py-4 border-b text-[0.87rem] font-medium no-underline transition-colors duration-150 ${light ? "border-black/[0.08] text-black/[0.68] hover:text-[#399746]" : "border-white/[0.06] text-[#f0f2ed]/[0.68] hover:text-[#a8d63e]"}`}
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    <Lock size={13} className="inline mr-2 opacity-55" />
+                    Change Password
+                  </Link>
+                  <button
+                    className={`w-full text-left px-4 py-4 border-b text-[0.87rem] font-medium no-underline transition-colors duration-150 text-red-400 hover:bg-red-400/[0.09] hover:text-red-400 focus:bg-red-400/[0.09] focus:text-red-400 ${light ? "border-black/[0.08]" : "border-white/[0.06]"}`}
+                    onClick={() => {
+                      logout();
+                      toast({ title: 'Logged out', className: 'bg-green-700 text-white' });
+                      setMobileOpen(false);
+                    }}
+                  >
+                    <LogOut size={13} className="inline mr-2 opacity-55" />
+                    Log out
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link
+                    to="/login"
+                    className={`block px-4 py-4 border-b text-[0.87rem] font-medium no-underline transition-colors duration-150 ${light ? "border-black/[0.08] text-black/[0.68] hover:text-[#399746]" : "border-white/[0.06] text-[#f0f2ed]/[0.68] hover:text-[#a8d63e]"}`}
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    <LogIn size={13} className="inline mr-2 opacity-55" />
+                    Log In
+                  </Link>
+                  <Link
+                    to="/signup"
+                    className={`block px-4 py-4 border-b text-[0.87rem] font-medium no-underline transition-colors duration-150 ${light ? "border-black/[0.08] text-black/[0.68] hover:text-[#399746]" : "border-white/[0.06] text-[#f0f2ed]/[0.68] hover:text-[#a8d63e]"}`}
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    <UserPlus size={13} className="inline mr-2 opacity-55" />
+                    Sign Up
+                  </Link>
+                </>
+              )
+            }
+            {/* <Link
+              to="/wishlist"
+              className={`block px-4 py-4 border-b text-[0.87rem] font-medium no-underline transition-colors duration-150 ${light ? "border-black/[0.08] text-black/[0.68] hover:text-[#399746]" : "border-white/[0.06] text-[#f0f2ed]/[0.68] hover:text-[#a8d63e]"}`}
+              onClick={() => setMobileOpen(false)}
+            >
+              <Heart size={13} className="inline mr-2 opacity-55" />
+              Wishlist {wishlistCount > 0 && `(${wishlistCount})`}
+            </Link> */}
+            
             <div className={`px-4 pt-4 pb-[0.45rem] text-[0.63rem] font-bold tracking-[0.18em] uppercase ${light ? "text-black/[0.22]" : "text-[#f0f2ed]/[0.22]"}`}>
               Categories
             </div>
