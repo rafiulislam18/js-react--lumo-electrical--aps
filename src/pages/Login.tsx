@@ -161,7 +161,7 @@ export default function Login() {
                 </label>
                 <Link
                   to="/forgot-password"
-                  className="text-[.75rem] text-lime-brand hover:text-lime-brand/80 font-medium transition-colors duration-150"
+                  className="text-[.75rem] text-green-deep dark:text-lime-brand hover:text-green-deep/80 dark:hover:text-lime-brand/80 font-medium transition-colors duration-150"
                 >
                   Forgot password?
                 </Link>
@@ -209,7 +209,7 @@ export default function Login() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-3 rounded-lg bg-gradient-to-br from-green-brand to-lime-brand text-dark-surface font-semibold text-[.9rem] cursor-pointer transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-6"
+              className="w-full py-3 rounded-lg bg-gradient-to-br from-green-brand to-lime-brand text-white dark:text-dark-surface font-semibold text-[.9rem] cursor-pointer transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-6"
             >
               {isLoading ? (
                 <>
@@ -226,7 +226,7 @@ export default function Login() {
           <div className="px-8 py-5 bg-black/[.02] dark:bg-white/[.02] border-t border-black/[.08] dark:border-white/[.06] text-center">
             <p className="text-[.8rem] text-black/60 dark:text-[rgba(240,242,237,.6)]">
               Don't have an account?{" "}
-              <Link to="/signup" className="text-lime-brand hover:text-lime-brand/80 font-semibold transition-colors duration-150">
+              <Link to="/signup" className="text-green-deep dark:text-lime-brand hover:text-green-deep/80 dark:hover:text-lime-brand/80 font-semibold transition-colors duration-150">
                 Sign Up
               </Link>
             </p>
@@ -244,7 +244,7 @@ export default function Login() {
         <div className="mt-6 text-center">
           <Link
             to="/"
-            className="inline-flex items-center gap-2 text-[.8rem] text-black/60 dark:text-[rgba(240,242,237,.6)] hover:text-lime-brand dark:hover:text-lime-brand transition-colors duration-150 font-medium"
+            className="inline-flex items-center gap-2 text-[.8rem] text-black/60 dark:text-[rgba(240,242,237,.6)] hover:text-green-deep dark:hover:text-lime-brand transition-colors duration-150 font-medium"
           >
             ← Continue as Guest
           </Link>
