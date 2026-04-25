@@ -187,7 +187,7 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
         <div className="flex-1 overflow-y-auto">
           {isLoading ? (
             <div className="flex items-center justify-center h-full">
-              <Loader className="w-6 h-6 text-lime-brand animate-spin" />
+              <Loader className="w-6 h-6 text-green-deep dark:text-lime-brand animate-spin" />
             </div>
           ) : items.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center p-6">
@@ -225,7 +225,7 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                       <p className="text-sm font-bold text-black/85 dark:text-[#f0f2ed] mt-0.5">
                         ${(parseFloat(item.product.price)).toFixed(2)}
                         <span className="font-normal text-black/60 dark:text-[rgba(240,242,237,.6)]">{" "} x {item.quantity} = {" "}</span>
-                        <span className="text-lime-brand">${(parseFloat(item.product.price)*item.quantity).toFixed(2)}</span>
+                        <span className="text-green-deep dark:text-lime-brand">${(parseFloat(item.product.price)*item.quantity).toFixed(2)}</span>
                       </p>
                     </div>
 
@@ -283,7 +283,7 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
               </div>
               <div className="flex justify-between font-bold text-black/85 dark:text-[#f0f2ed] pt-1 border-t border-black/[.08] dark:border-white/[.06]">
                 <span>Total</span>
-                <span className="text-lime-brand">${total.toFixed(2)}</span>
+                <span className="text-green-deep dark:text-lime-brand">${total.toFixed(2)}</span>
               </div>
             </div>
 
@@ -294,7 +294,7 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                   navigate("/checkout");
                   onClose();
                 }}
-                className="w-full bg-gradient-to-br from-green-brand to-lime-brand text-dark-surface font-semibold py-3 rounded-lg transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)] text-sm"
+                className="w-full bg-gradient-to-br from-green-brand to-lime-brand text-white dark:text-dark-surface font-semibold py-3 rounded-lg transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)] text-sm"
               >
                 Checkout
               </button>
