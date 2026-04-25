@@ -341,7 +341,7 @@ export default function ProductDetail() {
         {/* Back Button */}
         <button
           onClick={() => navigate(-1)}
-          className="flex items-center gap-2 text-black/60 dark:text-[rgba(240,242,237,.6)] hover:text-lime-brand transition-colors duration-200 mb-8 text-[.85rem] font-medium"
+          className="flex items-center gap-2 text-black/60 dark:text-[rgba(240,242,237,.6)] hover:text-green-deep dark:hover:text-lime-brand transition-colors duration-200 mb-8 text-[.85rem] font-medium"
         >
           <ChevronLeft size={18} />
           Back
