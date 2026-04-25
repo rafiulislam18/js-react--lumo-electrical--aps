@@ -270,7 +270,7 @@ export default function ContactUs() {
   return (
     <div className="font-outfit bg-white dark:bg-dark-surface min-h-screen">
       {/* Header Section */}
-      <div className="bg-gradient-to-br from-green-brand to-lime-brand text-dark-surface py-12 px-4">
+      <div className="bg-gradient-to-br from-green-brand to-lime-brand text-white dark:text-dark-surface py-12 px-4">
         <div className="max-w-[1280px] mx-auto">
           <div className="flex items-center gap-3 mb-2">
             <Mail className="w-8 h-8" />
@@ -417,7 +417,7 @@ export default function ContactUs() {
                 <button
                   type="submit"
                   disabled={isSubmitting || isLoadingProfile}
-                  className="w-full bg-gradient-to-br from-green-brand to-lime-brand text-dark-surface font-semibold py-3 rounded-lg transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="w-full bg-gradient-to-br from-green-brand to-lime-brand text-white dark:text-dark-surface font-semibold py-3 rounded-lg transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   {isSubmitting ? (
                     <>
@@ -438,7 +438,7 @@ export default function ContactUs() {
               <div className="space-y-6">
                 {contactDetails?.address && (
                   <div className="flex items-start gap-4">
-                    <div className="bg-gradient-to-br from-green-brand to-lime-brand rounded-lg p-3 text-dark-surface flex-shrink-0">
+                    <div className="bg-gradient-to-br from-green-brand to-lime-brand rounded-lg p-3 text-white dark:text-dark-surface flex-shrink-0">
                       <MapPin className="w-6 h-6" />
                     </div>
                     <div>
@@ -452,7 +452,7 @@ export default function ContactUs() {
 
                 {contactDetails?.phone && (
                   <div className="flex items-start gap-4">
-                    <div className="bg-gradient-to-br from-green-brand to-lime-brand rounded-lg p-3 text-dark-surface flex-shrink-0">
+                    <div className="bg-gradient-to-br from-green-brand to-lime-brand rounded-lg p-3 text-white dark:text-dark-surface flex-shrink-0">
                       <Phone className="w-6 h-6" />
                     </div>
                     <div>
@@ -464,7 +464,7 @@ export default function ContactUs() {
 
                 {contactDetails?.vat_number && (
                   <div className="flex items-start gap-4">
-                    <div className="bg-gradient-to-br from-green-brand to-lime-brand rounded-lg p-3 text-dark-surface flex-shrink-0">
+                    <div className="bg-gradient-to-br from-green-brand to-lime-brand rounded-lg p-3 text-white dark:text-dark-surface flex-shrink-0">
                       <Receipt className="w-6 h-6" />
                     </div>
                     <div>
@@ -476,7 +476,7 @@ export default function ContactUs() {
 
                 {contactDetails?.registered_number && (
                   <div className="flex items-start gap-4">
-                    <div className="bg-gradient-to-br from-green-brand to-lime-brand rounded-lg p-3 text-dark-surface flex-shrink-0">
+                    <div className="bg-gradient-to-br from-green-brand to-lime-brand rounded-lg p-3 text-white dark:text-dark-surface flex-shrink-0">
                       <Building2 className="w-6 h-6" />
                     </div>
                     <div>
@@ -488,7 +488,7 @@ export default function ContactUs() {
 
                 {contactDetails?.email && (
                   <div className="flex items-start gap-4">
-                    <div className="bg-gradient-to-br from-green-brand to-lime-brand rounded-lg p-3 text-dark-surface flex-shrink-0">
+                    <div className="bg-gradient-to-br from-green-brand to-lime-brand rounded-lg p-3 text-white dark:text-dark-surface flex-shrink-0">
                       <Mail className="w-6 h-6" />
                     </div>
                     <div>
