@@ -363,7 +363,7 @@ export function Navbar({ categories }: NavbarProps) {
             <Link
               to="/contact-us"
               className={`block px-4 py-4 border-b text-[0.87rem] font-medium no-underline transition-colors duration-150 ${light ? "border-black/[0.08] text-black/[0.68] hover:text-[#399746]" : "border-white/[0.06] text-[#f0f2ed]/[0.68] hover:text-[#a8d63e]"}`}
-              onClick={() => closeMobileDrawer(false)}
+              onClick={() => setMobileOpen(false)}
             >
               <PhoneCall size={13} className="inline mr-2 opacity-55" />
               Contact Us

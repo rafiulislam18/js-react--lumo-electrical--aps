@@ -217,8 +217,12 @@ export default function CategorizedProducts() {
           alt=""
           className="absolute inset-0 w-full h-full object-cover animate-[zoomOut_14s_ease-out_forwards]"
         />
-        {/* Dark overlay */}
-        <div className="absolute inset-0"
+        {/* Light mode overlay */}
+        <div className="absolute inset-0 dark:hidden"
+          style={{ background: 'linear-gradient(to right, rgba(20,28,20,.85) 0%, rgba(20,28,20,.55) 55%, rgba(20,28,20,.3) 100%), linear-gradient(to top, rgba(20,28,20,.7) 0%, transparent 50%)' }}
+        />
+        {/* Dark mode overlay */}
+        <div className="absolute inset-0 hidden dark:block"
           style={{ background: 'linear-gradient(to right, rgba(4,8,4,.92) 0%, rgba(4,8,4,.6) 55%, rgba(4,8,4,.25) 100%), linear-gradient(to top, rgba(4,8,4,.8) 0%, transparent 50%)' }}
         />
         {/* Breadcrumb */}
