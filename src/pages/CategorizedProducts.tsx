@@ -205,7 +205,7 @@ export default function CategorizedProducts() {
   const filterLabelCls = "font-bebas text-[.95rem] tracking-[.06em] text-[#222] dark:text-[#f0f2ed] mb-3 block";
   const filterGroupCls = "mb-7 pb-7 border-b border-black/[.08] dark:border-white/[.06] last:border-b-0";
   const radioOptionCls = "flex items-center gap-3 cursor-pointer";
-  const radioSpanCls = "text-[.85rem] text-black/60 dark:text-[rgba(240,242,237,.6)] cursor-pointer transition-colors duration-200 peer-checked:text-lime-brand peer-checked:font-medium";
+  const radioSpanCls = "text-[.85rem] text-black/60 dark:text-[rgba(240,242,237,.6)] cursor-pointer transition-colors duration-200 peer-checked:text-green-deep dark:peer-checked:text-lime-brand peer-checked:font-medium";
   const clearBtnCls = "w-full py-3 px-4 rounded-md border border-green-deep/30 dark:border-lime-brand/30 bg-green-deep/[.08] dark:bg-lime-brand/[.08] text-green-deep dark:text-lime-brand font-semibold text-[.82rem] cursor-pointer transition-all duration-200 uppercase tracking-[.06em] hover:bg-green-deep/15 dark:hover:bg-lime-brand/15 hover:shadow-[0_0_12px_rgba(57,151,70,.2)] hover:shadow-[0_0_12px_rgba(57,151,70,.2)] dark:hover:shadow-[0_0_16px_rgba(168,214,62,.15)]";
 
   return (
@@ -314,7 +314,7 @@ export default function CategorizedProducts() {
                   onChange={handleMinPriceChange}
                   onBlur={handleMinPriceBlur}
                   placeholder="Min"
-                  className="flex-1 bg-black/[.04] dark:bg-white/[.04] border border-black/10 dark:border-white/[.08] rounded-md px-3 py-2.5 text-black/80 dark:text-[rgba(240,242,237,.8)] text-[.8rem] focus:outline-none focus:border-lime-brand/30 focus:bg-lime-brand/[.06]"
+                  className="flex-1 bg-black/[.02] dark:bg-white/[.04] border border-black/10 dark:border-white/[.08] rounded-md px-3 py-2.5 text-black/80 dark:text-[rgba(240,242,237,.8)] text-[.8rem] focus:outline-none focus:border-lime-brand/30 focus:bg-lime-brand/[.06]"
                 />
                 <input
                   type="number"
@@ -324,7 +324,7 @@ export default function CategorizedProducts() {
                   onChange={handleMaxPriceChange}
                   onBlur={handleMaxPriceBlur}
                   placeholder="Max"
-                  className="flex-1 bg-black/[.04] dark:bg-white/[.04] border border-black/10 dark:border-white/[.08] rounded-md px-3 py-2.5 text-black/80 dark:text-[rgba(240,242,237,.8)] text-[.8rem] focus:outline-none focus:border-lime-brand/30 focus:bg-lime-brand/[.06]"
+                  className="flex-1 bg-black/[.02] dark:bg-white/[.04] border border-black/10 dark:border-white/[.08] rounded-md px-3 py-2.5 text-black/80 dark:text-[rgba(240,242,237,.8)] text-[.8rem] focus:outline-none focus:border-lime-brand/30 focus:bg-lime-brand/[.06]"
                 />
               </div>
             </div>
@@ -345,7 +345,7 @@ export default function CategorizedProducts() {
                       value={value}
                       checked={availability === value}
                       onChange={(e) => { setAvailability(e.target.value); setCurrentPage(1); }}
-                      className="peer accent-lime-brand cursor-pointer"
+                      className="peer accent-green-deep dark:accent-lime-brand cursor-pointer"
                     />
                     <span className={radioSpanCls}>{label}</span>
                   </label>
@@ -371,7 +371,7 @@ export default function CategorizedProducts() {
                       value={value}
                       checked={rating === value}
                       onChange={(e) => { setRating(e.target.value); setCurrentPage(1); }}
-                      className="peer accent-lime-brand cursor-pointer"
+                      className="peer accent-green-deep dark:accent-lime-brand cursor-pointer"
                     />
                     <span className={radioSpanCls}>{label}</span>
                   </label>
@@ -403,15 +403,15 @@ export default function CategorizedProducts() {
                 <select
                   value={sortBy}
                   onChange={(e) => { setSortBy(e.target.value); setCurrentPage(1); }}
-                  className="flex-1 min-w-[150px] max-sm:min-w-0 max-sm:text-[.75rem] max-sm:px-3 max-sm:py-2.5 bg-black/[.04] dark:bg-white/[.04] border border-black/10 dark:border-white/[.08] rounded-md px-4 py-3 text-black/80 dark:text-[rgba(240,242,237,.8)] text-[.85rem] cursor-pointer transition-all duration-200 focus:outline-none focus:border-lime-brand/30 focus:bg-lime-brand/[.06] hover:border-black/15 dark:hover:border-lime-brand/20"
+                  className="flex-1 min-w-[150px] max-sm:min-w-0 max-sm:text-[.75rem] max-sm:px-3 max-sm:py-2.5 bg-black/[.02] dark:bg-white/[.04] border border-black/10 dark:border-white/[.08] rounded-md px-4 py-3 text-black/80 dark:text-[rgba(240,242,237,.8)] text-[.85rem] cursor-pointer transition-all duration-200 focus:outline-none focus:border-lime-brand/30 focus:bg-lime-brand/[.06] hover:border-black/15 dark:hover:border-lime-brand/20"
                 >
-                  <option value="newest">Newest</option>
-                  <option value="price_low_to_high">Price: Low to High</option>
-                  <option value="price_high_to_low">Price: High to Low</option>
-                  <option value="highest_rated">Highest Rated</option>
+                  <option className="bg-white dark:bg-dark-elevated-900" value="newest">Newest</option>
+                  <option className="bg-white dark:bg-dark-elevated-900" value="price_low_to_high">Price: Low to High</option>
+                  <option className="bg-white dark:bg-dark-elevated-900" value="price_high_to_low">Price: High to Low</option>
+                  <option className="bg-white dark:bg-dark-elevated-900" value="highest_rated">Highest Rated</option>
                 </select>
                 <button
-                  className="hidden max-lg:flex items-center gap-2 bg-black/[.08] dark:bg-lime-brand/10 border border-black/15 dark:border-lime-brand/20 rounded-md px-4 py-2.5 text-black/70 dark:text-lime-brand font-semibold text-[.8rem] uppercase tracking-[.06em] cursor-pointer transition-all duration-200 hover:bg-black/12 dark:hover:bg-lime-brand/20 dark:hover:shadow-[0_0_12px_rgba(168,214,62,.15)]"
+                  className="hidden max-lg:flex items-center gap-2 bg-black/[.02] dark:bg-lime-brand/10 border border-black/15 dark:border-lime-brand/20 rounded-md px-4 py-2.5 text-black/70 dark:text-lime-brand font-semibold text-[.8rem] uppercase tracking-[.06em] cursor-pointer transition-all duration-200 hover:bg-black/12 dark:hover:bg-lime-brand/20 dark:hover:shadow-[0_0_12px_rgba(168,214,62,.15)]"
                   onClick={() => setShowFilters(!showFilters)}
                 >
                   <SlidersHorizontal size={16} /> Filters
@@ -475,7 +475,7 @@ export default function CategorizedProducts() {
                     className={[
                       "px-4 py-2.5 rounded-md border font-medium text-[.85rem] cursor-pointer transition-all duration-200",
                       currentPage === page
-                        ? "bg-gradient-to-br from-green-brand to-lime-brand border-lime-brand/50 text-dark-surface"
+                        ? "bg-gradient-to-br from-green-brand to-lime-brand border-lime-brand/50 text-white dark:text-dark-surface"
                         : "bg-black/[.06] dark:bg-white/[.04] border-black/10 dark:border-white/[.08] text-black/80 dark:text-[rgba(240,242,237,.8)] hover:bg-black/10 hover:border-black/15 dark:hover:bg-lime-brand/15 dark:hover:border-lime-brand/30 dark:hover:text-lime-brand"
                     ].join(' ')}
                     onClick={() => setCurrentPage(page)}

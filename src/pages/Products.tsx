@@ -176,13 +176,13 @@ export default function Products() {
 
   return (
     <div className="font-outfit bg-white dark:bg-dark-surface min-h-screen flex flex-col">
-      {/* Header Section */}
+      {/* Breadcrumb Section */}
       <section className="border-b border-black/[.08] dark:border-white/[.06] bg-white dark:bg-black/[.02]">
         <div className="max-w-[1280px] mx-auto px-4 py-4 sm:py-6">
           <div className="flex items-center gap-2 text-[.8rem] overflow-x-auto">
             <a href="/" className="text-black/60 dark:text-[rgba(240,242,237,.6)] hover:text-lime-brand dark:hover:text-lime-brand transition-colors whitespace-nowrap">Home</a>
             <span className="text-black/40 dark:text-[rgba(240,242,237,.4)]">/</span>
-            <span className="text-lime-brand font-semibold whitespace-nowrap">{getDisplayTitle()}</span>
+            <span className="text-green-deep dark:text-lime-brand font-semibold whitespace-nowrap">{getDisplayTitle()}</span>
           </div>
 
           {!getDisplayDescription().includes('search') && (
@@ -253,7 +253,7 @@ export default function Products() {
                   onClick={() => setCurrentPage(page)}
                   className={`min-w-10 py-2 px-2 rounded-lg text-[.85rem] font-semibold transition-all duration-200 ${
                     currentPage === page
-                      ? 'bg-gradient-to-br from-green-brand to-lime-brand text-dark-surface'
+                      ? 'bg-gradient-to-br from-green-brand to-lime-brand text-white dark:text-dark-surface'
                       : 'border border-black/[.1] dark:border-white/[.08] text-black/60 dark:text-[rgba(240,242,237,.6)] hover:border-lime-brand/30 dark:hover:border-lime-brand/20 hover:text-lime-brand dark:hover:text-lime-brand'
                   }`}
                 >

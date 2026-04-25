@@ -146,7 +146,7 @@ export function ProductCard({ product }: ProductCardProps) {
   const wishlistPending = addToWishlistMutation.isPending || removeFromWishlistMutation.isPending;
 
   return (
-    <div className="group font-outfit relative rounded-[10px] overflow-hidden bg-black/[.03] dark:bg-white/[.04] border border-black/[.08] dark:border-white/[.06] flex flex-col h-full transition-all duration-300 ease-[cubic-bezier(.25,.46,.45,.94)] hover:bg-black/[.05] dark:hover:bg-white/[.06] hover:border-lime-brand/25 dark:hover:border-lime-brand/20 hover:shadow-[0_8px_32px_rgba(168,214,62,.12)]">
+    <div className="group font-outfit relative rounded-[10px] overflow-hidden bg-white dark:bg-white/[.04] border border-black/[.08] dark:border-white/[.06] flex flex-col h-full transition-all duration-300 ease-[cubic-bezier(.25,.46,.45,.94)] hover:border-lime-brand/25 dark:hover:border-lime-brand/20 hover:shadow-[0_8px_32px_rgba(168,214,62,.12)] hover:scale-[1.01]">
       {/* Image */}
       <div
         className="relative w-full aspect-square overflow-hidden bg-black/[.05] dark:bg-white/[.02] border-b border-black/[.08] dark:border-white/[.05] cursor-pointer"
@@ -199,12 +199,12 @@ export function ProductCard({ product }: ProductCardProps) {
 
       {/* Content */}
       <div className="flex-1 p-4 flex flex-col gap-2">
-        <div className="text-[.65rem] font-bold tracking-[.1em] uppercase text-black/55 dark:text-lime-brand/70">
+        <div className="text-[.65rem] font-bold tracking-[.1em] uppercase text-green-deep/70 dark:text-lime-brand/70">
           {product.category}
         </div>
 
         <h3
-          className="text-[.85rem] font-medium text-black/80 dark:text-[rgba(240,242,237,.85)] leading-[1.35] line-clamp-2 cursor-pointer transition-colors duration-200 group-hover:text-lime-brand"
+          className="text-[.85rem] font-medium text-black/80 dark:text-[rgba(240,242,237,.85)] leading-[1.35] line-clamp-2 cursor-pointer transition-colors duration-200 group-hover:text-green-deep dark:group-hover:text-lime-brand"
           onClick={handleProductClick}
         >
           {product.name}
@@ -233,7 +233,7 @@ export function ProductCard({ product }: ProductCardProps) {
         {/* Price Section */}
         <div className="py-3 border-t border-b border-black/[.08] dark:border-white/[.05]">
           <div className="flex items-baseline gap-2 mb-1">
-            <span className="text-[.95rem] font-extrabold text-lime-brand">
+            <span className="text-[.95rem] font-extrabold text-green-deep dark:text-lime-brand">
               R {product.price.toFixed(2)}
             </span>
             {product.oldPrice && (
@@ -243,7 +243,7 @@ export function ProductCard({ product }: ProductCardProps) {
             )}
           </div>
           {discountPercent !== null && (
-            <div className="text-[.7rem] text-lime-brand/80 font-semibold">
+            <div className="text-[.7rem] text-green-deep/80 dark:text-lime-brand/80 font-semibold">
               Save R {(product.oldPrice! - product.price).toFixed(2)}
             </div>
           )}
