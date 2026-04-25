@@ -309,11 +309,12 @@ export default function ProductDetail() {
 
   const wishlistPending = addToWishlistMutation.isPending || removeFromWishlistMutation.isPending;
   const discountPercent = product ? calculateDiscountPercentage(product.old_price, product.price) : null;
+  const tabsTriggerCls = "rounded-none text-[.8rem] sm:text-[.85rem] font-medium text-black/60 dark:text-[rgba(240,242,237,.6)] data-[state=active]:text-green-deep dark:data-[state=active]:text-lime-brand data-[state=active]:border-b-2 data-[state=active]:border-green-deep dark:data-[state=active]:border-lime-brand";
 
   return (
     <div className="font-outfit bg-white dark:bg-dark-surface text-black/70 dark:text-[rgba(240,242,237,.7)] min-h-screen flex flex-col">
       {/* Breadcrumb */}
-      <section className="bg-black/[.03] dark:bg-lime-brand/[.02] border-b border-black/[.06] dark:border-lime-brand/[.06] px-8 py-4 max-sm:px-4 max-sm:py-3">
+      <section className="bg-white dark:bg-lime-brand/[.02] border-b border-black/[.06] dark:border-lime-brand/[.06] px-8 py-4 max-sm:px-4 max-sm:py-3">
         <div className="max-w-[1280px] mx-auto flex items-center gap-4 text-[.8rem] max-sm:text-[.7rem] flex-wrap">
           <a href="/" className="text-black/55 dark:text-[rgba(240,242,237,.55)] no-underline transition-colors duration-200 hover:text-lime-brand">
             Home
@@ -331,7 +332,7 @@ export default function ProductDetail() {
               ))}
             </>
           ) : null}
-          <span className="text-lime-brand font-semibold">{product?.name || 'Loading...'}</span>
+          <span className="text-green-deep dark:text-lime-brand font-semibold">{product?.name || 'Loading...'}</span>
         </div>
       </section>
 
@@ -391,12 +392,12 @@ export default function ProductDetail() {
                 <div className="space-y-4">
                   {/* Category & Badge */}
                   <div className="flex items-center gap-3">
-                    <span className="text-[.65rem] font-bold tracking-[.1em] uppercase text-black/55 dark:text-lime-brand/70">
+                    <span className="text-[.65rem] font-bold tracking-[.1em] uppercase text-green-deep/70 dark:text-lime-brand/70">
                       {product.category.name}
                     </span>
                     {product.badge && (
                       <span className={[
-                        "text-[.65rem] font-extrabold tracking-[.05em] uppercase px-2 py-1 rounded text-white",
+                        "text-[.65rem] font-extrabold tracking-[.05em] uppercase px-2 py-1 rounded text-white dark:text-dark-surface",
                         product.badge === 'Hot' ? "bg-red-500" :
                         product.badge === 'New' ? "bg-blue-500" :
                         "bg-green-brand"
@@ -432,14 +433,14 @@ export default function ProductDetail() {
                   </div>
 
                   {/* Stock & Code */}
-                  <div className="grid grid-cols-2 gap-3 py-4 px-4 bg-black/[.03] dark:bg-white/[.02] rounded-lg border border-black/[.08] dark:border-white/[.06]">
+                  <div className="grid grid-cols-2 gap-3 py-4 px-4 bg-black/[.02] dark:bg-white/[.02] rounded-lg border border-black/[.08] dark:border-white/[.06]">
                     <div>
                       <p className="text-[.7rem] text-black/50 dark:text-[rgba(240,242,237,.5)] font-medium mb-1">Stock Status</p>
                       <div className="flex items-center gap-1">
-                        <AlertCircle size={14} className={product.in_stock ? "text-green-600" : "text-red-600"} />
+                        <AlertCircle size={14} className={product.in_stock ? "text-green-deep dark:text-lime-brand" : "text-red-500"} />
                         <span className={[
                           "text-[.75rem] font-semibold",
-                          product.in_stock ? "text-green-600" : "text-red-600"
+                          product.in_stock ? "text-green-deep dark:text-lime-brand" : "text-red-500"
                         ].join(' ')}>
                           {product.in_stock ? 'In Stock' : 'Out of Stock'}
                         </span>
@@ -454,17 +455,17 @@ export default function ProductDetail() {
                   {/* Price */}
                   <div className="space-y-2 py-4 border-y border-black/[.08] dark:border-white/[.06]">
                     <div className="flex items-baseline gap-3">
-                      <span className="text-[2.5rem] sm:text-[3rem] font-extrabold text-lime-brand">
+                      <span className="text-[2.5rem] sm:text-[3rem] font-extrabold text-green-deep dark:text-lime-brand">
                         R {parseFloat(product.price).toFixed(2)}
                       </span>
                       {product.old_price && (
-                        <span className="text-[.85rem] text-black/32 dark:text-[rgba(240,242,237,.3)] line-through">
+                        <span className="text-[.85rem] text-black/[.32] dark:text-[rgba(240,242,237,.3)] line-through">
                           R {parseFloat(product.old_price).toFixed(2)}
                         </span>
                       )}
                     </div>
                     {discountPercent !== null && (
-                      <p className="text-[.8rem] text-lime-brand/80 font-semibold">
+                      <p className="text-[.8rem] text-green-deep/80 dark:text-lime-brand/80 font-semibold">
                         Save R {(parseFloat(product.old_price!) - parseFloat(product.price)).toFixed(2)}
                       </p>
                     )}
@@ -497,8 +498,8 @@ export default function ProductDetail() {
                         className={[
                           "flex items-center justify-center gap-2 px-4 py-3 rounded-md border font-semibold text-[.85rem] cursor-pointer transition-all duration-200",
                           isWishlisted
-                            ? "bg-red-500/[.12] border-red-500/30 text-red-500 hover:bg-red-500/[.2]"
-                            : "bg-black/[.06] dark:bg-lime-brand/[.08] border-black/[.12] dark:border-lime-brand/20 text-black/70 dark:text-lime-brand hover:bg-black/[.1] dark:hover:bg-lime-brand/[.15]"
+                ? "bg-red-500/12 border-red-500/30 text-red-400"
+                : "bg-green-deep/[.08] border-green-deep/20 text-green-deep dark:border-lime-brand/20 dark:bg-lime-brand/[.08] dark:text-lime-brand hover:bg-green-deep/15 dark:hover:bg-lime-brand/15 hover:shadow-[0_0_12px_rgba(57,151,70,.2)]  dark:hover:shadow-[0_0_12px_rgba(168,214,62,.2)]"
                         ].join(' ')}
                         onClick={handleWishlistToggle}
                         disabled={wishlistPending}
@@ -511,7 +512,7 @@ export default function ProductDetail() {
                         )}
                       </button>
                       <button
-                        className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md bg-gradient-to-br from-green-brand to-lime-brand text-dark-surface font-semibold text-[.85rem] cursor-pointer transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)] disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md bg-gradient-to-br from-green-brand to-lime-brand text-white dark:text-dark-surface font-semibold text-[.85rem] cursor-pointer transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)] disabled:opacity-50 disabled:cursor-not-allowed"
                         onClick={handleAddToCart}
                         disabled={!product.in_stock || addToCartMutation.isPending}
                       >
@@ -527,17 +528,17 @@ export default function ProductDetail() {
               <div className="bg-white dark:bg-black/[.02] rounded-xl border border-black/[.08] dark:border-white/[.06] overflow-hidden">
                 <Tabs defaultValue="specifications" className="w-full">
                   <TabsList className="w-full rounded-none border-b border-black/[.08] dark:border-white/[.06] bg-black/[.02] dark:bg-white/[.02] h-auto p-0 grid grid-cols-4">
-                    <TabsTrigger value="specifications" className="rounded-none text-[.8rem] sm:text-[.85rem] font-medium text-black/60 dark:text-[rgba(240,242,237,.6)] data-[state=active]:text-lime-brand data-[state=active]:border-b-2 data-[state=active]:border-lime-brand">
+                    <TabsTrigger value="specifications" className={tabsTriggerCls}>
                       <span className="hidden sm:inline">Specifications</span>
                       <span className="sm:hidden">Specs</span>
                     </TabsTrigger>
-                    <TabsTrigger value="description" className="rounded-none text-[.8rem] sm:text-[.85rem] font-medium text-black/60 dark:text-[rgba(240,242,237,.6)] data-[state=active]:text-lime-brand data-[state=active]:border-b-2 data-[state=active]:border-lime-brand">
+                    <TabsTrigger value="description" className={tabsTriggerCls}>
                       Description
                     </TabsTrigger>
-                    <TabsTrigger value="questions" className="rounded-none text-[.8rem] sm:text-[.85rem] font-medium text-black/60 dark:text-[rgba(240,242,237,.6)] data-[state=active]:text-lime-brand data-[state=active]:border-b-2 data-[state=active]:border-lime-brand">
+                    <TabsTrigger value="questions" className={tabsTriggerCls}>
                       Q&A
                     </TabsTrigger>
-                    <TabsTrigger value="reviews" className="rounded-none text-[.8rem] sm:text-[.85rem] font-medium text-black/60 dark:text-[rgba(240,242,237,.6)] data-[state=active]:text-lime-brand data-[state=active]:border-b-2 data-[state=active]:border-lime-brand">
+                    <TabsTrigger value="reviews" className={tabsTriggerCls}>
                       Reviews
                     </TabsTrigger>
                   </TabsList>
@@ -577,7 +578,7 @@ export default function ProductDetail() {
                   <TabsContent value="questions" className="p-6 sm:p-8 space-y-6">
                     {!showQuestionForm ? (
                       <button
-                        className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-br from-green-brand to-lime-brand text-dark-surface font-semibold text-[.85rem] rounded-md cursor-pointer transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)]"
+                        className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-br from-green-brand to-lime-brand text-white dark:text-dark-surface font-semibold text-[.85rem] rounded-md cursor-pointer transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)]"
                         onClick={() => {
                           if (!isAuthenticated) {
                             toast({
@@ -715,7 +716,7 @@ export default function ProductDetail() {
 
                     {!showReviewForm ? (
                       <button
-                        className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-br from-green-brand to-lime-brand text-dark-surface font-semibold text-[.85rem] rounded-md cursor-pointer transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)]"
+                        className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-br from-green-brand to-lime-brand text-white dark:text-dark-surface font-semibold text-[.85rem] rounded-md cursor-pointer transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)]"
                         onClick={() => {
                           if (!isAuthenticated) {
                             toast({
@@ -867,7 +868,7 @@ export default function ProductDetail() {
                       <button
                         key={relatedProduct.id}
                         onClick={() => navigate(`/product-details/${relatedProduct.id}`)}
-                        className="w-full text-left group flex gap-2 p-3 bg-white dark:bg-black/[.02] rounded-lg border border-black/[.08] dark:border-white/[.06] hover:border-lime-brand/30 dark:hover:border-lime-brand/20 hover:shadow-md dark:hover:shadow-[0_4px_12px_rgba(168,214,62,.15)] transition-all duration-200"
+                        className="w-full text-left group flex gap-2 p-3 bg-white dark:bg-black/[.02] rounded-lg border border-black/[.08] dark:border-white/[.06] hover:border-green-deep/20 dark:hover:border-lime-brand/20 hover:shadow-md dark:hover:shadow-[0_4px_12px_rgba(168,214,62,.15)] transition-all duration-200"
                       >
                         <div className="relative w-16 h-16 flex-shrink-0 rounded-md overflow-hidden bg-black/[.05] dark:bg-white/[.02] border border-black/[.08] dark:border-white/[.06]">
                           <img
@@ -882,7 +883,7 @@ export default function ProductDetail() {
                         <div className="flex-1 min-w-0">
                           <p className="text-[.7rem] text-black/50 dark:text-[rgba(240,242,237,.5)] font-semibold line-clamp-2 mb-1">{relatedProduct.name}</p>
                           <div className="flex items-baseline gap-1">
-                            <span className="font-bold text-[.8rem] text-lime-brand">R {parseFloat(relatedProduct.price).toFixed(2)}</span>
+                            <span className="font-bold text-[.8rem] text-green-deep dark:text-lime-brand">R {parseFloat(relatedProduct.price).toFixed(2)}</span>
                             {relatedProduct.old_price && (
                               <span className="text-[.65rem] text-black/[.28] dark:text-[rgba(240,242,237,.25)] line-through">R {parseFloat(relatedProduct.old_price).toFixed(2)}</span>
                             )}
