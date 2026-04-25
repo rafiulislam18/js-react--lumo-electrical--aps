@@ -197,7 +197,7 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                 Add items to get started with shopping
               </p>
               <Link to="/products" onClick={onClose}>
-                <button className="bg-gradient-to-br from-green-brand to-lime-brand text-dark-surface font-semibold py-3 px-6 rounded-lg transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)]">
+                <button className="bg-gradient-to-br from-green-brand to-lime-brand text-white dark:text-dark-surface font-semibold py-3 px-6 rounded-lg transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)]">
                   Continue Shopping
                 </button>
               </Link>

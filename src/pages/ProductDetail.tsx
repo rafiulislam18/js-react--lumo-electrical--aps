@@ -359,7 +359,7 @@ export default function ProductDetail() {
           <div className="text-center py-16">
             <h1 className="text-3xl font-bold text-black/80 dark:text-[#f0f2ed] mb-4">Product Not Found</h1>
             <p className="text-black/60 dark:text-[rgba(240,242,237,.6)] mb-8">The product you're looking for doesn't exist.</p>
-            <button onClick={() => navigate("/products")} className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-br from-green-brand to-lime-brand text-dark-surface font-semibold rounded-md hover:shadow-[0_0_16px_rgba(168,214,62,.4)] transition-all duration-200">
+            <button onClick={() => navigate("/products")} className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-br from-green-brand to-lime-brand text-white dark:text-dark-surface font-semibold rounded-md hover:shadow-[0_0_16px_rgba(168,214,62,.4)] transition-all duration-200">
               Go Back to Products
             </button>
           </div>
@@ -619,7 +619,7 @@ export default function ProductDetail() {
                         </div>
                         <div className="flex gap-2">
                           <button
-                            className="flex-1 px-4 py-2 bg-gradient-to-br from-green-brand to-lime-brand text-dark-surface font-semibold text-[.8rem] rounded-md cursor-pointer transition-all duration-200 hover:shadow-[0_0_12px_rgba(168,214,62,.4)] disabled:opacity-50"
+                            className="flex-1 px-4 py-2 bg-gradient-to-br from-green-brand to-lime-brand text-white dark:text-dark-surface font-semibold text-[.8rem] rounded-md cursor-pointer transition-all duration-200 hover:shadow-[0_0_12px_rgba(168,214,62,.4)] disabled:opacity-50"
                             disabled={createQuestionMutation.isPending || questionText.trim().length === 0}
                             onClick={() => createQuestionMutation.mutate()}
                           >
@@ -787,7 +787,7 @@ export default function ProductDetail() {
                         {/* Submit */}
                         <div className="flex gap-2">
                           <button
-                            className="flex-1 px-4 py-2 bg-gradient-to-br from-green-brand to-lime-brand text-dark-surface font-semibold text-[.8rem] rounded-md cursor-pointer transition-all duration-200 hover:shadow-[0_0_12px_rgba(168,214,62,.4)] disabled:opacity-50"
+                            className="flex-1 px-4 py-2 bg-gradient-to-br from-green-brand to-lime-brand text-white dark:text-dark-surface font-semibold text-[.8rem] rounded-md cursor-pointer transition-all duration-200 hover:shadow-[0_0_12px_rgba(168,214,62,.4)] disabled:opacity-50"
                             disabled={createReviewMutation.isPending || selectedReviewRating === 0}
                             onClick={() => createReviewMutation.mutate()}
                           >
