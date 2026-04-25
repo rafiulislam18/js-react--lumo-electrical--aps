@@ -268,7 +268,7 @@ export function Navbar({ categories }: NavbarProps) {
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 align="end"
-                className={`w-52 border rounded-lg p-[0.35rem] ${light ? "bg-[#f5f5f5] border-black/[0.12] text-[#222]" : "bg-[#111411] border-white/[0.09] text-[#f0f2ed]"}`}
+                className={`w-52 border rounded-lg p-[0.35rem] ${light ? "bg-white border-black/[0.12] text-[#222]" : "bg-[#111411] border-white/[0.09] text-[#f0f2ed]"}`}
                 onMouseLeave={() => setUserOpen(false)}
               >
                 {isAuthenticated ? (
