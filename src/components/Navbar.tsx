@@ -187,7 +187,7 @@ export function Navbar({ categories }: NavbarProps) {
 
             {/* Logo */}
             <Link to="/" className="flex-shrink-0 flex items-center no-underline">
-              <img src="/images/logo.png" alt="Lumo Electrical" className="h-[36px] sm:h-[38px] block" />
+              <img src={ light? "/images/logo.png" : "/images/logo-light.png"} alt="Lumo Electrical" className="h-[36px] sm:h-[38px] block" />
             </Link>
           </div>
           

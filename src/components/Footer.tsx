@@ -58,7 +58,7 @@ export function Footer({ contactDetails }: FooterProps) {
           {/* Brand */}
           <div>
             <Link to="/">
-              <img src="/images/logo.png" alt="Lumo Electrical" className="h-[38px] mb-5 block" />
+              <img src="/images/logo-light.png" alt="Lumo Electrical" className="h-[38px] mb-5 block" />
             </Link>
             <p className="text-[0.88rem] leading-[1.8] font-light max-w-[280px] mb-7 text-[#f0f2ed]/60">
               Premium electrical components, tools and solutions trusted by professionals and DIY enthusiasts across Cape Town, South Africa.
