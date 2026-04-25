@@ -227,6 +227,7 @@ export default function Signup() {
   const labelCls = "block text-[.8rem] font-medium text-black/70 dark:text-[rgba(240,242,237,.7)] mb-2";
   const sectionTitleCls = "text-[.9rem] font-semibold text-black/80 dark:text-[rgba(240,242,237,.8)] mb-4";
   const dividerCls = "border-t border-black/[.08] dark:border-white/[.06]";
+  const optionCls = "bg-white dark:bg-dark-elevated-900"
 
   return (
     <div className="font-outfit bg-white dark:bg-dark-surface min-h-screen flex flex-col items-center justify-center px-4 py-12">
@@ -257,7 +258,7 @@ export default function Signup() {
                     value="Retail"
                     checked={formData.customerType === "Retail"}
                     onChange={handleChange}
-                    className="w-4 h-4 accent-lime-brand cursor-pointer"
+                    className="w-4 h-4 accent-green-deep dark:accent-lime-brand cursor-pointer"
                   />
                   <span className="text-[.85rem] text-black/70 dark:text-[rgba(240,242,237,.7)]">Retail</span>
                 </label>
@@ -268,7 +269,7 @@ export default function Signup() {
                     value="Trade"
                     checked={formData.customerType === "Trade"}
                     onChange={handleChange}
-                    className="w-4 h-4 accent-lime-brand cursor-pointer"
+                    className="w-4 h-4 accent-green-deep dark:accent-lime-brand cursor-pointer"
                   />
                   <span className="text-[.85rem] text-black/70 dark:text-[rgba(240,242,237,.7)]">Trade (Business)</span>
                 </label>
@@ -405,11 +406,11 @@ export default function Signup() {
                       className={inputCls}
                       required
                     >
-                      <option value="">Select a business type</option>
-                      <option value="electrician">Electrician</option>
-                      <option value="contractor">Contractor</option>
-                      <option value="reseller">Reseller</option>
-                      <option value="other">Other</option>
+                      <option value="" className={`${optionCls} text-black/40 dark:text-white/30`}>Select a business type</option>
+                      <option value="electrician" className={optionCls}>Electrician</option>
+                      <option value="contractor" className={optionCls}>Contractor</option>
+                      <option value="reseller" className={optionCls}>Reseller</option>
+                      <option value="other" className={optionCls}>Other</option>
                     </select>
                   </div>
 
@@ -519,16 +520,16 @@ export default function Signup() {
                     className={inputCls}
                     required={formData.customerType === "Trade"}
                   >
-                    <option value="">Select a province</option>
-                    <option value="Eastern Cape">Eastern Cape</option>
-                    <option value="Free State">Free State</option>
-                    <option value="Gauteng">Gauteng</option>
-                    <option value="KwaZulu-Natal">KwaZulu-Natal</option>
-                    <option value="Limpopo">Limpopo</option>
-                    <option value="Mpumalanga">Mpumalanga</option>
-                    <option value="Northern Cape">Northern Cape</option>
-                    <option value="North West">North West</option>
-                    <option value="Western Cape">Western Cape</option>
+                    <option value="" className={`${optionCls} text-black/40 dark:text-white/30`}>Select a province</option>
+                    <option value="Eastern Cape" className={optionCls}>Eastern Cape</option>
+                    <option value="Free State" className={optionCls}>Free State</option>
+                    <option value="Gauteng" className={optionCls}>Gauteng</option>
+                    <option value="KwaZulu-Natal" className={optionCls}>KwaZulu-Natal</option>
+                    <option value="Limpopo" className={optionCls}>Limpopo</option>
+                    <option value="Mpumalanga" className={optionCls}>Mpumalanga</option>
+                    <option value="Northern Cape" className={optionCls}>Northern Cape</option>
+                    <option value="North West" className={optionCls}>North West</option>
+                    <option value="Western Cape" className={optionCls}>Western Cape</option>
                   </select>
                 </div>
                 <div>
@@ -603,16 +604,16 @@ export default function Signup() {
                         onChange={handleChange}
                         className={inputCls}
                       >
-                        <option value="">Select a province</option>
-                        <option value="Eastern Cape">Eastern Cape</option>
-                        <option value="Free State">Free State</option>
-                        <option value="Gauteng">Gauteng</option>
-                        <option value="KwaZulu-Natal">KwaZulu-Natal</option>
-                        <option value="Limpopo">Limpopo</option>
-                        <option value="Mpumalanga">Mpumalanga</option>
-                        <option value="Northern Cape">Northern Cape</option>
-                        <option value="North West">North West</option>
-                        <option value="Western Cape">Western Cape</option>
+                        <option value="" className={`${optionCls} text-black/40 dark:text-white/30`}>Select a province</option>
+                        <option value="Eastern Cape" className={optionCls}>Eastern Cape</option>
+                        <option value="Free State" className={optionCls}>Free State</option>
+                        <option value="Gauteng" className={optionCls}>Gauteng</option>
+                        <option value="KwaZulu-Natal" className={optionCls}>KwaZulu-Natal</option>
+                        <option value="Limpopo" className={optionCls}>Limpopo</option>
+                        <option value="Mpumalanga" className={optionCls}>Mpumalanga</option>
+                        <option value="Northern Cape" className={optionCls}>Northern Cape</option>
+                        <option value="North West" className={optionCls}>North West</option>
+                        <option value="Western Cape" className={optionCls}>Western Cape</option>
                       </select>
                     </div>
                     <div>
@@ -696,7 +697,7 @@ export default function Signup() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-3 rounded-lg bg-gradient-to-br from-green-brand to-lime-brand text-dark-surface font-semibold text-[.9rem] cursor-pointer transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-6"
+              className="w-full py-3 rounded-lg bg-gradient-to-br from-green-brand to-lime-brand text-white dark:text-dark-surface font-semibold text-[.9rem] cursor-pointer transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-6"
             >
               {isLoading ? (
                 <>
@@ -713,7 +714,7 @@ export default function Signup() {
           <div className="px-8 py-5 bg-black/[.02] dark:bg-white/[.02] border-t border-black/[.08] dark:border-white/[.06] text-center">
             <p className="text-[.8rem] text-black/60 dark:text-[rgba(240,242,237,.6)]">
               Already have an account?{" "}
-              <Link to="/login" className="text-lime-brand hover:text-lime-brand/80 font-semibold transition-colors duration-150">
+              <Link to="/login" className="text-green-deep dark:text-lime-brand hover:text-green-deep/80 dark:hover:text-lime-brand/80 font-semibold transition-colors duration-150">
                 Sign In
               </Link>
             </p>
