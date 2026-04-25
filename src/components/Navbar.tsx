@@ -111,6 +111,7 @@ export function Navbar({ categories }: NavbarProps) {
 
   const [cartOpen,      setCartOpen]      = useState(false);
   const [mobileOpen,    setMobileOpen]    = useState(false);
+  const [isClosing,     setIsClosing]     = useState(false);
   const [searchOpen,    setSearchOpen]    = useState(false);
   const [allCatOpen,    setAllCatOpen]    = useState(false);
   const [userOpen,      setUserOpen]      = useState(false);
@@ -165,6 +166,18 @@ export function Navbar({ categories }: NavbarProps) {
   const imgSrc = (img: string) =>
     img?.startsWith('http') ? img : `${import.meta.env.VITE_BASE_URL}${img}`;
 
+  const closeMobileDrawer = (animate = true) => {
+    if (animate) {
+      setIsClosing(true);
+      setTimeout(() => {
+        setIsClosing(false);
+        setMobileOpen(false);
+      }, 300);
+    } else {
+      setMobileOpen(false);
+    }
+  };
+
   const solidBg = !isHome || scrolled;
   // Light styles only when navbar has a solid background AND user chose light mode
   const light = solidBg && theme === 'light';
@@ -181,7 +194,7 @@ export function Navbar({ categories }: NavbarProps) {
         <div className="flex items-center h-[68px] max-w-[1280px] mx-auto pl-4 sm:pl-8 pr-3 gap-4">
 
           <div className="flex items-center gap-2">
-            <button className={`${iconBtn} md:hidden`} onClick={() => setMobileOpen(!mobileOpen)} title="Menu">
+            <button className={`${iconBtn} md:hidden`} onClick={() => mobileOpen ? closeMobileDrawer() : setMobileOpen(true)} title="Menu">
               {mobileOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
 
@@ -343,12 +356,14 @@ export function Navbar({ categories }: NavbarProps) {
         </div>
 
         {/* MOBILE DRAWER */}
-        {mobileOpen && (
-          <div className={`md:hidden fixed top-[68px] left-0 right-0 bottom-0 border-t overflow-y-auto ${light ? "bg-[#f5f5f5] border-black/[0.08]" : "bg-[#0d110d] border-white/[0.06]"}`}>
+        {(mobileOpen || isClosing) && (
+          <>
+            <div className={`md:hidden fixed inset-0 top-[68px] z-[35] bg-black/40 ${isClosing ? 'animate-out fade-out duration-200' : 'animate-in fade-in duration-200'}`} onClick={() => closeMobileDrawer(true)} />
+            <div className={`md:hidden fixed top-[68px] left-0 bottom-0 w-full max-w-[80vw] border-t overflow-y-auto z-[36] ${isClosing ? 'animate-out slide-out-to-left duration-300' : 'animate-in slide-in-from-left duration-300'} ${light ? "bg-[#f5f5f5] border-black/[0.08]" : "bg-[#0d110d] border-white/[0.06]"}`}>
             <Link
               to="/contact-us"
               className={`block px-4 py-4 border-b text-[0.87rem] font-medium no-underline transition-colors duration-150 ${light ? "border-black/[0.08] text-black/[0.68] hover:text-[#399746]" : "border-white/[0.06] text-[#f0f2ed]/[0.68] hover:text-[#a8d63e]"}`}
-              onClick={() => setMobileOpen(false)}
+              onClick={() => closeMobileDrawer(false)}
             >
               <PhoneCall size={13} className="inline mr-2 opacity-55" />
               Contact Us
@@ -444,7 +459,8 @@ export function Navbar({ categories }: NavbarProps) {
               Categories
             </div>
             {allCategories.map(cat => <MobileCategoryItem key={cat.id} category={cat} light={light} />)}
-          </div>
+            </div>
+          </>
         )}
 
         {/* MOBILE SEARCH MODAL */}

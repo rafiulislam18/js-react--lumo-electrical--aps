@@ -210,47 +210,59 @@ export default function CategorizedProducts() {
 
   return (
     <div className="font-outfit bg-white dark:bg-dark-surface text-black/70 dark:text-[rgba(240,242,237,.7)] min-h-screen flex flex-col">
-      {/* Breadcrumb */}
-      <section className="bg-black/[.03] dark:bg-lime-brand/[.02] border-b border-black/[.06] dark:border-lime-brand/[.06] px-8 py-4 max-sm:px-4 max-sm:py-3">
-        <div className="max-w-[1280px] mx-auto flex items-center gap-4 text-[.8rem] max-sm:text-[.7rem] flex-wrap">
-          <a href="/" className="text-black/55 dark:text-[rgba(240,242,237,.55)] no-underline transition-colors duration-200 hover:text-lime-brand">
-            Home
-          </a>
-          <span className="text-black/25 dark:text-[rgba(240,242,237,.2)]">/</span>
-          {breadcrumb.length > 0 && breadcrumb.slice(0, -1).map((cat) => (
-            <div key={cat.id} className="flex items-center gap-4">
-              <a href={`/${cat.slug}`} className="text-black/55 dark:text-[rgba(240,242,237,.55)] no-underline transition-colors duration-200 hover:text-lime-brand">
-                {cat.name}
-              </a>
-              <span className="text-black/25 dark:text-[rgba(240,242,237,.2)]">/</span>
-            </div>
-          ))}
-          <span className="text-lime-brand font-semibold">{categoryData?.name || 'Products'}</span>
-        </div>
-      </section>
-
-      {/* Category Section */}
-      <section className="bg-gradient-to-b from-black/[.03] to-black/[.01] dark:from-lime-brand/[.04] dark:to-lime-brand/[.02] border-b border-black/[.08] dark:border-lime-brand/[.08] px-8 py-10 max-sm:px-4 max-sm:py-6">
-        <div className="max-w-[1280px] mx-auto">
-          <div className="font-bebas text-[clamp(1.6rem,4vw,2rem)] tracking-[.08em] text-[#1a1a1a] dark:text-[#f0f2ed] mb-4 max-sm:text-[1.3rem] max-sm:mb-3">
-            {categoryData?.name || 'Products'}
-          </div>
-          <p className="text-[.9rem] max-sm:text-[.8rem] leading-[1.8] text-black/55 dark:text-[rgba(240,242,237,.55)] mb-6 max-sm:mb-4 max-w-[900px]">
-            {categoryData?.name} price starts from ZAR {response?.results.price_range.min || '0'} to ZAR {response?.results.price_range.max || '0'} in Cape Town, South Africa; depending on brand, model, and features. Buy the Latest {categoryData?.name} from Lumo Electrical online shop. Browse below and order yours now!
-          </p>
-          {categoryData?.children && categoryData.children.length > 0 && (
-            <div className="flex flex-wrap gap-3">
-              {categoryData.children.map((child) => (
-                <a
-                  key={child.id}
-                  href={`/${child.slug}`}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-md bg-green-deep/10 dark:bg-lime-brand/10 border border-green-deep/20 dark:border-lime-brand/20 text-green-deep dark:text-lime-brand no-underline text-[.82rem] font-medium transition-all duration-200 hover:bg-green-deep/15 dark:hover:bg-lime-brand/15 dark:hover:shadow-[0_0_16px_rgba(168,214,62,.15)]"
-                >
-                  {child.name}
+      {/* Breadcrumb & Category Section with Shared Background */}
+      <section className="relative bg-cover bg-center bg-no-repeat before:absolute before:inset-0 before:bg-lime-brand/[.02]">
+        <img
+          src="https://images.pexels.com/photos/4276176/pexels-photo-4276176.jpeg"
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover animate-[zoomOut_14s_ease-out_forwards]"
+        />
+        {/* Dark overlay */}
+        <div className="absolute inset-0"
+          style={{ background: 'linear-gradient(to right, rgba(4,8,4,.92) 0%, rgba(4,8,4,.6) 55%, rgba(4,8,4,.25) 100%), linear-gradient(to top, rgba(4,8,4,.8) 0%, transparent 50%)' }}
+        />
+        {/* Breadcrumb */}
+        <div className="relative z-10 border-b border-lime-brand/[.06] px-8 py-4 max-sm:px-4 max-sm:py-3">
+          <div className="max-w-[1280px] mx-auto flex items-center gap-4 text-[.8rem] max-sm:text-[.7rem] flex-wrap">
+            <a href="/" className="text-[rgba(240,242,237,.55)] no-underline transition-colors duration-200 hover:text-lime-brand">
+              Home
+            </a>
+            <span className="text-[rgba(240,242,237,.2)]">/</span>
+            {breadcrumb.length > 0 && breadcrumb.slice(0, -1).map((cat) => (
+              <div key={cat.id} className="flex items-center gap-4">
+                <a href={`/${cat.slug}`} className="text-[rgba(240,242,237,.55)] no-underline transition-colors duration-200 hover:text-lime-brand">
+                  {cat.name}
                 </a>
-              ))}
+                <span className="text-[rgba(240,242,237,.2)]">/</span>
+              </div>
+            ))}
+            <span className="text-lime-brand font-semibold">{categoryData?.name || 'Products'}</span>
+          </div>
+        </div>
+
+        {/* Category Section */}
+        <div className="relative z-10 border-b border-lime-brand/[.08] px-8 py-10 max-sm:px-4 max-sm:py-6">
+          <div className="max-w-[1280px] mx-auto">
+            <div className="font-bebas text-[clamp(1.6rem,4vw,2rem)] tracking-[.08em] text-[#f0f2ed] mb-4 max-sm:text-[1.3rem] max-sm:mb-3">
+              {categoryData?.name || 'Products'}
             </div>
-          )}
+            <p className="text-[.9rem] max-sm:text-[.8rem] leading-[1.8] text-[rgba(240,242,237,.55)] mb-6 max-sm:mb-4 max-w-[900px]">
+              {categoryData?.name} price starts from ZAR {response?.results.price_range.min || '0'} to ZAR {response?.results.price_range.max || '0'} in Cape Town, South Africa; depending on brand, model, and features. Buy the Latest {categoryData?.name} from Lumo Electrical online shop. Browse below and order yours now!
+            </p>
+            {categoryData?.children && categoryData.children.length > 0 && (
+              <div className="flex flex-wrap gap-3">
+                {categoryData.children.map((child) => (
+                  <a
+                    key={child.id}
+                    href={`/${child.slug}`}
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-md bg-lime-brand/10 border border-lime-brand/20 text-lime-brand no-underline text-[.82rem] font-medium transition-all duration-200 hover:bg-lime-brand/15 hover:shadow-[0_0_16px_rgba(168,214,62,.15)]"
+                  >
+                    {child.name}
+                  </a>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </section>
 
@@ -269,9 +281,9 @@ export default function CategorizedProducts() {
           {/* Filters Sidebar */}
           <aside
             className={[
-              "bg-black/[.02] dark:bg-white/[.02] border border-black/[.08] dark:border-white/[.05] rounded-xl p-6",
+              "bg-white dark:bg-white/[.02] border border-black/[.08] dark:border-white/[.05] rounded-xl p-6",
               "max-lg:fixed max-lg:top-0 max-lg:left-0 max-lg:right-0 max-lg:bottom-0 max-lg:z-50 max-lg:w-full max-lg:max-w-[320px] max-lg:rounded-none max-lg:max-h-screen max-lg:overflow-y-auto max-lg:transition-transform max-lg:duration-300 max-lg:ease-in-out max-lg:bg-white max-lg:dark:bg-dark-surface",
-              "lg:sticky lg:top-[100px] lg:max-h-[calc(100vh-120px)] lg:overflow-y-auto",
+              "lg:sticky lg:top-[120px] lg:max-h-[calc(100vh-300px)] lg:overflow-y-auto",
               showFilters ? "max-lg:translate-x-0" : "max-lg:-translate-x-full"
             ].join(' ')}
           >
