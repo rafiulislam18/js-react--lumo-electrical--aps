@@ -292,7 +292,7 @@ export default function Checkout() {
           <p className="text-black/60 dark:text-[rgba(240,242,237,.6)] mb-4 text-[.9rem]">Your cart is empty</p>
           <button
             onClick={() => navigate("/products")}
-            className="bg-gradient-to-br from-green-brand to-lime-brand text-dark-surface font-semibold py-2 px-6 rounded-lg transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)]"
+            className="bg-gradient-to-br from-green-brand to-lime-brand text-white dark:text-dark-surface font-semibold py-2 px-6 rounded-lg transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)]"
           >
             Continue Shopping
           </button>
@@ -420,7 +420,7 @@ export default function Checkout() {
                         id="state"
                         value={formData.state}
                         onChange={(e) => handleSelectChange("state", e.target.value)}
-                        className={`${inputCls} appearance-none cursor-pointer`}
+                        className={`${inputCls} cursor-pointer`}
                       >
                         <option value="" disabled>Select a province</option>
                         {SOUTH_AFRICAN_PROVINCES.map((province) => (
@@ -453,7 +453,7 @@ export default function Checkout() {
                       </label>
                       <div
                         id="country"
-                        className={`${inputCls} bg-black/[.03] dark:bg-white/[.02] cursor-not-allowed flex items-center`}
+                        className={`${inputCls} bg-gray-100 dark:bg-white/[.05] cursor-not-allowed flex items-center`}
                       >
                         South Africa
                       </div>
@@ -504,7 +504,7 @@ export default function Checkout() {
                         {item.product_name}
                       </h3>
                       <p className="font-semibold text-black/85 dark:text-[#f0f2ed] text-[.8rem] mt-1">
-                        ${item.price} <span className="font-normal text-black/60 dark:text-[rgba(240,242,237,.6)]">x {item.quantity}</span> = <span className="text-lime-brand">${item.subtotal.toFixed(2)}</span>
+                        R{item.price} <span className="font-normal text-black/60 dark:text-[rgba(240,242,237,.6)]">x {item.quantity}</span> = <span className="text-green-deep dark:text-lime-brand">R{item.subtotal.toFixed(2)}</span>
                       </p>
                     </div>
                   </div>
@@ -515,16 +515,16 @@ export default function Checkout() {
               <div className="space-y-2 border-t border-black/[.08] dark:border-white/[.06] pt-4 text-[.85rem]">
                 <div className="flex justify-between text-black/60 dark:text-[rgba(240,242,237,.6)]">
                   <span>Subtotal</span>
-                  <span>${pricing.subtotal.toFixed(2)}</span>
+                  <span>R{pricing.subtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-black/60 dark:text-[rgba(240,242,237,.6)]">
                   <span>Tax (10%)</span>
-                  <span>${pricing.tax.toFixed(2)}</span>
+                  <span>R{pricing.tax.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-black/60 dark:text-[rgba(240,242,237,.6)]">
                   <span>Shipping</span>
                   <span className={pricing.shipping === 0 ? "text-lime-brand font-semibold" : ""}>
-                    {pricing.shipping === 0 ? "Free" : `$${pricing.shipping.toFixed(2)}`}
+                    {pricing.shipping === 0 ? "Free" : `R${pricing.shipping.toFixed(2)}`}
                   </span>
                 </div>
 
@@ -536,8 +536,8 @@ export default function Checkout() {
 
                 <div className="border-t border-black/[.08] dark:border-white/[.06] pt-3 flex justify-between items-center">
                   <span className="font-bold text-black/85 dark:text-[#f0f2ed]">Total</span>
-                  <span className="font-bold text-lime-brand text-lg">
-                    ${pricing.total.toFixed(2)}
+                  <span className="font-bold text-green-deep dark:text-lime-brand text-lg">
+                    R{pricing.total.toFixed(2)}
                   </span>
                 </div>
               </div>
@@ -547,7 +547,7 @@ export default function Checkout() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-gradient-to-br from-green-brand to-lime-brand text-dark-surface font-semibold py-3 rounded-lg transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="w-full bg-gradient-to-br from-green-brand to-lime-brand text-white dark:text-dark-surface font-semibold py-3 rounded-lg transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   {loading ? (
                     <>
