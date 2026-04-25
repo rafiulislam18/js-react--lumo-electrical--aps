@@ -146,7 +146,7 @@ export function ProductCard({ product }: ProductCardProps) {
   const wishlistPending = addToWishlistMutation.isPending || removeFromWishlistMutation.isPending;
 
   return (
-    <div className="group font-outfit relative rounded-[10px] overflow-hidden bg-white dark:bg-white/[.04] border border-black/[.08] dark:border-white/[.06] flex flex-col h-full transition-all duration-300 ease-[cubic-bezier(.25,.46,.45,.94)] hover:border-lime-brand/25 dark:hover:border-lime-brand/20 hover:shadow-[0_8px_32px_rgba(168,214,62,.12)] hover:scale-[1.01]">
+    <div className="group font-outfit relative rounded-[10px] overflow-hidden bg-white dark:bg-white/[.04] border border-black/[.08] dark:border-white/[.06] flex flex-col h-full transition-all duration-300 ease-[cubic-bezier(.25,.46,.45,.94)] hover:border-green-deep/20 dark:hover:border-lime-brand/20 hover:shadow-[0_8px_32px_rgba(168,214,62,.12)] hover:scale-[1.01]">
       {/* Image */}
       <div
         className="relative w-full aspect-square overflow-hidden bg-black/[.05] dark:bg-white/[.02] border-b border-black/[.08] dark:border-white/[.05] cursor-pointer"
