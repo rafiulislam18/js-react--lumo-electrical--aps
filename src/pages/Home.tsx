@@ -217,7 +217,7 @@ export default function Home() {
         <div className="max-w-[1280px] mx-auto px-8">
           <div className="grid grid-cols-4 max-[1024px]:grid-cols-2 max-[480px]:grid-cols-1">
             {[
-              { icon: Truck,   title: 'Cape Town Delivery',  desc: 'Fast dispatch across the metro' },
+              { icon: Truck,   title: '100% Free Delivery',  desc: 'For orders of at least R1000 in Cape Town' },
               { icon: Shield,  title: 'Quality Guaranteed',  desc: 'All products meet SA standards'  },
               { icon: Zap,     title: '5000+ Products',      desc: 'Largest local electrical range'  },
               { icon: Wrench,  title: 'Trade Accounts',      desc: 'Exclusive pricing for the trade'  },
