@@ -252,16 +252,6 @@ export default function Checkout() {
         const errorData = await response.json();
         throw new Error(errorData.detail || "Failed to create order");
       }
-
-      const data = await response.json();
-
-      // Clear cart and redirect
-      localStorage.removeItem("cart");
-      toast({
-        title: "Order Placed Successfully",
-        description: `Your order #${data.order_id} has been placed. Thank you for shopping with us!`,
-      });
-      navigate("/orders");
     } catch (error) {
       // console.error("Order creation error:", error);
       toast({
