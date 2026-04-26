@@ -343,15 +343,35 @@ export default function Profile() {
 
   return (
     <div className="font-outfit bg-white dark:bg-dark-surface min-h-screen flex flex-col">
-      {/* Page Header */}
-      <section className="bg-black/[.03] dark:bg-lime-brand/[.02] border-b border-black/[.06] dark:border-lime-brand/[.06] px-8 py-6 max-sm:px-4 max-sm:py-4">
-        <div className="max-w-[1280px] mx-auto">
-          <h1 className="font-bebas text-[2rem] tracking-[.08em] text-black/85 dark:text-[#f0f2ed] mb-1">
-            My Account
-          </h1>
-          <p className="text-[.9rem] text-black/55 dark:text-[rgba(240,242,237,.55)]">
-            Manage your profile, addresses, and account settings
-          </p>
+      {/* Header Section with Background Image */}
+      <section className="relative bg-cover bg-center bg-no-repeat before:absolute before:inset-0 before:bg-lime-brand/[.02]">
+        <img
+          src="https://images.pexels.com/photos/356407/pexels-photo-356407.jpeg"
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover animate-[zoomOut_14s_ease-out_forwards]"
+        />
+        {/* Light mode overlay */}
+        <div className="absolute inset-0 dark:hidden"
+          style={{ background: 'linear-gradient(to right, rgba(20,28,20,.85) 0%, rgba(20,28,20,.55) 55%, rgba(20,28,20,.3) 100%), linear-gradient(to top, rgba(20,28,20,.7) 0%, transparent 50%)' }}
+        />
+        {/* Dark mode overlay */}
+        <div className="absolute inset-0 hidden dark:block"
+          style={{ background: 'linear-gradient(to right, rgba(4,8,4,.92) 0%, rgba(4,8,4,.6) 55%, rgba(4,8,4,.25) 100%), linear-gradient(to top, rgba(4,8,4,.8) 0%, transparent 50%)' }}
+        />
+
+        {/* Header Content */}
+        <div className="relative z-10 px-8 py-12 max-sm:px-4 max-sm:py-8">
+          <div className="max-w-[1280px] mx-auto">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="bg-lime-brand/20 rounded-lg p-2">
+                <User className="w-8 h-8 text-lime-brand" />
+              </div>
+              <h1 className="font-bebas text-[clamp(2rem,5vw,3rem)] tracking-[.08em] text-[#f0f2ed] max-sm:text-[2rem]">My Account</h1>
+            </div>
+            <p className="text-[.95rem] max-sm:text-[.85rem] leading-[1.8] text-[rgba(240,242,237,.7)] max-w-2xl">
+              Manage your profile, addresses, and account settings. Keep your information up to date for a better experience.
+            </p>
+          </div>
         </div>
       </section>
 
@@ -365,7 +385,7 @@ export default function Profile() {
               {/* Card Header */}
               <div className="px-6 sm:px-8 py-6 sm:py-8 flex items-center justify-between gap-4 border-b border-black/[.08] dark:border-white/[.06] bg-black/[.02] dark:bg-white/[.02]">
                 <div className="flex items-center gap-3">
-                  <User className="w-5 h-5 text-lime-brand" />
+                  <User className="w-5 h-5 text-green-deep dark:text-lime-brand" />
                   <h2 className="text-[1.1rem] font-semibold text-black/80 dark:text-[rgba(240,242,237,.8)]">
                     Personal Information
                   </h2>
@@ -708,7 +728,7 @@ export default function Profile() {
                       <button
                         onClick={handleSaveProfile}
                         disabled={isSaving}
-                        className="flex-1 py-3 px-4 bg-gradient-to-br from-green-brand to-lime-brand text-dark-surface font-semibold text-[.9rem] rounded-lg cursor-pointer transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                        className="flex-1 py-3 px-4 bg-gradient-to-br from-green-brand to-lime-brand text-white dark:text-dark-surface font-semibold text-[.9rem] rounded-lg cursor-pointer transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                       >
                         {isSaving ? (
                           <>
@@ -833,7 +853,7 @@ export default function Profile() {
                                   href={existingTradeDocsUrl}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="text-lime-brand hover:text-lime-brand/80 underline text-[.9rem]"
+                                  className="text-green-deep dark:text-lime-brand hover:text-lime-brand/80 underline text-[.9rem]"
                                 >
                                   View Document
                                 </a>
@@ -868,7 +888,7 @@ export default function Profile() {
 
                     <button
                       onClick={() => setIsEditingProfile(true)}
-                      className="w-full py-3 px-4 bg-gradient-to-br from-green-brand to-lime-brand text-dark-surface font-semibold text-[.9rem] rounded-lg cursor-pointer transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)] flex items-center justify-center gap-2 mt-6"
+                      className="w-full py-3 px-4 bg-gradient-to-br from-green-brand to-lime-brand text-white dark:text-dark-surface font-semibold text-[.9rem] rounded-lg cursor-pointer transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)] flex items-center justify-center gap-2 mt-6"
                     >
                       <Edit3 size={16} />
                       Edit Profile
@@ -886,7 +906,7 @@ export default function Profile() {
                     <p className="text-[.75rem] text-black/50 dark:text-[rgba(240,242,237,.5)] font-medium mb-1">Total Orders</p>
                     <p className="text-2xl font-bold text-black/80 dark:text-[rgba(240,242,237,.8)]">{stats.total_orders}</p>
                   </div>
-                  <ShoppingBag size={28} className="text-blue-500/20" />
+                  <ShoppingBag size={28} className="text-blue-500/50" />
                 </div>
               </div>
 
@@ -896,7 +916,7 @@ export default function Profile() {
                     <p className="text-[.75rem] text-black/50 dark:text-[rgba(240,242,237,.5)] font-medium mb-1">Wishlist Items</p>
                     <p className="text-2xl font-bold text-black/80 dark:text-[rgba(240,242,237,.8)]">{stats.wishlist_items}</p>
                   </div>
-                  <Heart size={28} className="text-red-500/20" />
+                  <Heart size={28} className="text-red-500/50" />
                 </div>
               </div>
 
@@ -906,7 +926,7 @@ export default function Profile() {
                     <p className="text-[.75rem] text-black/50 dark:text-[rgba(240,242,237,.5)] font-medium mb-1">Total Spent</p>
                     <p className="text-2xl font-bold text-black/80 dark:text-[rgba(240,242,237,.8)]">R {stats.total_spent.toFixed(2)}</p>
                   </div>
-                  <DollarSign size={28} className="text-lime-brand/20" />
+                  <DollarSign size={28} className="text-lime-brand/50" />
                 </div>
               </div>
             </div>
@@ -916,35 +936,35 @@ export default function Profile() {
           <div className="space-y-3">
             <button
               onClick={() => navigate("/orders")}
-              className="w-full flex items-center justify-between px-4 py-3 bg-white dark:bg-black/[.02] border border-black/[.08] dark:border-white/[.06] rounded-lg hover:border-lime-brand/30 dark:hover:border-lime-brand/20 transition-all duration-200 group"
+              className="w-full flex items-center justify-between px-4 py-3 bg-white dark:bg-black/[.02] border border-black/[.08] dark:border-white/[.06] rounded-lg hover:border-green-deep/20 dark:hover:border-lime-brand/20 transition-all duration-200 group"
             >
               <div className="flex items-center gap-3">
-                <ShoppingBag size={18} className="text-lime-brand" />
+                <ShoppingBag size={18} className="text-green-deep dark:text-lime-brand" />
                 <span className="text-[.85rem] font-medium text-black/70 dark:text-[rgba(240,242,237,.7)]">View Orders</span>
               </div>
-              <ArrowRight size={16} className="text-black/40 dark:text-[rgba(240,242,237,.4)] group-hover:text-lime-brand transition-colors" />
+              <ArrowRight size={16} className="text-black/40 dark:text-[rgba(240,242,237,.4)] group-hover:text-green-deep dark:group-hover:text-lime-brand transition-colors" />
             </button>
 
             <button
               onClick={() => navigate("/wishlist")}
-              className="w-full flex items-center justify-between px-4 py-3 bg-white dark:bg-black/[.02] border border-black/[.08] dark:border-white/[.06] rounded-lg hover:border-lime-brand/30 dark:hover:border-lime-brand/20 transition-all duration-200 group"
+              className="w-full flex items-center justify-between px-4 py-3 bg-white dark:bg-black/[.02] border border-black/[.08] dark:border-white/[.06] rounded-lg hover:border-green-deep/20 dark:hover:border-lime-brand/20 transition-all duration-200 group"
             >
               <div className="flex items-center gap-3">
-                <Heart size={18} className="text-lime-brand" />
+                <Heart size={18} className="text-green-deep dark:text-lime-brand" />
                 <span className="text-[.85rem] font-medium text-black/70 dark:text-[rgba(240,242,237,.7)]">View Wishlist</span>
               </div>
-              <ArrowRight size={16} className="text-black/40 dark:text-[rgba(240,242,237,.4)] group-hover:text-lime-brand transition-colors" />
+              <ArrowRight size={16} className="text-black/40 dark:text-[rgba(240,242,237,.4)] group-hover:text-green-deep dark:group-hover:text-lime-brand transition-colors" />
             </button>
 
             <button
               onClick={() => navigate("/change-password")}
-              className="w-full flex items-center justify-between px-4 py-3 bg-white dark:bg-black/[.02] border border-black/[.08] dark:border-white/[.06] rounded-lg hover:border-lime-brand/30 dark:hover:border-lime-brand/20 transition-all duration-200 group"
+              className="w-full flex items-center justify-between px-4 py-3 bg-white dark:bg-black/[.02] border border-black/[.08] dark:border-white/[.06] rounded-lg hover:border-green-deep/20 dark:hover:border-lime-brand/20 transition-all duration-200 group"
             >
               <div className="flex items-center gap-3">
-                <Lock size={18} className="text-lime-brand" />
+                <Lock size={18} className="text-green-deep dark:text-lime-brand" />
                 <span className="text-[.85rem] font-medium text-black/70 dark:text-[rgba(240,242,237,.7)]">Change Password</span>
               </div>
-              <ArrowRight size={16} className="text-black/40 dark:text-[rgba(240,242,237,.4)] group-hover:text-lime-brand transition-colors" />
+              <ArrowRight size={16} className="text-black/40 dark:text-[rgba(240,242,237,.4)] group-hover:text-green-deep dark:group-hover:text-lime-brand transition-colors" />
             </button>
 
             <button
