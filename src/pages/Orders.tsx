@@ -92,7 +92,7 @@ export default function Orders() {
       {/* Header Section with Background Image */}
       <section className="relative bg-cover bg-center bg-no-repeat before:absolute before:inset-0 before:bg-lime-brand/[.02]">
         <img
-          src="https://images.pexels.com/photos/7620866/pexels-photo-7620866.jpeg"
+          src="https://images.pexels.com/photos/34594827/pexels-photo-34594827.jpeg"
           alt=""
           className="absolute inset-0 w-full h-full object-cover animate-[zoomOut_14s_ease-out_forwards]"
         />

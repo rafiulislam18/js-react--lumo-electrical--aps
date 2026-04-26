@@ -142,27 +142,48 @@ export default function OrderDetail() {
   }
 
   return (
-    <div className="font-outfit bg-white dark:bg-dark-surface w-full">
-      {/* Header Section */}
-      <div className="bg-gradient-to-br from-green-brand to-lime-brand text-dark-surface py-8 px-4">
-        <div className="max-w-[1280px] mx-auto">
-          <button
-            onClick={() => navigate('/orders')}
-            className="flex items-center gap-2 text-dark-surface hover:opacity-80 transition-opacity mb-4"
-          >
-            <ArrowLeft className="w-5 h-5" />
-            <span className="font-medium">Back to Orders</span>
-          </button>
-          <div className="flex items-center gap-3 mb-2">
-            <Package className="w-7 h-7" />
-            <h1 className="font-bebas text-[2.5rem] tracking-[.08em]">Order #{order.id}</h1>
+    <div className="font-outfit bg-white dark:bg-dark-surface w-full flex flex-col">
+      {/* Header Section with Background Image */}
+      <section className="relative bg-cover bg-center bg-no-repeat before:absolute before:inset-0 before:bg-lime-brand/[.02]">
+        <img
+          src="https://images.pexels.com/photos/5957/gift-brown-shopping-market.jpg"
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover animate-[zoomOut_14s_ease-out_forwards]"
+        />
+        {/* Light mode overlay */}
+        <div className="absolute inset-0 dark:hidden"
+          style={{ background: 'linear-gradient(to right, rgba(20,28,20,.85) 0%, rgba(20,28,20,.55) 55%, rgba(20,28,20,.3) 100%), linear-gradient(to top, rgba(20,28,20,.7) 0%, transparent 50%)' }}
+        />
+        {/* Dark mode overlay */}
+        <div className="absolute inset-0 hidden dark:block"
+          style={{ background: 'linear-gradient(to right, rgba(4,8,4,.92) 0%, rgba(4,8,4,.6) 55%, rgba(4,8,4,.25) 100%), linear-gradient(to top, rgba(4,8,4,.8) 0%, transparent 50%)' }}
+        />
+
+        {/* Header Content */}
+        <div className="relative z-10 px-8 py-12 max-sm:px-4 max-sm:py-8">
+          <div className="max-w-[1280px] mx-auto">
+            <button
+              onClick={() => navigate('/orders')}
+              className="flex items-center gap-2 text-[rgba(240,242,237,.8)] hover:text-lime-brand transition-colors mb-4"
+            >
+              <ArrowLeft className="w-5 h-5" />
+              <span className="font-medium">Back to Orders</span>
+            </button>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="bg-lime-brand/20 rounded-lg p-2">
+                <Package className="w-8 h-8 text-lime-brand" />
+              </div>
+              <h1 className="font-bebas text-[clamp(2rem,5vw,3rem)] tracking-[.08em] text-[#f0f2ed] max-sm:text-[2rem]">Order #{order.id}</h1>
+            </div>
+            <p className="text-[.95rem] max-sm:text-[.85rem] leading-[1.8] text-[rgba(240,242,237,.7)] max-w-2xl">
+              Detailed order information and tracking details
+            </p>
           </div>
-          <p className="text-[.95rem] opacity-90">Detailed order information and tracking</p>
         </div>
-      </div>
+      </section>
 
       {/* Main Content */}
-      <section className="py-8 px-4 w-full">
+      <section className="flex-1 py-8 px-4 w-full">
         <div className="max-w-[1280px] mx-auto space-y-6">
           {/* Status Card */}
           <div className="bg-white dark:bg-black/[.02] rounded-lg border border-black/[.08] dark:border-white/[.06] overflow-hidden">
@@ -229,7 +250,7 @@ export default function OrderDetail() {
           <div className="bg-white dark:bg-black/[.02] rounded-lg border border-black/[.08] dark:border-white/[.06] overflow-hidden">
             <div className="px-6 py-5 border-b border-black/[.08] dark:border-white/[.06] bg-black/[.02] dark:bg-white/[.02]">
               <h2 className="font-semibold text-black/85 dark:text-[#f0f2ed] flex items-center gap-2 text-[.95rem]">
-                <ShoppingBag className="w-5 h-5 text-lime-brand" />
+                <ShoppingBag className="w-5 h-5 text-green-deep dark:text-lime-brand" />
                 Order Items ({order.items_count})
               </h2>
             </div>
@@ -260,7 +281,7 @@ export default function OrderDetail() {
                     {/* Product Info */}
                     <div className="md:col-span-1">
                       <Link to={`/product-details/${item.product_id}`}>
-                        <h3 className="font-semibold text-black/85 dark:text-[#f0f2ed] text-[.9rem] mb-1 hover:text-lime-brand dark:hover:text-lime-brand transition-colors">{item.product_name}</h3>
+                        <h3 className="font-semibold text-black/85 dark:text-[#f0f2ed] text-[.9rem] mb-1 hover:text-green-deep dark:hover:text-lime-brand transition-colors">{item.product_name}</h3>
                       </Link>
                       <p className="text-[.75rem] text-black/50 dark:text-[rgba(240,242,237,.5)]">Product ID: #{item.product_id}</p>
                     </div>
@@ -293,7 +314,7 @@ export default function OrderDetail() {
             {/* Delivery Address */}
             <div className="bg-white dark:bg-black/[.02] rounded-lg border border-black/[.08] dark:border-white/[.06] p-6 hover:shadow-lg transition-all">
               <h3 className="font-semibold text-black/85 dark:text-[#f0f2ed] mb-4 flex items-center gap-2 text-[.95rem]">
-                <MapPin className="w-5 h-5 text-lime-brand" />
+                <MapPin className="w-5 h-5 text-green-deep dark:text-lime-brand" />
                 Delivery Address
               </h3>
               <div className="space-y-3">
@@ -325,7 +346,7 @@ export default function OrderDetail() {
             {/* Contact Information */}
             <div className="bg-white dark:bg-black/[.02] rounded-lg border border-black/[.08] dark:border-white/[.06] p-6 hover:shadow-lg transition-all">
               <h3 className="font-semibold text-black/85 dark:text-[#f0f2ed] mb-4 flex items-center gap-2 text-[.95rem]">
-                <Mail className="w-5 h-5 text-lime-brand" />
+                <Mail className="w-5 h-5 text-green-deep dark:text-lime-brand" />
                 Contact Information
               </h3>
               <div className="space-y-4">
@@ -358,7 +379,7 @@ export default function OrderDetail() {
           {/* Action Buttons */}
           <div className="flex gap-3">
             <Link to="/orders" className="flex-1">
-              <button className="w-full border border-lime-brand/30 dark:border-lime-brand/20 text-lime-brand dark:text-lime-brand bg-white dark:bg-black/[.02] hover:bg-lime-brand/[.05] dark:hover:bg-lime-brand/[.08] transition-all rounded-lg font-semibold py-3 flex items-center justify-center gap-2">
+              <button className="w-full border border-green-deep/20 dark:border-lime-brand/20 text-green-deep dark:text-lime-brand bg-white dark:bg-black/[.02] hover:bg-green-deep/[.08] dark:hover:bg-lime-brand/[.08] transition-all rounded-lg font-semibold py-3 flex items-center justify-center gap-2">
                 <ArrowLeft className="w-4 h-4" />
                 Back to Orders
               </button>
