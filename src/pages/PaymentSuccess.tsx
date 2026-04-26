@@ -15,7 +15,7 @@ export default function PaymentSuccess() {
             <div className="relative">
               <div className="absolute inset-0 bg-gradient-to-br from-green-brand to-lime-brand rounded-full blur-xl opacity-20 animate-pulse" />
               <div className="relative bg-gradient-to-br from-green-brand to-lime-brand rounded-full p-4">
-                <CheckCircle className="w-16 h-16 text-dark-surface" strokeWidth={1.5} />
+                <CheckCircle className="w-16 h-16 text-white" strokeWidth={1.5} />
               </div>
             </div>
           </div>
@@ -74,14 +74,14 @@ export default function PaymentSuccess() {
           <div className="flex flex-col gap-3 justify-center mb-6">
             <button
               onClick={() => navigate(`/orders`)}
-              className="bg-gradient-to-br from-green-brand to-lime-brand text-dark-surface font-semibold py-3 px-6 rounded-lg text-[.9rem] transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)] flex items-center justify-center gap-2"
+              className="bg-gradient-to-br from-green-brand to-lime-brand text-white dark:text-dark-surface font-semibold py-3 px-6 rounded-lg text-[.9rem] transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)] flex items-center justify-center gap-2"
             >
               <Package className="w-5 h-5" />
               View Orders
             </button>
             <button
               onClick={() => navigate("/products")}
-              className="border border-lime-brand/30 dark:border-lime-brand/20 text-lime-brand dark:text-lime-brand font-semibold py-3 px-6 rounded-lg text-[.9rem] transition-all duration-200 hover:bg-lime-brand/[.05] dark:hover:bg-lime-brand/[.08] flex items-center justify-center gap-2"
+              className="border border-green-deep/20 dark:border-lime-brand/20 text-green-deep dark:text-lime-brand font-semibold py-3 px-6 rounded-lg text-[.9rem] transition-all duration-200 hover:bg-green-deep/[.08] dark:hover:bg-lime-brand/[.08] flex items-center justify-center gap-2"
             >
               Continue Shopping
               <ArrowRight className="w-5 h-5" />
@@ -92,10 +92,10 @@ export default function PaymentSuccess() {
           <div className="pt-6 border-t border-black/[.08] dark:border-white/[.06]">
             <p className="text-[.8rem] text-black/60 dark:text-[rgba(240,242,237,.6)] mb-3">Have questions about your order?</p>
             <div className="flex flex-col gap-2 justify-center text-[.8rem]">
-              <a href="mailto:support@lumoelectrical.co.za" className="text-lime-brand dark:text-lime-brand hover:underline">
+              <a href="mailto:support@lumoelectrical.co.za" className="text-green-deep dark:text-lime-brand hover:underline">
                 📧 support@lumoelectrical.co.za
               </a>
-              <a href="tel:+27666666666" className="text-lime-brand dark:text-lime-brand hover:underline">
+              <a href="tel:+27666666666" className="text-green-deep dark:text-lime-brand hover:underline">
                 📞 +27 66 666 6666
               </a>
             </div>

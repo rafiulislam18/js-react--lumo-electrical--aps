@@ -130,7 +130,7 @@ export default function OrderDetail() {
             <h3 className="font-bebas text-2xl tracking-[.08em] text-black/85 dark:text-[#f0f2ed] mb-2">Order Not Found</h3>
             <p className="text-black/60 dark:text-[rgba(240,242,237,.6)] mb-6">We couldn't find the order you're looking for.</p>
             <Link to="/orders">
-              <button className="bg-gradient-to-br from-green-brand to-lime-brand text-dark-surface font-semibold px-6 py-3 rounded-lg transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)] inline-flex items-center gap-2">
+              <button className="bg-gradient-to-br from-green-brand to-lime-brand text-white dark:text-dark-surface font-semibold px-6 py-3 rounded-lg transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)] inline-flex items-center gap-2">
                 Back to Orders
                 <ArrowLeft className="w-4 h-4" />
               </button>

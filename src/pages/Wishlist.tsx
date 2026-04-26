@@ -112,7 +112,7 @@ export default function Wishlist() {
               <p className="text-red-600 text-lg mb-4">Failed to load wishlist. Please try again later.</p>
               <button
                 onClick={() => window.location.reload()}
-                className="bg-gradient-to-br from-green-brand to-lime-brand text-dark-surface font-semibold py-2 px-6 rounded-lg transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)]"
+                className="bg-gradient-to-br from-green-brand to-lime-brand text-white dark:text-dark-surface font-semibold py-2 px-6 rounded-lg transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)]"
               >
                 Reload
               </button>
@@ -131,7 +131,7 @@ export default function Wishlist() {
               <p className="text-[.9rem] text-black/60 dark:text-[rgba(240,242,237,.6)] mb-8">Please sign in to view your wishlist</p>
               <button
                 onClick={() => navigate('/login')}
-                className="bg-gradient-to-br from-green-brand to-lime-brand text-dark-surface font-semibold py-3 px-8 rounded-lg transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)]"
+                className="bg-gradient-to-br from-green-brand to-lime-brand text-white dark:text-dark-surface font-semibold py-3 px-8 rounded-lg transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)]"
               >
                 Sign In
               </button>
@@ -169,7 +169,7 @@ export default function Wishlist() {
               <h3 className="font-bebas text-2xl tracking-[.08em] text-black/85 dark:text-[#f0f2ed] mb-2">Wishlist Empty</h3>
               <p className="text-[.9rem] text-black/60 dark:text-[rgba(240,242,237,.6)] mb-8 max-w-md mx-auto">No items in your wishlist yet. Start adding your favorites!</p>
               <Link to="/products/circuit-breakers">
-                <button className="bg-gradient-to-br from-green-brand to-lime-brand text-dark-surface font-semibold py-3 px-8 rounded-lg transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)] inline-flex items-center gap-2">
+                <button className="bg-gradient-to-br from-green-brand to-lime-brand text-white dark:text-dark-surface font-semibold py-3 px-8 rounded-lg transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)] inline-flex items-center gap-2">
                   Continue Shopping
                   <ArrowRight className="w-4 h-4" />
                 </button>

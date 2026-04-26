@@ -15,7 +15,7 @@ export default function NotFound() {
         </p>
 
         <Link to="/">
-          <button className="bg-gradient-to-br from-green-brand to-lime-brand text-dark-surface font-semibold py-3 px-6 rounded-lg w-full transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)]">
+          <button className="bg-gradient-to-br from-green-brand to-lime-brand text-white dark:text-dark-surface font-semibold py-3 px-6 rounded-lg w-full transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)]">
             Go to Home
           </button>
         </Link>

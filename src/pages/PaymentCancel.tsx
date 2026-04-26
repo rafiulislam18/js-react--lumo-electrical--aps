@@ -78,14 +78,14 @@ export default function PaymentCancel() {
           <div className="flex flex-col gap-3 justify-center mb-6">
             <button
               onClick={() => navigate("/checkout")}
-              className="bg-gradient-to-br from-green-brand to-lime-brand text-dark-surface font-semibold py-3 px-6 rounded-lg text-[.9rem] transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)] flex items-center justify-center gap-2"
+              className="bg-gradient-to-br from-green-brand to-lime-brand text-white dark:text-dark-surface font-semibold py-3 px-6 rounded-lg text-[.9rem] transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)] flex items-center justify-center gap-2"
             >
               <ShoppingCart className="w-5 h-5" />
               Return to Checkout
             </button>
             <button
               onClick={() => navigate("/products")}
-              className="border border-lime-brand/30 dark:border-lime-brand/20 text-lime-brand dark:text-lime-brand font-semibold py-3 px-6 rounded-lg text-[.9rem] transition-all duration-200 hover:bg-lime-brand/[.05] dark:hover:bg-lime-brand/[.08] flex items-center justify-center gap-2"
+              className="border border-green-deep/20 dark:border-lime-brand/20 text-green-deep dark:text-lime-brand font-semibold py-3 px-6 rounded-lg text-[.9rem] transition-all duration-200 hover:bg-green-deep/[.08] dark:hover:bg-lime-brand/[.08] flex items-center justify-center gap-2"
             >
               <Home className="w-5 h-5" />
               Continue Shopping
@@ -98,10 +98,10 @@ export default function PaymentCancel() {
               Experiencing payment issues? Contact our support team
             </p>
             <div className="flex flex-col gap-2 justify-center text-[.8rem]">
-              <a href="mailto:support@lumoelectrical.co.za" className="text-lime-brand dark:text-lime-brand hover:underline">
+              <a href="mailto:support@lumoelectrical.co.za" className="text-green-deep dark:text-lime-brand hover:underline">
                 📧 support@lumoelectrical.co.za
               </a>
-              <a href="tel:+27666666666" className="text-lime-brand dark:text-lime-brand hover:underline">
+              <a href="tel:+27666666666" className="text-green-deep dark:text-lime-brand hover:underline">
                 📞 +27 66 666 6666
               </a>
             </div>
