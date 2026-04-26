@@ -258,7 +258,7 @@ export default function ForgotPassword() {
                 <button
                   type="submit"
                   disabled={isLoading || !email}
-                  className="w-full py-3 rounded-lg bg-gradient-to-br from-green-brand to-lime-brand text-dark-surface font-semibold text-[.9rem] cursor-pointer transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-6"
+                  className="w-full py-3 rounded-lg bg-gradient-to-br from-green-brand to-lime-brand text-white dark:text-dark-surface font-semibold text-[.9rem] cursor-pointer transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-6"
                 >
                   {isLoading ? (
                     <>
@@ -303,7 +303,7 @@ export default function ForgotPassword() {
                 <button
                   type="submit"
                   disabled={isLoading || code.length !== 6}
-                  className="w-full py-3 rounded-lg bg-gradient-to-br from-green-brand to-lime-brand text-dark-surface font-semibold text-[.9rem] cursor-pointer transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-6"
+                  className="w-full py-3 rounded-lg bg-gradient-to-br from-green-brand to-lime-brand text-white dark:text-dark-surface font-semibold text-[.9rem] cursor-pointer transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-6"
                 >
                   {isLoading ? (
                     <>
@@ -318,7 +318,7 @@ export default function ForgotPassword() {
                 <button
                   type="button"
                   onClick={handleResendCode}
-                  className="w-full text-[.8rem] text-lime-brand hover:text-lime-brand/80 font-medium py-2 transition-colors duration-150"
+                  className="w-full text-[.8rem] text-green-deep dark:text-lime-brand hover:text-green-deep/80 dark:hover:text-lime-brand/80 font-medium py-2 transition-colors duration-150"
                 >
                   Didn't receive the code? Resend
                 </button>
@@ -330,7 +330,7 @@ export default function ForgotPassword() {
                     setError("");
                     setCode("");
                   }}
-                  className="w-full text-[.8rem] text-black/60 dark:text-[rgba(240,242,237,.6)] hover:text-lime-brand dark:hover:text-lime-brand transition-colors duration-150"
+                  className="w-full text-[.8rem] text-black/60 dark:text-[rgba(240,242,237,.6)] hover:text-green-deep dark:hover:text-lime-brand transition-colors duration-150"
                 >
                   Try another email
                 </button>
@@ -401,7 +401,7 @@ export default function ForgotPassword() {
                 <button
                   type="submit"
                   disabled={isLoading || !newPassword || !confirmPassword || newPassword !== confirmPassword}
-                  className="w-full py-3 rounded-lg bg-gradient-to-br from-green-brand to-lime-brand text-dark-surface font-semibold text-[.9rem] cursor-pointer transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-6"
+                  className="w-full py-3 rounded-lg bg-gradient-to-br from-green-brand to-lime-brand text-white dark:text-dark-surface font-semibold text-[.9rem] cursor-pointer transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-6"
                 >
                   {isLoading ? (
                     <>
@@ -420,7 +420,7 @@ export default function ForgotPassword() {
           <div className="px-8 py-5 bg-black/[.02] dark:bg-white/[.02] border-t border-black/[.08] dark:border-white/[.06] text-center">
             <p className="text-[.8rem] text-black/60 dark:text-[rgba(240,242,237,.6)]">
               Remember your password?{" "}
-              <button onClick={() => navigate("/login")} className="text-lime-brand hover:text-lime-brand/80 font-semibold transition-colors duration-150">
+              <button onClick={() => navigate("/login")} className="text-green-deep dark:text-lime-brand hover:text-green-deep/80 dark:hover:text-lime-brand/80 font-semibold transition-colors duration-150">
                 Log In
               </button>
             </p>

@@ -158,12 +158,12 @@ export default function EmailVerificationModal({
     <div className="fixed inset-0 bg-black/50 dark:bg-black/60 flex items-center justify-center z-50 p-4 font-outfit">
       <div className="bg-white dark:bg-dark-surface rounded-2xl shadow-lg max-w-md w-full overflow-hidden">
         {/* Header */}
-        <div className="bg-gradient-to-r from-green-brand to-lime-brand px-6 py-8 text-dark-surface text-center">
+        <div className="bg-gradient-to-r from-green-brand to-lime-brand px-6 py-8 text-white dark:text-dark-surface text-center">
           <div className="w-12 h-12 bg-dark-surface/20 rounded-full flex items-center justify-center mx-auto mb-4">
             <CheckCircle className="w-6 h-6" />
           </div>
           <h2 className="text-2xl font-bebas tracking-[.08em]">VERIFY YOUR EMAIL</h2>
-          <p className="text-dark-surface/80 text-sm mt-2">
+          <p className="text-white/80 dark:text-dark-surface/80 text-sm mt-2">
             We sent a verification code to<br />
             <span className="font-semibold">{email}</span>
           </p>
@@ -209,7 +209,7 @@ export default function EmailVerificationModal({
           <button
             type="submit"
             disabled={isLoading || verificationCode.length !== 6}
-            className="w-full bg-gradient-to-br from-green-brand to-lime-brand text-dark-surface font-semibold py-3 rounded-lg transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="w-full bg-gradient-to-br from-green-brand to-lime-brand text-white dark:text-dark-surface font-semibold py-3 rounded-lg transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {isLoading ? (
               <>
@@ -225,7 +225,7 @@ export default function EmailVerificationModal({
             type="button"
             onClick={handleResend}
             disabled={isResending || resendCooldown > 0}
-            className="w-full text-sm text-lime-brand hover:text-green-brand font-medium py-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full text-sm text-green-deep dark:text-lime-brand hover:text-green-deep/80 dark:hover:text-lime-brand/80 font-medium py-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isResending ? "Sending..." : resendCooldown > 0 ? `Resend in ${resendCooldown}s` : "Didn't receive the code? Resend"}
           </button>
