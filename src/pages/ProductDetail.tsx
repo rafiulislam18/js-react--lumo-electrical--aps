@@ -37,6 +37,8 @@ interface Review {
     first_name: string;
     last_name: string;
   };
+  admin_reply: string | null;
+  admin_replied_at: string | null;
 }
 
 interface Question {
@@ -844,6 +846,12 @@ export default function ProductDetail() {
                               By <span className="font-semibold">{review.reviewed_by.first_name + " " + review.reviewed_by.last_name || review.reviewed_by.username}</span>
                               {review.is_verified_purchase && <span className="ml-2 text-green-600 dark:text-green-400 font-medium">✓ Verified Purchase</span>}
                             </p>
+                            {review.admin_reply && (
+                              <div className="mt-3 bg-green-50 dark:bg-green-500/[.08] border border-green-200 dark:border-green-500/20 rounded px-3 py-2">
+                                <p className="text-[.75rem] font-semibold text-green-700 dark:text-green-400 mb-0.5">Lumo Electrical</p>
+                                <p className="text-[.8rem] text-black/70 dark:text-[rgba(240,242,237,.7)]">{review.admin_reply}</p>
+                              </div>
+                            )}
                           </div>
                         ))
                       ) : (
