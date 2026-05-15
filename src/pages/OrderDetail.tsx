@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { Package, ArrowLeft, CheckCircle, Truck, ShoppingBag, MapPin, Phone, Mail, Loader } from "lucide-react";
-import { apiGet } from "@/lib/api";
+import { Package, ArrowLeft, CheckCircle, Truck, ShoppingBag, MapPin, Phone, Mail, Loader, MessageSquare, Send } from "lucide-react";
+import { apiGet, apiPatch } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 
 interface OrderItem {
@@ -35,6 +35,7 @@ interface OrderDetail {
   updated_at: string;
   items: OrderItem[];
   items_count: number;
+  delivery_feedback: string | null;
 }
 
 export default function OrderDetail() {
@@ -43,6 +44,8 @@ export default function OrderDetail() {
   const { toast } = useToast();
   const [order, setOrder] = useState<OrderDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [feedbackText, setFeedbackText] = useState('');
+  const [submittingFeedback, setSubmittingFeedback] = useState(false);
 
   const fetchOrderDetails = async () => {
     try {
@@ -72,6 +75,21 @@ export default function OrderDetail() {
     }
   }, [orderId, navigate, toast]);
 
+
+  const handleFeedbackSubmit = async () => {
+    if (!feedbackText.trim()) return;
+    setSubmittingFeedback(true);
+    try {
+      await apiPatch(`/orders/${orderId}/feedback/`, { delivery_feedback: feedbackText });
+      setOrder(prev => prev ? { ...prev, delivery_feedback: feedbackText } : prev);
+      setFeedbackText('');
+      toast({ title: "Thank you!", description: "Your feedback has been submitted." });
+    } catch {
+      toast({ variant: "destructive", title: "Error", description: "Failed to submit feedback. Please try again." });
+    } finally {
+      setSubmittingFeedback(false);
+    }
+  };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -373,6 +391,46 @@ export default function OrderDetail() {
             <div className="bg-white dark:bg-black/[.02] rounded-lg border border-black/[.08] dark:border-white/[.06] p-6 hover:shadow-lg transition-all">
               <h3 className="font-semibold text-black/85 dark:text-[#f0f2ed] mb-3 text-[.95rem]">Order Notes</h3>
               <p className="text-black/70 dark:text-[rgba(240,242,237,.7)] whitespace-pre-wrap">{order.comment}</p>
+            </div>
+          )}
+
+          {/* Delivery Feedback — only shown when delivered */}
+          {order.status === 'delivered' && (
+            <div className="bg-white dark:bg-black/[.02] rounded-lg border border-black/[.08] dark:border-white/[.06] p-6 hover:shadow-lg transition-all">
+              <h3 className="font-semibold text-black/85 dark:text-[#f0f2ed] mb-1 flex items-center gap-2 text-[.95rem]">
+                <MessageSquare className="w-5 h-5 text-green-deep dark:text-lime-brand" />
+                Delivery Feedback
+              </h3>
+              <p className="text-[.8rem] text-black/50 dark:text-[rgba(240,242,237,.5)] mb-4">
+                How was your delivery experience?
+              </p>
+
+              {order.delivery_feedback ? (
+                <div className="bg-green-brand/[.05] dark:bg-green-brand/[.08] border border-green-brand/[.15] rounded-lg p-4">
+                  <p className="text-[.8rem] text-black/50 dark:text-[rgba(240,242,237,.5)] font-medium mb-1">Your feedback</p>
+                  <p className="text-black/80 dark:text-[#f0f2ed] text-[.9rem] whitespace-pre-wrap">{order.delivery_feedback}</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  <textarea
+                    value={feedbackText}
+                    onChange={e => setFeedbackText(e.target.value)}
+                    placeholder="Share your experience with this delivery..."
+                    rows={4}
+                    className="w-full px-4 py-3 rounded-lg border border-black/[.08] dark:border-white/[.06] bg-black/[.02] dark:bg-white/[.02] text-black/85 dark:text-[#f0f2ed] placeholder:text-black/30 dark:placeholder:text-white/[.25] text-[.9rem] focus:outline-none focus:ring-2 focus:ring-lime-brand/40 resize-none transition-all"
+                  />
+                  <button
+                    onClick={handleFeedbackSubmit}
+                    disabled={submittingFeedback || !feedbackText.trim()}
+                    className="flex items-center gap-2 bg-gradient-to-br from-green-brand to-lime-brand text-white dark:text-dark-surface font-semibold px-6 py-2.5 rounded-lg transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)] disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none text-[.9rem]"
+                  >
+                    {submittingFeedback
+                      ? <><Loader className="w-4 h-4 animate-spin" />Submitting...</>
+                      : <><Send className="w-4 h-4" />Submit Feedback</>
+                    }
+                  </button>
+                </div>
+              )}
             </div>
           )}
 
