@@ -159,39 +159,39 @@ export default function Home() {
         /> */}
         {/* Light mode overlay */}
         <div className="absolute inset-0 dark:hidden"
-          style={{ background: 'linear-gradient(to right, rgba(20,28,20,.85) 0%, rgba(20,28,20,.55) 55%, rgba(20,28,20,.3) 100%), linear-gradient(to top, rgba(20,28,20,.7) 0%, transparent 50%)' }}
+          style={{ background: 'linear-gradient(to right, rgba(4,8,4,.82) 0%, rgba(4,8,4,.5) 55%, rgba(4,8,4,.18) 100%), linear-gradient(to top, rgba(4,8,4,.7) 0%, transparent 50%)' }}
         />
         {/* Dark mode overlay */}
         <div className="absolute inset-0 hidden dark:block"
           style={{ background: 'linear-gradient(to right, rgba(4,8,4,.92) 0%, rgba(4,8,4,.6) 55%, rgba(4,8,4,.25) 100%), linear-gradient(to top, rgba(4,8,4,.8) 0%, transparent 50%)' }}
         />
 
-        <div className="relative z-[2] max-w-[1280px] w-full mx-auto mt-[9vh] px-8 animate-[riseIn_.9s_cubic-bezier(.22,1,.36,1)_both]">
+        <div className="relative z-[2] max-w-[1280px] w-full mx-auto mt-[9vh] pt-20 sm:pt-0 px-4 sm:px-8 animate-[riseIn_.9s_cubic-bezier(.22,1,.36,1)_both]">
           {/* Hero tag */}
-          <div className="inline-flex items-center gap-[.45rem] text-[.72rem] font-semibold tracking-[.18em] uppercase border px-[.85rem] py-[.3rem] rounded-[4px] mb-[1.6rem] backdrop-blur-[4px] text-[#a8d63e] border-[rgba(168,214,62,.35)] bg-[rgba(168,214,62,.05)]">
-            <Zap size={10} />
-            Cape Town's Premier Electrical Supplier
+          <div className="inline-flex items-center gap-[.4rem] sm:gap-[.45rem] text-[.62rem] sm:text-[.72rem] font-semibold tracking-[.14em] sm:tracking-[.18em] uppercase border px-[.65rem] sm:px-[.85rem] py-[.25rem] sm:py-[.3rem] rounded-[4px] mb-[1.2rem] sm:mb-[1.6rem] backdrop-blur-[4px] text-[#a8d63e] border-[rgba(168,214,62,.35)] bg-[rgba(168,214,62,.05)] max-w-full">
+            <Zap size={10} className="shrink-0" />
+            <span className="truncate">Cape Town's Premier Electrical Supplier</span>
           </div>
 
-          <h1 className="font-bebas text-[clamp(4.5rem,10vw,8.5rem)] leading-[.95] tracking-[.01em] text-white mb-[1.5rem]">
+          <h1 className="font-bebas text-[clamp(3rem,11vw,8.5rem)] leading-[.95] tracking-[.01em] text-white mb-[1.2rem] sm:mb-[1.5rem]">
             Wire It.<br />
             <em className="not-italic [WebkitTextFillColor:transparent] [-webkit-text-fill-color:transparent] [-webkit-text-stroke:2px_#a8d63e] dark:[-webkit-text-stroke-color:2px_#a8d63e]">Right.</em>
           </h1>
 
-          <p className="text-[1.05rem] leading-[1.75] font-light text-[rgba(240,242,237,.6)] max-w-[480px] mb-[2.5rem]">
+          <p className="text-[.9rem] sm:text-[1.05rem] leading-[1.65] sm:leading-[1.75] font-light text-[rgba(240,242,237,.6)] max-w-[480px] mb-[1.8rem] sm:mb-[2.5rem]">
             Premium electrical components, tools and solutions trusted by professionals and builders across Cape Town, South Africa.
           </p>
 
-          <div className="flex flex-wrap gap-4 items-center">
+          <div className="flex flex-wrap gap-3 sm:gap-4 items-center">
             <button
-              className="inline-flex items-center gap-[.6rem] font-outfit font-bold text-[.9rem] tracking-[.04em] uppercase px-[2.2rem] py-[.9rem] rounded-[4px] border-0 cursor-pointer bg-gradient-to-r from-[#3aaa49] to-[#a8d63e] text-white dark:text-[#0a0c0a] shadow-[0_0_32px_rgba(58,170,73,.28)] dark:shadow-[0_0_32px_rgba(168,214,62,.28)] no-underline transition-[box-shadow,transform] duration-200 hover:shadow-[0_0_48px_rgba(58,170,73,.45)] hover:-translate-y-0.5 dark:hover:shadow-[0_0_48px_rgba(168,214,62,.45)]"
+              className="inline-flex items-center justify-center gap-[.5rem] sm:gap-[.6rem] font-outfit font-bold text-[.78rem] sm:text-[.9rem] tracking-[.04em] uppercase px-[1.4rem] sm:px-[2.2rem] py-[.7rem] sm:py-[.9rem] rounded-[4px] border-0 cursor-pointer bg-gradient-to-r from-[#3aaa49] to-[#a8d63e] text-white dark:text-[#0a0c0a] shadow-[0_0_32px_rgba(58,170,73,.28)] dark:shadow-[0_0_32px_rgba(168,214,62,.28)] no-underline transition-[box-shadow,transform] duration-300 hover:shadow-[0_0_48px_rgba(58,170,73,.45)] hover:-translate-y-0.5 dark:hover:shadow-[0_0_48px_rgba(168,214,62,.45)]"
               onClick={() => document.getElementById('categories-section')?.scrollIntoView({ behavior: 'smooth' })}
             >
-              <Zap size={15} /> Shop Now
+              <Zap size={14} /> Shop Now
             </button>
             <a
               href="/contact-us"
-              className="inline-flex items-center gap-[.6rem] font-outfit font-semibold text-[.9rem] tracking-[.04em] uppercase px-[2.2rem] py-[.9rem] rounded-[4px] cursor-pointer bg-white dark:bg-[#0a0c0a] border border-white/[0.1] text-[rgba(26,26,26,.9)] dark:text-[rgba(240,242,237,.85)] hover:text-[rgba(240,242,237,.85)] no-underline transition-[border-color,background] duration-200 hover:border-[rgba(58,170,73,.7)] hover:bg-[rgba(58,170,73,.08)] dark:hover:border-[rgba(168,214,62,.6)] dark:hover:bg-[rgba(168,214,62,.06)]"
+              className="inline-flex items-center justify-center gap-[.5rem] sm:gap-[.6rem] font-outfit font-semibold text-[.78rem] sm:text-[.9rem] tracking-[.04em] uppercase px-[1.4rem] sm:px-[2.2rem] py-[.7rem] sm:py-[.9rem] rounded-[4px] cursor-pointer bg-white dark:bg-[#0a0c0a] border border-white/[0.1] text-[rgba(26,26,26,.9)] dark:text-[rgba(240,242,237,.85)] hover:text-[rgba(240,242,237,.85)] no-underline transition-[border-color,background] duration-300 hover:border-[rgba(58,170,73,.7)] hover:bg-[rgba(58,170,73,.08)] dark:hover:border-[rgba(168,214,62,.6)] dark:hover:bg-[rgba(168,214,62,.06)]"
             >
               Get a Quote
             </a>
