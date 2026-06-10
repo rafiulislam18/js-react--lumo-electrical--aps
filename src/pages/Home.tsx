@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { ProductListColumn } from "@/components/ProductListColumn";
-import { Loader, ArrowRight, ArrowUpRight, Zap, Shield, Truck, Wrench, Package } from "lucide-react";
+import { Loader, ArrowRight, Zap, Shield, Truck, Wrench, Package } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
@@ -221,7 +221,7 @@ export default function Home() {
 
       {/* ══ TRUST BAR (cards) ══ */}
       <div className="bg-white dark:bg-dark-elevated-900">
-        <div className="max-w-[1280px] mx-auto px-4 sm:px-8 py-14">
+        <div className="max-w-[1280px] mx-auto px-4 sm:px-8 pt-14 py-20">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             {[
               { icon: Truck,  title: '100% Free Delivery', desc: 'For orders of at least R1000 in Cape Town' },
@@ -263,7 +263,7 @@ export default function Home() {
 
       {/* ══ CATEGORIES ══ */}
       <div
-        className="bg-gradient-to-b from-gray-50 to-white dark:from-dark-elevated-950 dark:to-dark-elevated-900 py-28"
+        className="bg-gradient-to-b from-gray-50 to-white dark:from-dark-elevated-950 dark:to-dark-elevated-900 py-20"
         id="categories-section"
         style={{ scrollMarginTop: '5rem' }}
       >
@@ -284,42 +284,32 @@ export default function Home() {
             </a> */}
           </div>
 
-          {/* Grid */}
-          <div
-            className="grid gap-3 max-[768px]:gap-2"
-            style={{
-              gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))',
-            }}
-          >
-            {featuredCategories.map((cat: Category, i: number) => {
+          {/* Grid — Voltage concept: squared cards, hairline dividers, image zoom + lime underline on hover */}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-px bg-[rgba(26,26,26,.1)] dark:bg-white/10">
+            {featuredCategories.map((cat: Category) => {
               const img = cat.image ? getImageUrl(cat.image) : null;
               return (
                 <a
                   key={cat.id}
                   href={`/${cat.slug}`}
-                  className={`group relative rounded-[8px] overflow-hidden bg-[#141814] no-underline block border border-[rgba(255,255,255,.7)] dark:border-[rgba(255,255,255,.05)] transition-[border-color] duration-300 h-[240px] max-[768px]:h-[200px] max-[480px]:h-[180px]`}
+                  className="group relative block aspect-[5/4] overflow-hidden bg-[#141814] no-underline rounded-2x"
                 >
                   {img && (
                     <img
                       src={img}
                       alt={cat.name}
                       loading="lazy"
-                      className="absolute inset-0 w-full h-full object-cover brightness-[.8] transition-[transform,filter] duration-700 ease-[cubic-bezier(.25,.46,.45,.94)] group-hover:scale-[1.05] group-hover:brightness-[.6]"
+                      className="absolute inset-0 w-full h-full object-cover [filter:grayscale(.3)_brightness(.62)] transition-transform duration-700 ease-[cubic-bezier(.22,1,.36,1)] group-hover:scale-110"
                     />
                   )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-[rgba(4,8,4,.92)] via-transparent to-transparent" />
-                  {/* {i === 0 && (
-                    <span className="absolute top-4 left-4 bg-[rgba(168,214,62,.15)] border border-[rgba(168,214,62,.3)] text-[#a8d63e] text-[.6rem] font-bold tracking-[.12em] uppercase px-[.65rem] py-[.25rem] rounded-[3px]">
-                      Featured
-                    </span>
-                  )} */}
-                  <div className="absolute inset-0 flex flex-col justify-end p-[1.4rem] max-[480px]:p-3">
-                    <div className="font-outfit font-bold text-[1rem] max-[480px]:text-[0.85rem] text-[#f0f2ed] leading-[1.2] mb-[.4rem]">{cat.name}</div>
-                    <div className="inline-flex items-center gap-[.3rem] text-[.68rem] max-[480px]:text-[.6rem] font-semibold tracking-[.1em] uppercase text-[#a8d63e] transition-[gap] duration-200">
+                  <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(6,9,7,.9),transparent_70%)]" />
+                  <div className="absolute bottom-0 left-0 right-0 p-4">
+                    <div className="font-bold text-[.92rem] text-white leading-tight">{cat.name}</div>
+                    <div className="inline-flex items-center gap-1 text-[.6rem] font-bold tracking-[.14em] uppercase mt-1 text-[#a8d63e]">
                       Shop <ArrowRight size={10} />
                     </div>
                   </div>
-                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-gradient transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
+                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#a8d63e] origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
                 </a>
               );
             })}
@@ -328,7 +318,7 @@ export default function Home() {
       </div>
 
       {/* ══ PRODUCTS ══ */}
-      <div className="bg-gradient-to-b from-gray-50 to-white dark:from-dark-elevated-950 dark:to-dark-elevated-900 py-28">
+      <div className="bg-gradient-to-b from-gray-50 to-white dark:from-dark-elevated-950 dark:to-dark-elevated-900 py-20">
         <div className="max-w-[1280px] mx-auto px-8">
           <div className="mb-12">
             <div className="inline-flex items-center gap-2 text-[.68rem] font-bold tracking-[.2em] uppercase text-[#3aaa49] dark:text-[#a8d63e] mb-[.8rem] before:content-[''] before:w-6 before:h-0.5 before:bg-[#3aaa49] dark:before:bg-[#a8d63e] before:rounded-sm before:shrink-0">
@@ -372,7 +362,7 @@ export default function Home() {
       </div>
 
       {/* ══ FAQ ══ */}
-      <div className="bg-gradient-to-b from-gray-50 to-white dark:from-dark-elevated-950 dark:to-dark-elevated-900 py-28">
+      <div className="bg-gradient-to-b from-gray-50 to-white dark:from-dark-elevated-950 dark:to-dark-elevated-900 py-20">
         <div className="max-w-[1280px] mx-auto px-8">
           <div className="grid grid-cols-[1fr_2fr] gap-24 items-start max-[768px]:grid-cols-1 max-[768px]:gap-10">
 
