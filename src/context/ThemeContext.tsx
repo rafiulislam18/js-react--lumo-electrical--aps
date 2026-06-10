@@ -10,12 +10,12 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [theme, setTheme] = useState<Theme>("dark");
+  const [theme, setTheme] = useState<Theme>("light");
 
   // Load theme from localStorage on mount and apply it
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme") as Theme | null;
-    const themeToApply = savedTheme || "dark";
+    const themeToApply = savedTheme || "light";
     setTheme(themeToApply);
     applyTheme(themeToApply);
   }, []);

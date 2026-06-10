@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Search, ShoppingCart, Heart, User, Menu, X,
   ChevronDown, LogIn, UserPlus, Package, LogOut, Lock, PhoneCall, Sun, Moon,
@@ -104,7 +104,6 @@ function MobileCategoryItem({ category, level = 0, light }: { category: Category
 
 export function Navbar({ categories }: NavbarProps) {
   const navigate = useNavigate();
-  const location = useLocation();
   const { isAuthenticated, user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const { toast } = useToast();
@@ -118,9 +117,7 @@ export function Navbar({ categories }: NavbarProps) {
   const [wishlistCount, setWishlistCount] = useState(0);
   const [query,         setQuery]         = useState('');
   const [results,       setResults]       = useState<any[]>([]);
-  const [scrolled,      setScrolled]      = useState(false);
 
-  const isHome = location.pathname === '/';
   const allCategories = categories || [];
   const first8 = allCategories.slice(0, 8);
 
@@ -134,12 +131,6 @@ export function Navbar({ categories }: NavbarProps) {
     window.addEventListener('storage', update);
     return () => window.removeEventListener('storage', update);
   }, [cartOpen]);
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 0);
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
 
   const handleSearch = async (q: string) => {
     setQuery(q);
@@ -167,9 +158,7 @@ export function Navbar({ categories }: NavbarProps) {
 
   const closeMobileDrawer = () => setMobileOpen(false);
 
-  const solidBg = !isHome || scrolled;
-  // Light styles only when navbar has a solid background AND user chose light mode
-  const light = solidBg && theme === 'light';
+  const light = theme === 'light';
 
   const iconBtn = `relative grid place-items-center w-[38px] h-[38px] rounded-md border-none cursor-pointer no-underline bg-transparent transition-all duration-[180ms] flex-shrink-0 ${light ? "text-black/60 hover:bg-black/[0.08] hover:text-black" : "text-[#f0f2ed]/[0.72] hover:bg-white/[0.09] hover:text-[#f0f2ed]"}`;
 
@@ -177,10 +166,10 @@ export function Navbar({ categories }: NavbarProps) {
     <>
       <CartSidebar isOpen={cartOpen} onClose={() => setCartOpen(false)} />
 
-      <nav className={`sticky top-0 z-[40] font-outfit w-full transition-all duration-500 ${solidBg ? (light ? 'bg-white shadow-[0_1px_0_rgba(0,0,0,0.08)]' : 'bg-[#0d110d] shadow-[0_1px_0_rgba(255,255,255,0.07)]') : 'bg-transparent'}`}>
+      <nav className={`sticky top-0 z-[40] font-outfit w-full transition-all duration-500 ${light ? 'bg-white shadow-[0_1px_0_rgba(0,0,0,0.08)]' : 'bg-[#0d110d] shadow-[0_1px_0_rgba(255,255,255,0.07)]'}`}>
 
         {/* TOPBAR */}
-        <div className="flex items-center h-[68px] max-w-[1280px] mx-auto pl-4 sm:pl-8 pr-3 gap-4">
+        <div className="flex items-center h-[68px] max-w-[1280px] mx-auto px-4 sm:px-8 gap-4">
 
           <div className="flex items-center gap-2">
             <button className={`${iconBtn} md:hidden`} onClick={() => mobileOpen ? closeMobileDrawer() : setMobileOpen(true)} title="Menu">
@@ -235,8 +224,8 @@ export function Navbar({ categories }: NavbarProps) {
             )}
           </div>
 
-          {/* Actions */}
-          <div className="flex items-center gap-[0.15rem] flex-shrink-0 md:flex-shrink-0 ml-auto md:ml-0">
+          {/* Actions — pinned to the right edge; -mr-2 optically aligns the icon glyphs with the content edge */}
+          <div className="flex items-center gap-[0.15rem] flex-shrink-0 ml-auto -mr-2">
             <Link to="/contact-us" className={`${iconBtn} hidden md:grid`} title="Contact Us">
               <PhoneCall size={17} />
             </Link>

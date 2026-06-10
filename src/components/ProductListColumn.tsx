@@ -105,7 +105,6 @@ export function ProductListColumn({ title, products, linkTo }: ProductListColumn
               "rounded-md cursor-pointer transition-colors duration-150",
               "bg-white/[0.02] dark:bg-white/[0.01]",
               "border-b border-black/[0.06] dark:border-white/[0.1]",
-              "last:border-b-0",
               "hover:bg-[#a8d63e]/[0.08] dark:hover:bg-[#a8d63e]/[0.04]",
             ].join(' ')}
             onClick={() => navigate(`/product-details/${product.id}`)}

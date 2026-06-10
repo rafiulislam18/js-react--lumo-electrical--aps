@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { ProductListColumn } from "@/components/ProductListColumn";
-import { Loader, ArrowRight, Zap, Shield, Truck, Wrench } from "lucide-react";
+import { Loader, ArrowRight, ArrowUpRight, Zap, Shield, Truck, Wrench, Package } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
@@ -74,23 +74,6 @@ const transformProduct = (product: Product) => ({
   inStock: product.in_stock,
 });
 
-/* ── Scroll-triggered fade-in hook ── */
-function useReveal(threshold = 0.15) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(
-      ([e]) => { if (e.isIntersecting) { setVisible(true); obs.unobserve(el); } },
-      { threshold, rootMargin: '0px 0px -40px 0px' }
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, [threshold]);
-  return { ref, visible };
-}
-
 /* ── Animated counter ── */
 function AnimatedNumber({ target, suffix = '' }: { target: number; suffix?: string }) {
   const [count, setCount] = useState(0);
@@ -133,68 +116,92 @@ export default function Home() {
   const featuredCategories = homeData?.featured_categories || [];
   const faqsData      = homeData?.faqs || [];
 
-  const trustReveal  = useReveal(0.15);
-
-  /* reveal transition classes */
-  const revealBase = "opacity-0 translate-y-8 transition-[opacity,transform] duration-700 ease-out";
-  const revealVisible = "!opacity-100 !translate-y-0";
+  /* Concept's .pcard hover-lift: subtle raise + soft shadow, deeper shadow in dark mode */
+  const pcardBase =
+    "transition-[transform,box-shadow,border-color] duration-500 ease-[cubic-bezier(.22,1,.36,1)] " +
+    "hover:shadow-[0_16px_40px_rgba(20,22,15,.12)] dark:hover:shadow-[0_16px_40px_rgba(0,0,0,.5)]";
+  const pcard = `${pcardBase} hover:-translate-y-[5px]`;            // hero tiles
+  const pcardSubtle = `${pcardBase} hover:-translate-y-[2px]`;     // trust cards (gentler)
 
   return (
     <div className="font-outfit bg-white dark:bg-dark-elevated-900 text-[#f0f2ed]">
 
-      {/* ══ HERO ══ */}
-      <section
-        className="relative grid place-items-center overflow-hidden mt-[-111px]"
-        style={{ height: 'calc(100svh - 34px)', minHeight: '600px', maxHeight: '900px' }}
-      >
-        <img
-          src="/images/home/new-hero-bg.jpeg"
-          alt=""
-          className="absolute inset-0 w-full h-full object-cover animate-[zoomOut_14s_ease-out_forwards]"
-        />
+      {/* ══ HERO (BENTO GRID) ══ */}
+      <section className="bg-white dark:bg-dark-elevated-900 pt-6 sm:pt-8 pb-10 sm:pb-14">
+        <div className="max-w-[1280px] mx-auto px-4 sm:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-3 sm:gap-4">
 
-        {/* Light overlay */}
-        {/* <div className="absolute inset-0 dark:hidden"
-          style={{ background: 'linear-gradient(to right, rgba(250,250,248,.94) 0%, rgba(250,250,248,.65) 55%, rgba(250,250,248,.28) 100%), linear-gradient(to top, rgba(250,250,248,.85) 0%, transparent 50%)' }}
-        /> */}
-        {/* Light mode overlay */}
-        <div className="absolute inset-0 dark:hidden"
-          style={{ background: 'linear-gradient(to right, rgba(4,8,4,.82) 0%, rgba(4,8,4,.5) 55%, rgba(4,8,4,.18) 100%), linear-gradient(to top, rgba(4,8,4,.7) 0%, transparent 50%)' }}
-        />
-        {/* Dark mode overlay */}
-        <div className="absolute inset-0 hidden dark:block"
-          style={{ background: 'linear-gradient(to right, rgba(4,8,4,.92) 0%, rgba(4,8,4,.6) 55%, rgba(4,8,4,.25) 100%), linear-gradient(to top, rgba(4,8,4,.8) 0%, transparent 50%)' }}
-        />
-
-        <div className="relative z-[2] max-w-[1280px] w-full mx-auto mt-[9vh] pt-20 sm:pt-0 px-4 sm:px-8 animate-[riseIn_.9s_cubic-bezier(.22,1,.36,1)_both]">
-          {/* Hero tag */}
-          <div className="inline-flex items-center gap-[.4rem] sm:gap-[.45rem] text-[.62rem] sm:text-[.72rem] font-semibold tracking-[.14em] sm:tracking-[.18em] uppercase border px-[.65rem] sm:px-[.85rem] py-[.25rem] sm:py-[.3rem] rounded-[4px] mb-[1.2rem] sm:mb-[1.6rem] backdrop-blur-[4px] text-[#a8d63e] border-[rgba(168,214,62,.35)] bg-[rgba(168,214,62,.05)] max-w-full">
-            <Zap size={10} className="shrink-0" />
-            <span className="truncate">Cape Town's Premier Electrical Supplier</span>
-          </div>
-
-          <h1 className="font-bebas text-[clamp(3rem,11vw,8.5rem)] leading-[.95] tracking-[.01em] text-white mb-[1.2rem] sm:mb-[1.5rem]">
-            Wire It.<br />
-            <em className="not-italic [WebkitTextFillColor:transparent] [-webkit-text-fill-color:transparent] [-webkit-text-stroke:2px_#a8d63e] dark:[-webkit-text-stroke-color:2px_#a8d63e]">Right.</em>
-          </h1>
-
-          <p className="text-[.9rem] sm:text-[1.05rem] leading-[1.65] sm:leading-[1.75] font-light text-[rgba(240,242,237,.6)] max-w-[480px] mb-[1.8rem] sm:mb-[2.5rem]">
-            Premium electrical components, tools and solutions trusted by professionals and builders across Cape Town, South Africa.
-          </p>
-
-          <div className="flex flex-wrap gap-3 sm:gap-4 items-center">
-            <button
-              className="inline-flex items-center justify-center gap-[.5rem] sm:gap-[.6rem] font-outfit font-bold text-[.78rem] sm:text-[.9rem] tracking-[.04em] uppercase px-[1.4rem] sm:px-[2.2rem] py-[.7rem] sm:py-[.9rem] rounded-[4px] border-0 cursor-pointer bg-gradient-to-r from-[#3aaa49] to-[#a8d63e] text-white dark:text-[#0a0c0a] shadow-[0_0_32px_rgba(58,170,73,.28)] dark:shadow-[0_0_32px_rgba(168,214,62,.28)] no-underline transition-[box-shadow,transform] duration-300 hover:shadow-[0_0_48px_rgba(58,170,73,.45)] hover:-translate-y-0.5 dark:hover:shadow-[0_0_48px_rgba(168,214,62,.45)]"
-              onClick={() => document.getElementById('categories-section')?.scrollIntoView({ behavior: 'smooth' })}
+            {/* Headline tile */}
+            <div
+              className={`${pcard} group rounded-[24px] lg:col-span-2 lg:row-span-2 p-7 sm:p-10 flex flex-col justify-between relative overflow-hidden animate-[hero-rise_.6s_cubic-bezier(.22,1,.36,1)_both]`}
+              style={{ background: 'linear-gradient(150deg,#399746,#a8d63e)', minHeight: '340px' }}
             >
-              <Zap size={14} /> Shop Now
-            </button>
-            <a
-              href="/contact-us"
-              className="inline-flex items-center justify-center gap-[.5rem] sm:gap-[.6rem] font-outfit font-semibold text-[.78rem] sm:text-[.9rem] tracking-[.04em] uppercase px-[1.4rem] sm:px-[2.2rem] py-[.7rem] sm:py-[.9rem] rounded-[4px] cursor-pointer bg-white dark:bg-[#0a0c0a] border border-white/[0.1] text-[rgba(26,26,26,.9)] dark:text-[rgba(240,242,237,.85)] hover:text-[rgba(240,242,237,.85)] no-underline transition-[border-color,background] duration-300 hover:border-[rgba(58,170,73,.7)] hover:bg-[rgba(58,170,73,.08)] dark:hover:border-[rgba(168,214,62,.6)] dark:hover:bg-[rgba(168,214,62,.06)]"
-            >
-              Get a Quote
-            </a>
+              <div className="pointer-events-none absolute -right-16 -bottom-16 w-72 h-72 rounded-full bg-white/[.14] transition-transform duration-500 ease-[cubic-bezier(.22,1,.36,1)] group-hover:scale-125" />
+              <div className="relative">
+                <div className="inline-flex items-center gap-2 text-[.72rem] font-semibold tracking-wide px-3 py-1.5 rounded-full mb-6 bg-[rgba(10,12,8,.16)] text-[#0a0c08]">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#0a0c08]" /> Cape Town's Premier Electrical Supplier
+                </div>
+                <h1 className="font-bebas leading-[.92] tracking-[.01em] text-[#0a0c08] text-[clamp(2.6rem,6vw,4.6rem)]">
+                  Everything electrical, in one place.
+                </h1>
+              </div>
+              <div className="relative mt-8">
+                <p className="text-[.96rem] leading-relaxed max-w-[420px] mb-6 text-[rgba(10,12,8,.72)]">
+                  Breakers, cable, lighting and solar — professional-grade gear for trade and home, dispatched same week.
+                </p>
+                <div className="flex flex-wrap gap-3">
+                  <button
+                    onClick={() => document.getElementById('categories-section')?.scrollIntoView({ behavior: 'smooth' })}
+                    className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full text-[.88rem] font-bold text-white bg-[#14160f] border-0 cursor-pointer transition-transform duration-300 hover:-translate-y-0.5"
+                  >
+                    <Zap size={16} /> Shop now
+                  </button>
+                  <a
+                    href="/contact-us"
+                    className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full text-[.88rem] font-bold bg-white/[.85] text-[#14160f] no-underline transition-transform duration-300 hover:-translate-y-0.5"
+                  >
+                    Get a quote
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            {/* Image tile */}
+            <div className={`${pcard} group rounded-[24px] lg:col-span-2 relative overflow-hidden animate-[hero-rise_.6s_cubic-bezier(.22,1,.36,1)_.08s_both]`} style={{ minHeight: '200px' }}>
+              <img src="/images/home/new-hero-bg.jpeg" alt="Lumo Electrical" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-[cubic-bezier(.22,1,.36,1)] group-hover:scale-105" />
+              <div className="absolute inset-0" style={{ background: 'linear-gradient(to right,rgba(8,11,8,.7),transparent 70%)' }} />
+              <div className="absolute left-6 top-6">
+                <div className="font-bebas text-white leading-none text-[2.4rem]">SANS<br />certified</div>
+                <div className="text-[.8rem] mt-2 text-white/70">Quality you can wire with confidence</div>
+              </div>
+            </div>
+
+            {/* Stat tile — products in stock (inverted "ink" tile: dark in light mode, light in dark mode) */}
+            <div className={`${pcard} group rounded-[24px] p-6 flex flex-col justify-between bg-[#14160f] dark:bg-[#f1f3ea] animate-[hero-rise_.6s_cubic-bezier(.22,1,.36,1)_.16s_both]`} style={{ minHeight: '150px' }}>
+              <span className="relative grid place-items-center w-11 h-11 -m-[10px]">
+                <span className="absolute inset-0 rounded-full bg-[#a8d63e]/25 scale-0 transition-transform duration-500 ease-[cubic-bezier(.22,1,.36,1)] group-hover:scale-100" />
+                <Package size={24} className="relative text-[#a8d63e] dark:text-[#34883f]" />
+              </span>
+              <div>
+                <div className="font-bebas leading-none text-[2.6rem] text-white dark:text-[#14160f]">
+                  <AnimatedNumber target={5000} />
+                  <span className="text-[#a8d63e] dark:text-[#34883f]">+</span>
+                </div>
+                <div className="text-[.78rem] mt-1.5 text-white/65 dark:text-[rgba(20,22,15,.6)]">products in stock</div>
+              </div>
+            </div>
+
+            {/* Free delivery tile (surface tile) */}
+            <div className={`${pcard} group rounded-[24px] p-6 flex flex-col justify-between bg-white dark:bg-dark-elevated-800 border border-[rgba(26,26,26,.1)] dark:border-white/10 animate-[hero-rise_.6s_cubic-bezier(.22,1,.36,1)_.24s_both]`} style={{ minHeight: '150px' }}>
+              <span className="relative grid place-items-center w-11 h-11 -m-[10px]">
+                <span className="absolute inset-0 rounded-full bg-[#3aaa49]/15 dark:bg-[#a8d63e]/20 scale-0 transition-transform duration-500 ease-[cubic-bezier(.22,1,.36,1)] group-hover:scale-100" />
+                <Truck size={24} className="relative text-[#34883f] dark:text-[#a8d63e]" />
+              </span>
+              <div>
+                <div className="font-bebas leading-none text-[2.6rem] text-[#14160f] dark:text-[#f1f3ea]">Free</div>
+                <div className="text-[.78rem] mt-1.5 text-[rgba(20,22,15,.6)] dark:text-[rgba(241,243,234,.6)]">delivery across Cape Town</div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -212,62 +219,47 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ══ TRUST BAR (simple) ══ */}
-      <div className="bg-white dark:bg-dark-elevated-900 border-t border-b border-[rgba(26,26,26,.1)] dark:border-[rgba(255,255,255,.06)]">
-        <div className="max-w-[1280px] mx-auto px-8">
-          <div className="grid grid-cols-4 max-[1024px]:grid-cols-2 max-[480px]:grid-cols-1">
+      {/* ══ TRUST BAR (cards) ══ */}
+      <div className="bg-white dark:bg-dark-elevated-900">
+        <div className="max-w-[1280px] mx-auto px-4 sm:px-8 py-14">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             {[
-              { icon: Truck,   title: '100% Free Delivery',  desc: 'For orders of at least R1000 in Cape Town' },
-              { icon: Shield,  title: 'Quality Guaranteed',  desc: 'All products meet SA standards'  },
-              { icon: Zap,     title: '5000+ Products',      desc: 'Largest local electrical range'  },
-              { icon: Wrench,  title: 'Trade Accounts',      desc: 'Exclusive pricing for the trade'  },
-            ].map(({ icon: Icon, title, desc }, idx) => (
-              <div
-                key={title}
-                className={`group flex flex-col items-center text-center py-8 px-4 gap-3 border-r border-[rgba(26,26,26,.1)] dark:border-[rgba(255,255,255,.06)] max-[480px]:py-6 max-[480px]:px-4 max-[480px]:border-r-0 ${idx === 3 ? ' border-r-0' : ''} ${idx === 1 ? 'max-[1024px]:border-r-0' : ''}`}
-              >
-                <div className="w-12 h-12 rounded-[8px] bg-[rgba(58,170,73,.1)] border border-[rgba(58,170,73,.25)] dark:bg-[rgba(168,214,62,.1)] dark:border-[rgba(168,214,62,.2)] grid place-items-center text-[#3aaa49] dark:text-[#a8d63e] transition-all duration-300 group-hover:bg-gradient-to-br group-hover:from-[#3aaa49] group-hover:to-[#a8d63e] group-hover:border-transparent group-hover:text-white dark:group-hover:text-[#0a0c0a] group-hover:shadow-[0_4px_20px_rgba(58,170,73,.35)] dark:group-hover:shadow-[0_4px_20px_rgba(168,214,62,.25)]">
-                  <Icon size={20} />
+              { icon: Truck,  title: '100% Free Delivery', desc: 'For orders of at least R1000 in Cape Town' },
+              { icon: Shield, title: 'Quality Guaranteed', desc: 'All products meet SA SANS standards' },
+              { icon: Zap,    title: '5000+ Products',     desc: 'Largest local electrical range' },
+              { icon: Wrench, title: 'Trade Accounts',     desc: 'Exclusive pricing for the trade' },
+            ].map(({ icon: Icon, title, desc }, i) => {
+              const inverted = i === 0;
+              return (
+                <div
+                  key={title}
+                  className={`${pcardSubtle} group rounded-[24px] p-6 border ${
+                    inverted
+                      ? 'bg-[#14160f] dark:bg-[#f1f3ea] border-transparent'
+                      : 'bg-white dark:bg-dark-elevated-800 border-[rgba(26,26,26,.1)] dark:border-white/10'
+                  }`}
+                >
+                  <div
+                    className={`w-11 h-11 rounded-xl grid place-items-center mb-4 transition-[background-color,color] duration-500 ease-[cubic-bezier(.22,1,.36,1)] group-hover:bg-primary-gradient group-hover:text-white ${
+                      inverted
+                        ? 'bg-[rgba(168,214,62,.16)] dark:bg-[rgba(52,136,63,.12)] text-[#a8d63e] dark:text-[#34883f]'
+                        : 'bg-[#e4e6dd] dark:bg-white/5 text-[#3aaa49] dark:text-[#a8d63e]'
+                    }`}
+                  >
+                    <Icon size={20} />
+                  </div>
+                  <div className={`font-bold text-[.96rem] mb-1 ${inverted ? 'text-white dark:text-[#14160f]' : 'text-[#1a1a1a] dark:text-[#f0f2ed]'}`}>
+                    {title}
+                  </div>
+                  <div className={`text-[.82rem] leading-relaxed ${inverted ? 'text-white/60 dark:text-[rgba(20,22,15,.6)]' : 'text-[rgba(26,26,26,.6)] dark:text-white/60'}`}>
+                    {desc}
+                  </div>
                 </div>
-                <span className="font-bold text-[.95rem] text-[#1a1a1a] dark:text-[#f0f2ed]">{title}</span>
-                <span className="text-[.78rem] text-[rgba(26,26,26,.5)] dark:text-[rgba(240,242,237,.4)] font-light">{desc}</span>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>
-      
-      {/* ══ TRUST BAR (animated) ══ */}
-      {/* <div
-        ref={trustReveal.ref}
-        className={`bg-gradient-to-b from-gray-50 to-white dark:from-dark-elevated-900 border-t border-b border-[rgba(0,0,0,.05)] dark:border-[rgba(255,255,255,.04)] ${revealBase} ${trustReveal.visible ? revealVisible : ''}`}
-      >
-        <div className="max-w-[1320px] mx-auto px-8">
-          <div className="grid grid-cols-4 gap-6 py-14 max-[768px]:grid-cols-2 max-[480px]:grid-cols-1">
-            {[
-              { icon: Truck,   num: 100,  suffix: '%', title: 'Free Delivery',     desc: 'Free shipping across Cape Town metro area' },
-              { icon: Shield,  num: 100,  suffix: '%', title: 'Quality Guaranteed', desc: 'All products meet SA SANS standards' },
-              { icon: Zap,     num: 5000, suffix: '+', title: 'Products in Stock',  desc: 'Largest electrical range in the Cape' },
-              { icon: Wrench,  num: 10,   suffix: '+', title: 'Years Trusted',      desc: 'Exclusive trade pricing for professionals' },
-            ].map(({ icon: Icon, num, suffix, title, desc }, i) => (
-              <div
-                key={title}
-                className={`relative flex flex-col items-center text-center p-8 rounded-2xl bg-[rgba(255,255,255,.7)] dark:bg-[rgba(255,255,255,.03)] backdrop-blur-[12px] border border-[rgba(0,0,0,.06)] dark:border-[rgba(255,255,255,.06)] transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(0,0,0,.06)] hover:border-[rgba(58,170,73,.2)] dark:hover:shadow-[0_12px_40px_rgba(0,0,0,.3)] dark:hover:border-[rgba(168,214,62,.15)] group ${revealBase} ${trustReveal.visible ? revealVisible : ''}`}
-                style={{ transitionDelay: `${i * 0.1}s` }}
-              >
-                <div className="w-[52px] h-[52px] rounded-[14px] grid place-items-center bg-[linear-gradient(135deg,rgba(58,170,73,.1),rgba(168,214,62,.1))] border border-[rgba(58,170,73,.15)] dark:border-[rgba(168,214,62,.15)] text-green-brand dark:text-lime-brand mb-5 transition-all duration-300 group-hover:bg-[linear-gradient(135deg,#3aaa49,#a8d63e)] group-hover:text-white dark:group-hover:text-[#0a0c0a] group-hover:border-transparent group-hover:shadow-[0_4px_20px_rgba(58,170,73,.25)]">
-                  <Icon size={22} />
-                </div>
-                <div className="font-bebas text-[2rem] text-[#1a1a1a] dark:text-[#f0f2ed] leading-none mb-1">
-                  <AnimatedNumber target={num} suffix={suffix} />
-                </div>
-                <span className="font-bold text-[0.88rem] text-[#1a1a1a] dark:text-[#f0f2ed] mb-1">{title}</span>
-                <span className="text-[0.78rem] text-[rgba(26,26,26,.45)] dark:text-[rgba(240,242,237,.4)] font-light leading-[1.6]">{desc}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div> */}
 
       {/* ══ CATEGORIES ══ */}
       <div
@@ -360,8 +352,8 @@ export default function Home() {
                 { title: 'Best Sellers', products: bestSellers,      link: '/products?q=best-sellers' },
                 { title: 'New Arrivals', products: newArrivals,      link: '/products?q=new-arrivals' },
               ].map(col => (
-                <div key={col.title} className="p-10 max-[1024px]:p-8 max-[480px]:p-4">
-                  <div className="flex items-center justify-between pb-[1.2rem] mb-[1.75rem] border-b border-[rgba(26,26,26,.1)] dark:border-white/[0.1]">
+                <div key={col.title} className="p-10 font-semibold max-[1024px]:p-8 max-[480px]:p-4">
+                  <div className="flex items-center justify-between pb-[1.2rem] mb-[1.75rem] border-b-2 border-[rgba(26,26,26,.8)] dark:border-white/[0.8]">
                     <span className="font-bebas text-[1.4rem] max-[480px]:text-[1rem] text-[#1a1a1a] dark:text-[#f0f2ed] tracking-[.04em]">{col.title}</span>
                     <a
                       href={col.link}
