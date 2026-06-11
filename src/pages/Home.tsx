@@ -284,32 +284,32 @@ export default function Home() {
             </a> */}
           </div>
 
-          {/* Grid — Voltage concept: squared cards, hairline dividers, image zoom + lime underline on hover */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-px bg-[rgba(26,26,26,.1)] dark:bg-white/10">
+          {/* Grid — Voltage card (image zoom + lime underline), rounded to match the page's tiles */}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
             {featuredCategories.map((cat: Category) => {
               const img = cat.image ? getImageUrl(cat.image) : null;
               return (
                 <a
                   key={cat.id}
                   href={`/${cat.slug}`}
-                  className="group relative block aspect-[5/4] overflow-hidden bg-[#141814] no-underline rounded-2x"
+                  className={`${pcardSubtle} group relative block aspect-[5/4] overflow-hidden rounded-[24px] bg-[#141814] no-underline`}
                 >
                   {img && (
                     <img
                       src={img}
                       alt={cat.name}
                       loading="lazy"
-                      className="absolute inset-0 w-full h-full object-cover [filter:grayscale(.3)_brightness(.62)] transition-transform duration-700 ease-[cubic-bezier(.22,1,.36,1)] group-hover:scale-110"
+                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-[cubic-bezier(.22,1,.36,1)] group-hover:scale-110"
                     />
                   )}
-                  <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(6,9,7,.9),transparent_70%)]" />
+                  <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(10,14,8,.9),rgba(10,14,8,.05)_65%)]" />
                   <div className="absolute bottom-0 left-0 right-0 p-4">
                     <div className="font-bold text-[.92rem] text-white leading-tight">{cat.name}</div>
                     <div className="inline-flex items-center gap-1 text-[.6rem] font-bold tracking-[.14em] uppercase mt-1 text-[#a8d63e]">
                       Shop <ArrowRight size={10} />
                     </div>
                   </div>
-                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#a8d63e] origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
+                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#a8d63e] origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300 rounded-b-[24px]" />
                 </a>
               );
             })}

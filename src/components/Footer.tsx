@@ -11,6 +11,13 @@ interface FooterProps {
   contactDetails: ContactDetails;
 }
 
+/* Build a wa.me link: digits only, country code, no leading "+" / "00" / separators */
+function whatsappHref(phone: string) {
+  let digits = phone.replace(/\D/g, '');
+  if (digits.startsWith('00')) digits = digits.slice(2);
+  return `https://wa.me/${digits}`;
+}
+
 export function Footer({ contactDetails }: FooterProps) {
   const year = new Date().getFullYear();
 
@@ -63,7 +70,7 @@ export function Footer({ contactDetails }: FooterProps) {
             <p className="text-[0.88rem] leading-[1.8] font-light max-w-[280px] mb-7 text-[#f0f2ed]/60">
               Premium electrical components, tools and solutions trusted by professionals and DIY enthusiasts across Cape Town, South Africa.
             </p>
-            <div className="flex gap-[0.6rem]">
+            {/* <div className="flex gap-[0.6rem]">
               {[
                 { icon: <Facebook size={15} />, href: '#' },
                 { icon: <Instagram size={15} />, href: '#' },
@@ -77,7 +84,7 @@ export function Footer({ contactDetails }: FooterProps) {
                   {s.icon}
                 </a>
               ))}
-            </div>
+            </div> */}
           </div>
 
           {/* Quick Links */}
@@ -133,21 +140,41 @@ export function Footer({ contactDetails }: FooterProps) {
             <div className="font-bebas text-[1.1rem] tracking-[0.08em] text-[#f0f2ed] mb-5">Contact Info</div>
             {[
               { icon: <MapPin size={14} />, text: contactDetails.address, wrap: true },
-              { icon: <Phone size={14} />,  text: contactDetails.phone },
-              { icon: <Mail size={14} />,   text: contactDetails.email },
-            ].map((item, i) => (
-              <div key={i} className="flex items-start gap-[0.85rem] mb-[1.1rem]">
+              { icon: <Phone size={14} />,  text: contactDetails.phone, href: whatsappHref(contactDetails.phone), external: true },
+              { icon: <Mail size={14} />,   text: contactDetails.email, href: `mailto:${contactDetails.email}` },
+            ].map((item, i) => {
+              const iconBox = (
                 <div className="w-8 h-8 rounded-md flex-shrink-0 bg-[#a8d63e]/10 border border-[#a8d63e]/15 grid place-items-center text-[#a8d63e]">
                   {item.icon}
                 </div>
-                <div
-                  className="text-[0.85rem] leading-[1.6] font-light text-[#f0f2ed]/50"
-                  style={item.wrap ? { whiteSpace: 'pre-wrap' } : undefined}
-                >
-                  {item.text}
+              );
+              if (item.href) {
+                return (
+                  <a
+                    key={i}
+                    href={item.href}
+                    {...(item.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                    className="group flex items-start gap-[0.85rem] mb-[1.1rem] no-underline"
+                  >
+                    {iconBox}
+                    <div className="text-[0.85rem] leading-[1.6] font-light text-[#f0f2ed]/50 transition-colors duration-200 group-hover:text-[#a8d63e] break-all">
+                      {item.text}
+                    </div>
+                  </a>
+                );
+              }
+              return (
+                <div key={i} className="flex items-start gap-[0.85rem] mb-[1.1rem]">
+                  {iconBox}
+                  <div
+                    className="text-[0.85rem] leading-[1.6] font-light text-[#f0f2ed]/50"
+                    style={item.wrap ? { whiteSpace: 'pre-wrap' } : undefined}
+                  >
+                    {item.text}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
         </div>
