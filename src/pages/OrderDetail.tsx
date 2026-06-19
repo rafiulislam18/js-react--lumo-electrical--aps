@@ -95,7 +95,7 @@ export default function OrderDetail() {
     switch (status) {
       case "order_placed":
         return <ShoppingBag className="w-5 h-5" />;
-      case "out_for_delivery":
+      case "assigned_courier":
         return <Truck className="w-5 h-5" />;
       case "delivered":
         return <CheckCircle className="w-5 h-5" />;
@@ -108,8 +108,8 @@ export default function OrderDetail() {
     switch (status) {
       case "order_placed":
         return "Order Placed";
-      case "out_for_delivery":
-        return "Out for Delivery";
+      case "assigned_courier":
+        return "Courier Assigned";
       case "delivered":
         return "Delivered";
       default:
@@ -213,7 +213,7 @@ export default function OrderDetail() {
                     <div className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-[.85rem] border ${
                       order.status === 'delivered'
                         ? 'bg-green-brand/[.1] dark:bg-green-brand/[.15] text-green-700 dark:text-green-300 border-green-brand/20'
-                        : order.status === 'out_for_delivery'
+                        : order.status === 'assigned_courier'
                         ? 'bg-orange-500/[.1] dark:bg-orange-500/[.15] text-orange-700 dark:text-orange-300 border-orange-500/20'
                         : 'bg-blue-500/[.1] dark:bg-blue-500/[.15] text-blue-700 dark:text-blue-300 border-blue-500/20'
                     }`}>
