@@ -266,10 +266,10 @@ export default function Checkout() {
 
   if (initialLoading) {
     return (
-      <div className="font-outfit bg-white dark:bg-dark-surface min-h-screen flex items-center justify-center">
+      <div className="font-outfit bg-white dark:bg-[#0a0c0a] min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <Loader className="w-8 h-8 text-lime-brand animate-spin mx-auto mb-3" />
-          <p className="text-[.9rem] text-black/60 dark:text-[rgba(240,242,237,.6)]">Loading checkout data...</p>
+          <Loader className="w-8 h-8 text-[#2f8b3d] dark:text-[#a8d63e] animate-spin mx-auto mb-3" />
+          <p className="text-[.9rem] text-[rgba(22,25,26,.6)] dark:text-[rgba(241,243,234,.6)]">Loading checkout data...</p>
         </div>
       </div>
     );
@@ -277,12 +277,15 @@ export default function Checkout() {
 
   if (items.length === 0) {
     return (
-      <div className="font-outfit bg-white dark:bg-dark-surface min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-black/60 dark:text-[rgba(240,242,237,.6)] mb-4 text-[.9rem]">Your cart is empty</p>
+      <div className="font-outfit bg-white dark:bg-[#0a0c0a] min-h-screen flex items-center justify-center px-4">
+        <div className="bg-white dark:bg-[#141914] border border-[rgba(22,25,26,.1)] dark:border-white/10 rounded-[24px] p-10 sm:p-12 text-center max-w-md w-full">
+          <h2 className="font-bebas text-[2rem] tracking-[.04em] text-[#16191a] dark:text-[#f1f3ea] mb-2">Your cart is empty</h2>
+          <p className="text-[rgba(22,25,26,.6)] dark:text-[rgba(241,243,234,.6)] mb-6 text-[.9rem]">
+            Looks like you haven't added anything yet. Browse our range and find what you need.
+          </p>
           <button
             onClick={() => navigate("/products")}
-            className="bg-gradient-to-br from-green-brand to-lime-brand text-white dark:text-dark-surface font-semibold py-2 px-6 rounded-lg transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)]"
+            className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-[#399746] to-[#a8d63e] text-white dark:text-[#0a0c0a] font-semibold py-[.7rem] px-7 rounded-[10px] transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)]"
           >
             Continue Shopping
           </button>
@@ -291,22 +294,29 @@ export default function Checkout() {
     );
   }
 
-  const inputCls = "w-full px-4 py-3 text-[.85rem] bg-white dark:bg-black/[.05] border border-black/[.1] dark:border-white/[.08] rounded-lg text-black/80 dark:text-[rgba(240,242,237,.8)] placeholder-black/40 dark:placeholder-[rgba(240,242,237,.4)] focus:outline-none focus:border-lime-brand/30 focus:bg-lime-brand/[.05] transition-all duration-150";
-  const labelCls = "block text-[.8rem] font-medium text-black/70 dark:text-[rgba(240,242,237,.7)] mb-2";
+  const inputCls = "w-full px-[.9rem] py-[.7rem] text-[.85rem] bg-white dark:bg-[#141914] border border-[rgba(22,25,26,.1)] dark:border-white/10 rounded-[10px] text-[#16191a] dark:text-[#f1f3ea] placeholder-[rgba(22,25,26,.42)] dark:placeholder-[rgba(241,243,234,.42)] outline-none focus:border-[rgba(57,151,70,.4)] transition-colors";
+  const lockedCls = "w-full px-[.9rem] py-[.7rem] text-[.85rem] bg-[#f7f6f1] dark:bg-[#171c16] border border-[rgba(22,25,26,.1)] dark:border-white/10 rounded-[10px] text-[#16191a] dark:text-[#f1f3ea] opacity-70 cursor-not-allowed flex items-center";
+  const labelCls = "block text-[.8rem] font-medium text-[rgba(22,25,26,.6)] dark:text-[rgba(241,243,234,.6)] mb-2";
+  const reqCls = "text-[#d94646]";
 
   return (
-    <div className="font-outfit bg-white dark:bg-dark-surface min-h-screen">
-      <div className="max-w-[1280px] mx-auto px-4 py-8">
-        <h1 className="font-bebas text-[2.5rem] tracking-[.08em] text-black/85 dark:text-[#f0f2ed] mb-8">Checkout</h1>
+    <div className="font-outfit bg-[#f6f5f0]/[.86] dark:bg-[#0a0c0a] min-h-screen">
+      <div className="max-w-[1280px] mx-auto px-4 sm:px-8 py-10">
+        <div className="mb-8">
+          <div className="inline-flex items-center gap-2 text-[.68rem] font-bold tracking-[.2em] uppercase text-[#2f8b3d] dark:text-[#a8d63e] mb-3 before:content-[''] before:w-6 before:h-0.5 before:bg-[#2f8b3d] dark:before:bg-[#a8d63e] before:rounded-sm before:shrink-0">
+            Almost there
+          </div>
+          <h1 className="font-bebas leading-[.9] tracking-[.04em] text-[#16191a] dark:text-[#f1f3ea] text-[clamp(2.4rem,6vw,4rem)]">Checkout</h1>
+        </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 items-start">
           {/* Main Content */}
           <div className="lg:col-span-2">
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Shipping Information */}
-              <div className="bg-white dark:bg-black/[.02] rounded-lg border border-black/[.08] dark:border-white/[.06] p-6">
-                <h2 className="text-lg font-semibold text-black/85 dark:text-[#f0f2ed] mb-6 flex items-center gap-2">
-                  <Truck className="w-5 h-5" />
+              <div className="bg-white dark:bg-[#141914] border border-[rgba(22,25,26,.1)] dark:border-white/10 rounded-[24px] p-6 sm:p-8">
+                <h2 className="text-[1.05rem] font-semibold text-[#16191a] dark:text-[#f1f3ea] mb-6 flex items-center gap-2">
+                  <Truck className="w-5 h-5 text-[#2f8b3d] dark:text-[#a8d63e]" />
                   Shipping Information
                 </h2>
 
@@ -315,7 +325,7 @@ export default function Checkout() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label htmlFor="firstName" className={labelCls}>
-                        First Name <span className="text-red-500">*</span>
+                        First Name <span className={reqCls}>*</span>
                       </label>
                       <input
                         id="firstName"
@@ -328,7 +338,7 @@ export default function Checkout() {
                     </div>
                     <div>
                       <label htmlFor="lastName" className={labelCls}>
-                        Last Name <span className="text-red-500">*</span>
+                        Last Name <span className={reqCls}>*</span>
                       </label>
                       <input
                         id="lastName"
@@ -345,7 +355,7 @@ export default function Checkout() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label htmlFor="email" className={labelCls}>
-                        Email <span className="text-red-500">*</span>
+                        Email <span className={reqCls}>*</span>
                       </label>
                       <input
                         id="email"
@@ -359,7 +369,7 @@ export default function Checkout() {
                     </div>
                     <div>
                       <label htmlFor="phone" className={labelCls}>
-                        Phone <span className="text-red-500">*</span>
+                        Phone <span className={reqCls}>*</span>
                       </label>
                       <input
                         id="phone"
@@ -375,7 +385,7 @@ export default function Checkout() {
                   {/* Address */}
                   <div>
                     <label htmlFor="address" className={labelCls}>
-                      Street Address <span className="text-red-500">*</span>
+                      Street Address <span className={reqCls}>*</span>
                     </label>
                     <input
                       id="address"
@@ -391,7 +401,7 @@ export default function Checkout() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label htmlFor="city" className={labelCls}>
-                        City <span className="text-red-500">*</span>
+                        City <span className={reqCls}>*</span>
                       </label>
                       <input
                         id="city"
@@ -404,7 +414,7 @@ export default function Checkout() {
                     </div>
                     <div>
                       <label htmlFor="state" className={labelCls}>
-                        Province <span className="text-red-500">*</span>
+                        Province <span className={reqCls}>*</span>
                       </label>
                       <select
                         id="state"
@@ -426,7 +436,7 @@ export default function Checkout() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label htmlFor="zipCode" className={labelCls}>
-                        Postal Code <span className="text-red-500">*</span>
+                        Postal Code <span className={reqCls}>*</span>
                       </label>
                       <input
                         id="zipCode"
@@ -441,10 +451,7 @@ export default function Checkout() {
                       <label htmlFor="country" className={labelCls}>
                         Country
                       </label>
-                      <div
-                        id="country"
-                        className={`${inputCls} bg-gray-100 dark:bg-white/[.05] cursor-not-allowed flex items-center`}
-                      >
+                      <div id="country" className={lockedCls}>
                         South Africa
                       </div>
                     </div>
@@ -472,29 +479,31 @@ export default function Checkout() {
 
           {/* Order Summary Sidebar */}
           <div className="lg:col-span-1">
-            <div className="bg-white dark:bg-black/[.02] rounded-lg border border-black/[.08] dark:border-white/[.06] p-6 sticky top-8">
-              <h2 className="text-lg font-semibold text-black/85 dark:text-[#f0f2ed] mb-6">Order Summary</h2>
+            <div className="bg-white dark:bg-[#141914] border border-[rgba(22,25,26,.1)] dark:border-white/10 rounded-[24px] p-6 lg:sticky lg:top-[96px]">
+              <h2 className="text-[1.05rem] font-semibold text-[#16191a] dark:text-[#f1f3ea] mb-5">Order Summary</h2>
 
               {/* Items List */}
-              <div className="space-y-3 mb-6 max-h-72 overflow-y-auto">
+              <div className="space-y-3 mb-5 max-h-72 overflow-y-auto pr-1">
                 {items.map((item) => (
                   <div
                     key={item.id}
-                    className="flex gap-3 pb-3 border-b border-black/[.08] dark:border-white/[.06] last:border-0"
+                    className="flex gap-3 pb-3 border-b border-[rgba(22,25,26,.07)] dark:border-white/[.06] last:border-0"
                   >
                     {item.image && (
                       <img
                         src={item.image}
                         alt={item.product_name}
-                        className="w-14 h-14 object-cover rounded-lg"
+                        className="w-14 h-14 object-cover rounded-[10px]"
                       />
                     )}
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-medium text-black/85 dark:text-[#f0f2ed] line-clamp-2 text-[.85rem]">
+                      <h3 className="font-medium text-[.84rem] leading-snug text-[#16191a] dark:text-[#f1f3ea] line-clamp-2">
                         {item.product_name}
                       </h3>
-                      <p className="font-semibold text-black/85 dark:text-[#f0f2ed] text-[.8rem] mt-1">
-                        R{item.price} <span className="font-normal text-black/60 dark:text-[rgba(240,242,237,.6)]">x {item.quantity}</span> = <span className="text-green-deep dark:text-lime-brand">R{item.subtotal.toFixed(2)}</span>
+                      <p className="text-[.8rem] mt-1">
+                        <span className="font-semibold text-[#16191a] dark:text-[#f1f3ea]">R{item.price}</span>{" "}
+                        <span className="text-[rgba(22,25,26,.6)] dark:text-[rgba(241,243,234,.6)]">x {item.quantity}</span> ={" "}
+                        <span className="font-semibold text-[#2f8b3d] dark:text-[#a8d63e]">R{item.subtotal.toFixed(2)}</span>
                       </p>
                     </div>
                   </div>
@@ -502,31 +511,31 @@ export default function Checkout() {
               </div>
 
               {/* Pricing Summary */}
-              <div className="space-y-2 border-t border-black/[.08] dark:border-white/[.06] pt-4 text-[.85rem]">
-                <div className="flex justify-between text-black/60 dark:text-[rgba(240,242,237,.6)]">
+              <div className="space-y-2 border-t border-[rgba(22,25,26,.07)] dark:border-white/[.06] pt-4 text-[.85rem]">
+                <div className="flex justify-between text-[rgba(22,25,26,.6)] dark:text-[rgba(241,243,234,.6)]">
                   <span>Subtotal</span>
                   <span>R{pricing.subtotal.toFixed(2)}</span>
                 </div>
-                <div className="flex justify-between text-black/60 dark:text-[rgba(240,242,237,.6)]">
+                <div className="flex justify-between text-[rgba(22,25,26,.6)] dark:text-[rgba(241,243,234,.6)]">
                   <span>Tax (10%)</span>
                   <span>R{pricing.tax.toFixed(2)}</span>
                 </div>
-                <div className="flex justify-between text-black/60 dark:text-[rgba(240,242,237,.6)]">
+                <div className="flex justify-between text-[rgba(22,25,26,.6)] dark:text-[rgba(241,243,234,.6)]">
                   <span>Shipping</span>
-                  <span className={pricing.shipping === 0 ? "text-lime-brand font-semibold" : ""}>
+                  <span className={pricing.shipping === 0 ? "text-[#2f8b3d] dark:text-[#a8d63e] font-semibold" : ""}>
                     {pricing.shipping === 0 ? "Free" : `R${pricing.shipping.toFixed(2)}`}
                   </span>
                 </div>
 
                 {pricing.shipping === 0 && (
-                  <p className="text-[.75rem] text-lime-brand font-medium mt-1">
+                  <p className="text-[.75rem] text-[#2f8b3d] dark:text-[#a8d63e] font-medium">
                     You've qualified for free shipping!
                   </p>
                 )}
 
-                <div className="border-t border-black/[.08] dark:border-white/[.06] pt-3 flex justify-between items-center">
-                  <span className="font-bold text-black/85 dark:text-[#f0f2ed]">Total</span>
-                  <span className="font-bold text-green-deep dark:text-lime-brand text-lg">
+                <div className="border-t border-[rgba(22,25,26,.07)] dark:border-white/[.06] pt-3 mt-1 flex justify-between items-center">
+                  <span className="font-bold text-[#16191a] dark:text-[#f1f3ea]">Total</span>
+                  <span className="font-bold text-[#2f8b3d] dark:text-[#a8d63e] text-[1.15rem]">
                     R{pricing.total.toFixed(2)}
                   </span>
                 </div>
@@ -537,7 +546,7 @@ export default function Checkout() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-gradient-to-br from-green-brand to-lime-brand text-white dark:text-dark-surface font-semibold py-3 rounded-lg transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="w-full bg-gradient-to-r from-[#399746] to-[#a8d63e] text-white dark:text-[#0a0c0a] font-semibold py-[.8rem] rounded-[10px] transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   {loading ? (
                     <>

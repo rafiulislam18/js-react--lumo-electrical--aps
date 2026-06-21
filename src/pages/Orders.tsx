@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Package, ArrowRight, CheckCircle, Truck, ShoppingBag, Calendar, DollarSign } from "lucide-react";
+import { Package, ArrowRight, CheckCircle, Truck, ShoppingBag, Calendar } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { apiGet } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
@@ -87,155 +87,128 @@ export default function Orders() {
     }
   };
 
-  return (
-    <div className="font-outfit bg-white dark:bg-dark-surface min-h-screen flex flex-col">
-      {/* Header Section with Background Image */}
-      <section className="relative bg-cover bg-center bg-no-repeat before:absolute before:inset-0 before:bg-lime-brand/[.02]">
-        <img
-          src="https://images.pexels.com/photos/34594827/pexels-photo-34594827.jpeg"
-          alt=""
-          className="absolute inset-0 w-full h-full object-cover animate-[zoomOut_14s_ease-out_forwards]"
-        />
-        {/* Light mode overlay */}
-        <div className="absolute inset-0 dark:hidden"
-          style={{ background: 'linear-gradient(to right, rgba(20,28,20,.85) 0%, rgba(20,28,20,.55) 55%, rgba(20,28,20,.3) 100%), linear-gradient(to top, rgba(20,28,20,.7) 0%, transparent 50%)' }}
-        />
-        {/* Dark mode overlay */}
-        <div className="absolute inset-0 hidden dark:block"
-          style={{ background: 'linear-gradient(to right, rgba(4,8,4,.92) 0%, rgba(4,8,4,.6) 55%, rgba(4,8,4,.25) 100%), linear-gradient(to top, rgba(4,8,4,.8) 0%, transparent 50%)' }}
-        />
+  const getStatusPillClass = (status: string) => {
+    switch (status) {
+      case "delivered":
+        return "bg-[rgba(57,151,70,.09)] dark:bg-[rgba(168,214,62,.1)] text-[#2f8b3d] dark:text-[#a8d63e]";
+      case "assigned_courier":
+        return "bg-[rgba(168,214,62,.14)] text-[#399746] dark:text-[#a8d63e]";
+      default:
+        return "bg-[rgba(22,25,26,.06)] dark:bg-white/[.07] text-[rgba(22,25,26,.6)] dark:text-[rgba(241,243,234,.6)]";
+    }
+  };
 
-        {/* Header Content */}
-        <div className="relative z-10 px-8 py-12 max-sm:px-4 max-sm:py-8">
-          <div className="max-w-[1280px] mx-auto">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="bg-lime-brand/20 rounded-lg p-2">
-                <ShoppingBag className="w-8 h-8 text-lime-brand" />
-              </div>
-              <h1 className="font-bebas text-[clamp(2rem,5vw,3rem)] tracking-[.08em] text-[#f0f2ed] max-sm:text-[2rem]">My Orders</h1>
+  const pillBase =
+    "inline-flex items-center gap-1.5 text-[.72rem] font-bold rounded-full px-[.7rem] py-[.34rem]";
+
+  return (
+    <div className="font-outfit bg-[#f6f5f0]/[.86] dark:bg-dark-surface min-h-screen flex flex-col">
+      <section className="flex-1 py-14 px-4 sm:px-8">
+        <div className="max-w-[1280px] mx-auto">
+          {/* Header block */}
+          <div className="mb-10">
+            <div className="inline-flex items-center gap-2 text-[.68rem] font-bold tracking-[.2em] uppercase text-[#2f8b3d] dark:text-[#a8d63e] mb-3 before:content-[''] before:w-[1.4rem] before:h-0.5 before:bg-[#2f8b3d] dark:before:bg-[#a8d63e] before:rounded-sm before:shrink-0">
+              Your account
             </div>
-            <p className="text-[.95rem] max-sm:text-[.85rem] leading-[1.8] text-[rgba(240,242,237,.7)] max-w-2xl">
-              Track and manage all your orders. View status, details, and delivery updates at a glance.
+            <h1 className="font-bebas leading-[.9] text-[clamp(2.4rem,6vw,4rem)] text-[#16191a] dark:text-[#f0f2ed]">My Orders</h1>
+            <p className="mt-3 text-[.95rem] leading-relaxed max-w-[640px] text-[rgba(22,25,26,.6)] dark:text-[rgba(241,243,234,.6)]">
+              Track and manage all your orders. View status, details and delivery updates at a glance.
             </p>
           </div>
-        </div>
-      </section>
 
-      {/* Main Content */}
-      <section className="flex-1 py-12 px-4">
-        <div className="max-w-[1280px] mx-auto">
           {/* Orders List */}
           {isLoading ? (
-            <div className="flex flex-col items-center justify-center py-12">
-              <div className="relative w-12 h-12 mb-3 rounded-full border-2 border-lime-brand border-t-green-brand animate-spin" />
-              <p className="text-[.9rem] text-black/60 dark:text-[rgba(240,242,237,.6)]">Loading your orders...</p>
+            <div className="flex flex-col items-center justify-center py-16">
+              <div className="relative w-12 h-12 mb-3 rounded-full border-2 border-[#a8d63e] border-t-[#2f8b3d] animate-spin" />
+              <p className="text-[.9rem] text-[rgba(22,25,26,.6)] dark:text-[rgba(241,243,234,.6)]">Loading your orders...</p>
             </div>
           ) : orders.length > 0 ? (
-            <div className="space-y-4">
+            <>
               <div className="flex items-center gap-4 mb-6">
-                <h2 className="text-xl font-bold text-black/85 dark:text-[#f0f2ed]">All Orders ({orders.length})</h2>
-                <div className="flex-1 h-px bg-lime-brand/30" />
+                <h2 className="text-[1.1rem] font-bold text-[#16191a] dark:text-[#f0f2ed]">All Orders ({orders.length})</h2>
+                <div className="flex-1 h-px bg-[rgba(22,25,26,.1)] dark:bg-white/10" />
               </div>
 
-              {orders.map((order) => (
-                <div
-                  key={order.id}
-                  className="bg-white dark:bg-black/[.02] rounded-lg border border-black/[.08] dark:border-white/[.06] overflow-hidden transition-all duration-300 hover:border-lime-brand/25 dark:hover:border-lime-brand/20 hover:shadow-[0_8px_32px_rgba(168,214,62,.12)]"
-                >
-                  {/* Order Header */}
-                  <div className="px-4 py-4 border-b border-black/[.08] dark:border-white/[.06]">
-                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              <div className="space-y-4">
+                {orders.map((order) => (
+                  <div
+                    key={order.id}
+                    className="bg-white dark:bg-[#141914] border border-[rgba(22,25,26,.1)] dark:border-white/10 rounded-[24px] overflow-hidden transition hover:-translate-y-[3px] hover:border-[rgba(57,151,70,.35)] hover:shadow-[0_16px_40px_rgba(22,25,26,.08)] dark:hover:shadow-[0_16px_40px_rgba(0,0,0,.5)]"
+                  >
+                    {/* Order Header */}
+                    <div className="px-5 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3 border-b border-[rgba(22,25,26,.07)] dark:border-white/[.06]">
                       <div className="flex items-start gap-3">
-                        <div className="bg-gradient-to-br from-green-brand to-lime-brand rounded-lg p-2 text-white dark:text-dark-surface flex-shrink-0">
+                        <span className="w-10 h-10 rounded-xl grid place-items-center shrink-0 bg-gradient-to-r from-[#399746] to-[#a8d63e] text-white dark:text-[#0a0c0a]">
                           <ShoppingBag className="w-5 h-5" />
-                        </div>
+                        </span>
                         <div>
-                          <h3 className="text-[.95rem] font-semibold text-black/85 dark:text-[#f0f2ed]">Order #{order.id}</h3>
-                          <div className="flex flex-wrap items-center gap-2 mt-1 text-[.8rem] text-black/60 dark:text-[rgba(240,242,237,.6)]">
-                            <div className="flex items-center gap-1">
+                          <div className="font-semibold text-[.96rem] text-[#16191a] dark:text-[#f0f2ed]">Order #{order.id}</div>
+                          <div className="flex flex-wrap items-center gap-2 mt-1 text-[.8rem] text-[rgba(22,25,26,.6)] dark:text-[rgba(241,243,234,.6)]">
+                            <span className="flex items-center gap-1">
                               <Calendar className="w-3.5 h-3.5" />
-                              <span>{formatDate(order.created_at)}</span>
-                            </div>
-                            <span className="px-2 py-0.5 bg-black/[.05] dark:bg-white/[.05] rounded-full text-[.75rem] font-medium text-black/70 dark:text-[rgba(240,242,237,.7)]">
+                              {formatDate(order.created_at)}
+                            </span>
+                            <span className={`${pillBase} ${order.paid
+                              ? "bg-[rgba(57,151,70,.09)] dark:bg-[rgba(168,214,62,.1)] text-[#2f8b3d] dark:text-[#a8d63e]"
+                              : "bg-[rgba(22,25,26,.06)] dark:bg-white/[.07] text-[rgba(22,25,26,.6)] dark:text-[rgba(241,243,234,.6)]"}`}>
                               {order.paid ? "✓ Paid" : "Pending"}
                             </span>
                           </div>
                         </div>
                       </div>
-                      <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[.8rem] font-semibold whitespace-nowrap flex-shrink-0 ${
-                        order.status === 'delivered'
-                          ? 'bg-green-brand/[.1] dark:bg-green-brand/[.15] text-green-700 dark:text-green-300 border border-green-brand/20'
-                          : order.status === 'assigned_courier'
-                          ? 'bg-orange-500/[.1] dark:bg-orange-500/[.15] text-orange-700 dark:text-orange-300 border border-orange-500/20'
-                          : 'bg-blue-500/[.1] dark:bg-blue-500/[.15] text-blue-700 dark:text-blue-300 border border-blue-500/20'
-                      }`}>
+                      <span className={`${pillBase} self-start whitespace-nowrap ${getStatusPillClass(order.status)}`}>
                         {getStatusIcon(order.status)}
                         {getStatusDisplay(order.status)}
+                      </span>
+                    </div>
+
+                    {/* Order Details */}
+                    <div className="px-5 py-4">
+                      <div className="grid grid-cols-3 gap-3 mb-4">
+                        {/* Items Count */}
+                        <div className="bg-[#f7f6f1] dark:bg-[#171c16] border border-[rgba(22,25,26,.07)] dark:border-white/[.06] rounded-[14px] px-4 py-3">
+                          <div className="text-[.72rem] font-medium text-[rgba(22,25,26,.45)] dark:text-[rgba(241,243,234,.4)]">Items Ordered</div>
+                          <div className="text-[1.15rem] font-bold mt-0.5 text-[#16191a] dark:text-[#f0f2ed]">{order.items_count}</div>
+                        </div>
+
+                        {/* Total Amount */}
+                        <div className="bg-[rgba(57,151,70,.06)] dark:bg-[#171c16] border border-[rgba(57,151,70,.16)] dark:border-white/[.06] rounded-[14px] px-4 py-3">
+                          <div className="text-[.72rem] font-medium text-[rgba(22,25,26,.45)] dark:text-[rgba(241,243,234,.4)]">Order Total</div>
+                          <div className="text-[1.15rem] font-bold mt-0.5 text-[#2f8b3d] dark:text-[#a8d63e]">${typeof order.total === 'number' ? order.total.toFixed(2) : parseFloat(order.total as any).toFixed(2)}</div>
+                        </div>
+
+                        {/* Status Info */}
+                        <div className="bg-[#f7f6f1] dark:bg-[#171c16] border border-[rgba(22,25,26,.07)] dark:border-white/[.06] rounded-[14px] px-4 py-3">
+                          <div className="text-[.72rem] font-medium text-[rgba(22,25,26,.45)] dark:text-[rgba(241,243,234,.4)]">Status</div>
+                          <div className="text-[.82rem] font-bold mt-1.5 text-[#16191a] dark:text-[#f0f2ed]">{getStatusDisplay(order.status)}</div>
+                        </div>
+                      </div>
+
+                      {/* Action Button */}
+                      <div className="flex justify-end pt-3 border-t border-[rgba(22,25,26,.07)] dark:border-white/[.06]">
+                        <Link to={`/orders/${order.id}`}>
+                          <button className="inline-flex items-center gap-1.5 bg-gradient-to-r from-[#399746] to-[#a8d63e] text-white dark:text-[#0a0c0a] font-bold text-[.82rem] px-4 py-2.5 rounded-full transition-transform duration-200 hover:-translate-y-0.5">
+                            View Details
+                            <ArrowRight className="w-3.5 h-3.5" />
+                          </button>
+                        </Link>
                       </div>
                     </div>
                   </div>
-
-                  {/* Order Details */}
-                  <div className="px-4 py-4">
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
-                      {/* Items Count */}
-                      <div className="bg-blue-500/[.05] dark:bg-blue-500/[.08] rounded-lg p-3 border border-blue-500/[.1] dark:border-blue-500/[.15]">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="text-[.75rem] text-black/60 dark:text-[rgba(240,242,237,.6)] font-medium">Items Ordered</p>
-                            <p className="text-lg font-bold text-blue-700 dark:text-blue-300 mt-1">{order.items_count}</p>
-                          </div>
-                          <Package className="w-6 h-6 text-blue-500/30" />
-                        </div>
-                      </div>
-
-                      {/* Total Amount */}
-                      <div className="bg-green-brand/[.05] dark:bg-green-brand/[.08] rounded-lg p-3 border border-green-brand/[.1] dark:border-green-brand/[.15]">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="text-[.75rem] text-black/60 dark:text-[rgba(240,242,237,.6)] font-medium">Order Total</p>
-                            <p className="text-lg font-bold text-green-700 dark:text-green-300 mt-1">${typeof order.total === 'number' ? order.total.toFixed(2) : parseFloat(order.total as any).toFixed(2)}</p>
-                          </div>
-                          <DollarSign className="w-6 h-6 text-green-brand/30" />
-                        </div>
-                      </div>
-
-                      {/* Status Info */}
-                      <div className="bg-purple-500/[.05] dark:bg-purple-500/[.08] rounded-lg p-3 border border-purple-500/[.1] dark:border-purple-500/[.15]">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="text-[.75rem] text-black/60 dark:text-[rgba(240,242,237,.6)] font-medium">Status</p>
-                            <p className="text-[.8rem] font-bold text-purple-700 dark:text-purple-300 mt-1">{getStatusDisplay(order.status)}</p>
-                          </div>
-                          <Truck className="w-6 h-6 text-purple-500/30" />
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Action Button */}
-                    <div className="flex justify-end pt-3 border-t border-black/[.08] dark:border-white/[.06]">
-                      <Link to={`/order/${order.id}`}>
-                        <button className="bg-gradient-to-br from-green-brand to-lime-brand text-white dark:text-dark-surface font-semibold text-[.85rem] px-3 py-2 rounded-lg transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)] flex items-center gap-1.5">
-                          View Details
-                          <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-                        </button>
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            </>
           ) : (
-            <div className="bg-white dark:bg-black/[.02] rounded-xl border border-black/[.08] dark:border-white/[.06] p-12 text-center">
+            <div className="bg-white dark:bg-[#141914] border border-[rgba(22,25,26,.1)] dark:border-white/10 rounded-[24px] p-12 text-center">
               <div className="mb-6 flex justify-center">
-                <div className="bg-black/[.05] dark:bg-white/[.05] rounded-full p-5">
-                  <Package className="w-16 h-16 text-black/30 dark:text-white/[.2]" />
+                <div className="bg-[#f7f6f1] dark:bg-white/[.06] rounded-full p-5">
+                  <Package className="w-16 h-16 text-[rgba(22,25,26,.25)] dark:text-white/[.2]" />
                 </div>
               </div>
-              <h3 className="font-bebas text-2xl tracking-[.08em] text-black/85 dark:text-[#f0f2ed] mb-2">No Orders Yet</h3>
-              <p className="text-[.9rem] text-black/60 dark:text-[rgba(240,242,237,.6)] mb-8 max-w-md mx-auto">Start your shopping journey and discover our amazing products. Your orders will appear here.</p>
+              <h3 className="font-bebas text-2xl tracking-[.08em] text-[#16191a] dark:text-[#f0f2ed] mb-2">No Orders Yet</h3>
+              <p className="text-[.9rem] text-[rgba(22,25,26,.6)] dark:text-[rgba(241,243,234,.6)] mb-8 max-w-md mx-auto">Start your shopping journey and discover our amazing products. Your orders will appear here.</p>
               <Link to="/products">
-                <button className="bg-gradient-to-br from-green-brand to-lime-brand text-white dark:text-dark-surface font-semibold text-[.9rem] px-6 py-3 rounded-lg transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)] inline-flex items-center gap-2">
+                <button className="inline-flex items-center gap-2 bg-gradient-to-r from-[#399746] to-[#a8d63e] text-white dark:text-[#0a0c0a] font-bold text-[.9rem] px-6 py-3 rounded-full transition-transform duration-200 hover:-translate-y-0.5">
                   Start Shopping
                   <ArrowRight className="w-4 h-4" />
                 </button>

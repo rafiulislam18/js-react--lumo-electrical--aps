@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:opsz,wght@9..40,400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -158,6 +158,10 @@ html {
 }
 
 @layer components {
+  /* Ensure Bebas Neue wins over the base h1..h6 { font-family: var(--font-display) } rule */
+  .font-bebas {
+    font-family: 'Bebas Neue', sans-serif !important;
+  }
   .bg-primary-gradient {
     background: linear-gradient(90deg, #399746, #A6CD3D);
   }

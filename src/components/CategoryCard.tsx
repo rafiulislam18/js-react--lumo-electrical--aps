@@ -14,20 +14,33 @@ export function CategoryCard({ category }: CategoryCardProps) {
   };
 
   return (
-    <div onClick={handleClick} className="group relative flex flex-col items-center justify-center p-3 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-xl hover:shadow-green-900/5 hover:-translate-y-1 transition-smooth cursor-pointer overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-br from-green-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-smooth" />
-      
-      <div className="relative z-10 w-14 h-14 rounded-full bg-gray-50 flex items-center justify-center mb-4 text-gray-500 group-hover:bg-white group-hover:text-primary group-hover:scale-110 group-hover:shadow-md transition-smooth">
-        <category.icon className="w-7 h-7" />
+    <div
+      onClick={handleClick}
+      className="group relative flex aspect-[5/4] flex-col justify-end overflow-hidden rounded-[24px] bg-[#f7f6f1] dark:bg-[#141814] border border-[rgba(22,25,26,.1)] dark:border-white/10 cursor-pointer transition duration-300 ease-[cubic-bezier(.22,1,.36,1)] hover:-translate-y-[3px] hover:border-[rgba(57,151,70,.35)] hover:shadow-[0_16px_40px_rgba(22,25,26,.08)] dark:hover:border-[rgba(168,214,62,.3)] dark:hover:shadow-[0_16px_40px_rgba(0,0,0,.5)]"
+    >
+      {/* Icon */}
+      <div className="absolute inset-0 flex items-center justify-center text-[#2f8b3d] dark:text-[#a8d63e] transition-transform duration-700 ease-[cubic-bezier(.22,1,.36,1)] group-hover:scale-110">
+        <category.icon className="w-12 h-12" />
       </div>
-      
-      <h3 className="relative z-10 font-medium text-gray-900 group-hover:text-primary transition-smooth mb-2">
-        {category.name}
-      </h3>
-      
-      <div className="relative z-10 w-6 h-6 rounded-full bg-white border border-gray-100 flex items-center justify-center opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-smooth delay-75">
-        <ArrowRight className="w-3 h-3 text-primary" />
+
+      {/* Gradient overlay */}
+      <div
+        className="absolute inset-0"
+        style={{ background: "linear-gradient(to top,rgba(10,14,8,.9),rgba(10,14,8,.05) 65%)" }}
+      />
+
+      {/* Label */}
+      <div className="relative z-10 p-4">
+        <div className="font-bold text-[.92rem] text-white leading-tight">
+          {category.name}
+        </div>
+        <div className="inline-flex items-center gap-1 text-[.6rem] font-bold tracking-[.14em] uppercase mt-1 text-[#a8d63e]">
+          Shop <ArrowRight className="w-2.5 h-2.5" />
+        </div>
       </div>
+
+      {/* Lime underline */}
+      <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#a8d63e] origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300 rounded-b-[24px]" />
     </div>
   );
 }

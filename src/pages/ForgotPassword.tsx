@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Mail, AlertCircle, CheckCircle, Loader } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { Mail, AlertCircle, CheckCircle, Loader, Lock, KeyRound, ArrowLeft, ShieldCheck } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const API_URL = (import.meta as any).env.VITE_API_URL || 'http://localhost:8000/api';
@@ -20,7 +20,7 @@ export default function ForgotPassword() {
   const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    
+
     if (!email) {
       setError("Please enter your email address");
       return;
@@ -190,240 +190,274 @@ export default function ForgotPassword() {
     }
   };
 
-  const inputCls = "w-full px-4 py-3 text-[.85rem] bg-white dark:bg-black/[.05] border border-black/[.1] dark:border-white/[.08] rounded-lg text-black/80 dark:text-[rgba(240,242,237,.8)] placeholder-black/40 dark:placeholder-[rgba(240,242,237,.4)] focus:outline-none focus:border-lime-brand/30 focus:bg-lime-brand/[.05] transition-all duration-150";
+  const fieldCls = "w-full px-[.9rem] py-[.8rem] text-[.85rem] bg-white dark:bg-[#141914] border border-[rgba(22,25,26,.1)] dark:border-white/10 rounded-[10px] text-[#16191a] dark:text-[#f1f3ea] placeholder-[rgba(22,25,26,.42)] dark:placeholder-[rgba(241,243,234,.42)] outline-none focus:border-[rgba(57,151,70,.4)] transition-colors";
+
+  const eyebrowText =
+    step === "email" ? "Account recovery" : step === "verification" ? "Verify it's you" : "Almost there";
+  const headingText =
+    step === "email" ? "Reset Password" : step === "verification" ? "Enter Code" : "New Password";
+  const subText =
+    step === "email"
+      ? "We'll help you get back into your account"
+      : step === "verification"
+      ? "Check your inbox for the 6-digit code"
+      : "Choose a strong new password";
 
   return (
-    <div className="font-outfit bg-white dark:bg-dark-surface min-h-screen flex flex-col items-center justify-center px-4 py-12">
-      {/* Header */}
-      <div className="mb-12 text-center">
-        <h1 className="font-bebas text-[2.5rem] tracking-[.08em] text-black/85 dark:text-[#f0f2ed] mb-2">
-          Reset Password
-        </h1>
-        <p className="text-[.9rem] text-black/55 dark:text-[rgba(240,242,237,.55)]">
-          We'll help you get back into your account
-        </p>
-      </div>
+    <div className="font-outfit bg-[#f6f5f0] dark:bg-[#0a0c0a] min-h-screen flex items-center justify-center px-4 py-12">
+      <div className="w-full max-w-[860px]">
+        <div className="bg-white dark:bg-[#141914] border border-[rgba(22,25,26,.1)] dark:border-white/10 rounded-[24px] overflow-hidden grid md:grid-cols-2">
 
-      {/* Form Card */}
-      <div className="w-full max-w-md">
-        <div className="bg-white dark:bg-black/[.02] rounded-xl border border-black/[.08] dark:border-white/[.06] overflow-hidden">
+          {/* Brand panel */}
+          <div
+            className="relative hidden md:flex flex-col justify-between p-9 overflow-hidden"
+            style={{ background: 'linear-gradient(150deg,#399746,#a8d63e)' }}
+          >
+            <div className="self-start inline-flex rounded-xl px-3.5 py-2.5 relative">
+              {/* <img src="/images/logo-light.png" alt="Lumo Electrical" className="h-8" /> */}
+            </div>
+            <div className="relative">
+              <div className="font-bebas leading-[.95] text-white text-[2.8rem]">Forgot it?<br />No problem.</div>
+              <p className="text-[.9rem] leading-relaxed mt-3 text-white/85">
+                Resetting your password takes less than a minute. We'll verify it's really you, then get you back to shopping.
+              </p>
+            </div>
+            <div className="relative flex flex-col gap-2.5 text-[.82rem] text-white/90">
+              <span className="flex items-center gap-2"><Mail className="w-4 h-4" /> Enter your email</span>
+              <span className="flex items-center gap-2"><KeyRound className="w-4 h-4" /> Verify the 6-digit code</span>
+              <span className="flex items-center gap-2"><ShieldCheck className="w-4 h-4" /> Set a new password</span>
+            </div>
+          </div>
+
           {/* Form */}
-          <form onSubmit={step === "email" ? handleEmailSubmit : step === "verification" ? handleVerificationSubmit : handleResetSubmit} className="p-8 space-y-5">
+          <div className="p-8 sm:p-9">
+            <div className="inline-flex items-center gap-2 text-[.68rem] font-bold tracking-[.2em] uppercase text-[#2f8b3d] dark:text-[#a8d63e] mb-3 before:content-[''] before:w-6 before:h-0.5 before:bg-[#2f8b3d] dark:before:bg-[#a8d63e] before:rounded-sm before:shrink-0">
+              {eyebrowText}
+            </div>
+            <h1 className="font-bebas text-[2.2rem] leading-none mb-1.5 text-[#16191a] dark:text-[#f1f3ea]">{headingText}</h1>
+            <p className="text-[.88rem] mb-7 text-[rgba(22,25,26,.6)] dark:text-[rgba(241,243,234,.6)]">{subText}</p>
 
-            {/* Error Alert */}
-            {error && (
-              <div className="bg-red-50 dark:bg-red-950/[.2] border border-red-200 dark:border-red-900/[.3] rounded-lg p-4 flex gap-3">
-                <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
-                <p className="text-red-700 dark:text-red-300 text-[.85rem]">{error}</p>
-              </div>
-            )}
+            {/* Form */}
+            <form onSubmit={step === "email" ? handleEmailSubmit : step === "verification" ? handleVerificationSubmit : handleResetSubmit} className="space-y-5">
 
-            {/* Success Alert */}
-            {resendSuccess && (
-              <div className="bg-green-50 dark:bg-green-950/[.2] border border-green-200 dark:border-green-900/[.3] rounded-lg p-4 flex gap-3">
-                <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
-                <p className="text-green-700 dark:text-green-300 text-[.85rem]">Verification code sent to your email!</p>
-              </div>
-            )}
+              {/* Error Alert */}
+              {error && (
+                <div className="bg-[#d94646]/[.08] border border-[#d94646]/30 rounded-[10px] p-3.5 flex gap-3">
+                  <AlertCircle className="w-5 h-5 text-[#d94646] flex-shrink-0 mt-0.5" />
+                  <p className="text-[#d94646] text-[.85rem]">{error}</p>
+                </div>
+              )}
 
-            {/* Step 1: Email */}
-            {step === "email" && (
-              <>
-                <div>
-                  <p className="text-[.85rem] text-black/60 dark:text-[rgba(240,242,237,.6)] mb-4">
+              {/* Success Alert */}
+              {resendSuccess && (
+                <div className="bg-[#2f8b3d]/[.08] border border-[#2f8b3d]/30 rounded-[10px] p-3.5 flex gap-3">
+                  <CheckCircle className="w-5 h-5 text-[#2f8b3d] dark:text-[#a8d63e] flex-shrink-0 mt-0.5" />
+                  <p className="text-[#2f8b3d] dark:text-[#a8d63e] text-[.85rem]">Verification code sent to your email!</p>
+                </div>
+              )}
+
+              {/* Step 1: Email */}
+              {step === "email" && (
+                <>
+                  <p className="text-[.85rem] text-[rgba(22,25,26,.6)] dark:text-[rgba(241,243,234,.6)]">
                     Enter your email address and we'll send you a verification code to reset your password.
                   </p>
-                </div>
 
-                <div>
-                  <label className="block text-[.8rem] font-medium text-black/70 dark:text-[rgba(240,242,237,.7)] mb-2">
-                    Email Address <span className="text-red-500">*</span>
-                  </label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-black/40 dark:text-[rgba(240,242,237,.4)]" />
-                    <input
-                      type="email"
-                      value={email}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                        setEmail(e.target.value);
-                        setError("");
-                      }}
-                      placeholder="your@email.com"
-                      className={`pl-10 ${inputCls}`}
-                      required
-                    />
+                  <div>
+                    <label className="block text-[.8rem] font-medium mb-2 text-[rgba(22,25,26,.6)] dark:text-[rgba(241,243,234,.6)]">
+                      Email Address <span className="text-red-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <Mail className="w-[18px] h-[18px] absolute left-3 top-1/2 -translate-y-1/2 text-[rgba(22,25,26,.42)] dark:text-[rgba(241,243,234,.42)]" />
+                      <input
+                        type="email"
+                        value={email}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                          setEmail(e.target.value);
+                          setError("");
+                        }}
+                        placeholder="your@email.com"
+                        className={`pl-10 ${fieldCls}`}
+                        required
+                      />
+                    </div>
                   </div>
-                </div>
 
-                <button
-                  type="submit"
-                  disabled={isLoading || !email}
-                  className="w-full py-3 rounded-lg bg-gradient-to-br from-green-brand to-lime-brand text-white dark:text-dark-surface font-semibold text-[.9rem] cursor-pointer transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-6"
-                >
-                  {isLoading ? (
-                    <>
-                      <Loader size={16} className="animate-spin" />
-                      Sending Code...
-                    </>
-                  ) : (
-                    'Send Verification Code'
-                  )}
-                </button>
-              </>
-            )}
+                  <button
+                    type="submit"
+                    disabled={isLoading || !email}
+                    className="w-full mt-1 inline-flex items-center justify-center gap-2 font-semibold rounded-full px-6 py-[.8rem] bg-gradient-to-r from-[#399746] to-[#a8d63e] text-white dark:text-[#0a0c0a] text-[.9rem] transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)] disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isLoading ? (
+                      <>
+                        <Loader size={16} className="animate-spin" />
+                        Sending Code...
+                      </>
+                    ) : (
+                      'Send Verification Code'
+                    )}
+                  </button>
+                </>
+              )}
 
-            {/* Step 2: Verification Code */}
-            {step === "verification" && (
-              <>
-                <div>
-                  <p className="text-[.85rem] text-black/60 dark:text-[rgba(240,242,237,.6)] mb-2">
-                    We've sent a 6-digit verification code to:
-                  </p>
-                  <p className="text-[.85rem] font-semibold text-black/80 dark:text-[rgba(240,242,237,.8)] mb-4">{email}</p>
-                </div>
+              {/* Step 2: Verification Code */}
+              {step === "verification" && (
+                <>
+                  <div>
+                    <p className="text-[.85rem] text-[rgba(22,25,26,.6)] dark:text-[rgba(241,243,234,.6)] mb-1">
+                      We've sent a 6-digit verification code to:
+                    </p>
+                    <p className="text-[.85rem] font-semibold text-[#16191a] dark:text-[#f1f3ea]">{email}</p>
+                  </div>
 
-                <div>
-                  <label className="block text-[.8rem] font-medium text-black/70 dark:text-[rgba(240,242,237,.7)] mb-2">
-                    Verification Code <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={code}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                      setCode(e.target.value.replace(/\D/g, '').slice(0, 6));
+                  <div>
+                    <label className="block text-[.8rem] font-medium mb-2 text-[rgba(22,25,26,.6)] dark:text-[rgba(241,243,234,.6)]">
+                      Verification Code <span className="text-red-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <KeyRound className="w-[18px] h-[18px] absolute left-3 top-1/2 -translate-y-1/2 text-[rgba(22,25,26,.42)] dark:text-[rgba(241,243,234,.42)]" />
+                      <input
+                        type="text"
+                        value={code}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                          setCode(e.target.value.replace(/\D/g, '').slice(0, 6));
+                          setError("");
+                        }}
+                        placeholder="000000"
+                        maxLength={6}
+                        className={`pl-10 text-center tracking-[.5em] font-mono text-lg ${fieldCls}`}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={isLoading || code.length !== 6}
+                    className="w-full mt-1 inline-flex items-center justify-center gap-2 font-semibold rounded-full px-6 py-[.8rem] bg-gradient-to-r from-[#399746] to-[#a8d63e] text-white dark:text-[#0a0c0a] text-[.9rem] transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)] disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isLoading ? (
+                      <>
+                        <Loader size={16} className="animate-spin" />
+                        Verifying...
+                      </>
+                    ) : (
+                      'Verify Code'
+                    )}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleResendCode}
+                    className="w-full text-[.8rem] font-medium text-[#2f8b3d] dark:text-[#a8d63e] hover:opacity-80 py-1 transition-opacity"
+                  >
+                    Didn't receive the code? Resend
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setStep("email");
                       setError("");
+                      setCode("");
                     }}
-                    placeholder="000000"
-                    maxLength={6}
-                    className={`text-center tracking-widest font-mono text-lg ${inputCls}`}
-                    required
-                  />
-                </div>
+                    className="w-full inline-flex items-center justify-center gap-2 text-[.8rem] text-[rgba(22,25,26,.6)] dark:text-[rgba(241,243,234,.6)] hover:text-[#2f8b3d] dark:hover:text-[#a8d63e] transition-colors"
+                  >
+                    <ArrowLeft className="w-4 h-4" /> Try another email
+                  </button>
+                </>
+              )}
 
-                <button
-                  type="submit"
-                  disabled={isLoading || code.length !== 6}
-                  className="w-full py-3 rounded-lg bg-gradient-to-br from-green-brand to-lime-brand text-white dark:text-dark-surface font-semibold text-[.9rem] cursor-pointer transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-6"
-                >
-                  {isLoading ? (
-                    <>
-                      <Loader size={16} className="animate-spin" />
-                      Verifying...
-                    </>
-                  ) : (
-                    'Verify Code'
-                  )}
-                </button>
-
-                <button
-                  type="button"
-                  onClick={handleResendCode}
-                  className="w-full text-[.8rem] text-green-deep dark:text-lime-brand hover:text-green-deep/80 dark:hover:text-lime-brand/80 font-medium py-2 transition-colors duration-150"
-                >
-                  Didn't receive the code? Resend
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    setStep("email");
-                    setError("");
-                    setCode("");
-                  }}
-                  className="w-full text-[.8rem] text-black/60 dark:text-[rgba(240,242,237,.6)] hover:text-green-deep dark:hover:text-lime-brand transition-colors duration-150"
-                >
-                  Try another email
-                </button>
-              </>
-            )}
-
-            {/* Step 3: Reset Password */}
-            {step === "reset" && (
-              <>
-                <div>
-                  <p className="text-[.85rem] text-black/60 dark:text-[rgba(240,242,237,.6)] mb-4">
+              {/* Step 3: Reset Password */}
+              {step === "reset" && (
+                <>
+                  <p className="text-[.85rem] text-[rgba(22,25,26,.6)] dark:text-[rgba(241,243,234,.6)]">
                     Enter your new password below. Make sure it's at least 8 characters.
                   </p>
-                </div>
 
-                <div>
-                  <label className="block text-[.8rem] font-medium text-black/70 dark:text-[rgba(240,242,237,.7)] mb-2">
-                    New Password <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="password"
-                    value={newPassword}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                      setNewPassword(e.target.value);
-                      setError("");
-                    }}
-                    placeholder="••••••••"
-                    className={inputCls}
-                    required
-                  />
-                  <p className="text-[.75rem] text-black/50 dark:text-[rgba(240,242,237,.5)] mt-1">At least 8 characters</p>
-                </div>
-
-                <div>
-                  <label className="block text-[.8rem] font-medium text-black/70 dark:text-[rgba(240,242,237,.7)] mb-2">
-                    Confirm Password <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="password"
-                    value={confirmPassword}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                      setConfirmPassword(e.target.value);
-                      setError("");
-                    }}
-                    placeholder="••••••••"
-                    className={inputCls}
-                    required
-                  />
-
-                  {/* Password Match Validation */}
-                  {newPassword && confirmPassword && (
-                    <div className={`mt-2 flex items-center gap-2 text-[.8rem] ${newPassword === confirmPassword ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                      {newPassword === confirmPassword ? (
-                        <>
-                          <CheckCircle className="w-4 h-4" />
-                          <span>Passwords match</span>
-                        </>
-                      ) : (
-                        <>
-                          <AlertCircle className="w-4 h-4" />
-                          <span>Passwords do not match</span>
-                        </>
-                      )}
+                  <div>
+                    <label className="block text-[.8rem] font-medium mb-2 text-[rgba(22,25,26,.6)] dark:text-[rgba(241,243,234,.6)]">
+                      New Password <span className="text-red-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <Lock className="w-[18px] h-[18px] absolute left-3 top-1/2 -translate-y-1/2 text-[rgba(22,25,26,.42)] dark:text-[rgba(241,243,234,.42)]" />
+                      <input
+                        type="password"
+                        value={newPassword}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                          setNewPassword(e.target.value);
+                          setError("");
+                        }}
+                        placeholder="••••••••"
+                        className={`pl-10 ${fieldCls}`}
+                        required
+                      />
                     </div>
-                  )}
-                </div>
+                    <p className="text-[.75rem] text-[rgba(22,25,26,.5)] dark:text-[rgba(241,243,234,.5)] mt-1.5">At least 8 characters</p>
+                  </div>
 
-                <button
-                  type="submit"
-                  disabled={isLoading || !newPassword || !confirmPassword || newPassword !== confirmPassword}
-                  className="w-full py-3 rounded-lg bg-gradient-to-br from-green-brand to-lime-brand text-white dark:text-dark-surface font-semibold text-[.9rem] cursor-pointer transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-6"
-                >
-                  {isLoading ? (
-                    <>
-                      <Loader size={16} className="animate-spin" />
-                      Resetting...
-                    </>
-                  ) : (
-                    'Reset Password'
-                  )}
-                </button>
-              </>
-            )}
-          </form>
+                  <div>
+                    <label className="block text-[.8rem] font-medium mb-2 text-[rgba(22,25,26,.6)] dark:text-[rgba(241,243,234,.6)]">
+                      Confirm Password <span className="text-red-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <Lock className="w-[18px] h-[18px] absolute left-3 top-1/2 -translate-y-1/2 text-[rgba(22,25,26,.42)] dark:text-[rgba(241,243,234,.42)]" />
+                      <input
+                        type="password"
+                        value={confirmPassword}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                          setConfirmPassword(e.target.value);
+                          setError("");
+                        }}
+                        placeholder="••••••••"
+                        className={`pl-10 ${fieldCls}`}
+                        required
+                      />
+                    </div>
 
-          {/* Footer */}
-          <div className="px-8 py-5 bg-black/[.02] dark:bg-white/[.02] border-t border-black/[.08] dark:border-white/[.06] text-center">
-            <p className="text-[.8rem] text-black/60 dark:text-[rgba(240,242,237,.6)]">
+                    {/* Password Match Validation */}
+                    {newPassword && confirmPassword && (
+                      <div className={`mt-2 flex items-center gap-2 text-[.8rem] ${newPassword === confirmPassword ? 'text-[#2f8b3d] dark:text-[#a8d63e]' : 'text-[#d94646]'}`}>
+                        {newPassword === confirmPassword ? (
+                          <>
+                            <CheckCircle className="w-4 h-4" />
+                            <span>Passwords match</span>
+                          </>
+                        ) : (
+                          <>
+                            <AlertCircle className="w-4 h-4" />
+                            <span>Passwords do not match</span>
+                          </>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={isLoading || !newPassword || !confirmPassword || newPassword !== confirmPassword}
+                    className="w-full mt-1 inline-flex items-center justify-center gap-2 font-semibold rounded-full px-6 py-[.8rem] bg-gradient-to-r from-[#399746] to-[#a8d63e] text-white dark:text-[#0a0c0a] text-[.9rem] transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)] disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isLoading ? (
+                      <>
+                        <Loader size={16} className="animate-spin" />
+                        Resetting...
+                      </>
+                    ) : (
+                      'Reset Password'
+                    )}
+                  </button>
+                </>
+              )}
+            </form>
+
+            {/* Footer */}
+            <div className="text-center text-[.8rem] mt-6 pt-5 border-t border-[rgba(22,25,26,.07)] dark:border-white/[.07] text-[rgba(22,25,26,.6)] dark:text-[rgba(241,243,234,.6)]">
               Remember your password?{" "}
-              <button onClick={() => navigate("/login")} className="text-green-deep dark:text-lime-brand hover:text-green-deep/80 dark:hover:text-lime-brand/80 font-semibold transition-colors duration-150">
-                Log In
-              </button>
-            </p>
+              <Link to="/login" className="inline-flex items-center gap-1 font-semibold text-[#2f8b3d] dark:text-[#a8d63e] hover:opacity-80 transition-opacity align-middle">
+                <ArrowLeft className="w-3.5 h-3.5" /> Back to Sign In
+              </Link>
+            </div>
           </div>
         </div>
       </div>

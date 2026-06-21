@@ -121,7 +121,7 @@ export function ProductListColumn({ title, products, linkTo }: ProductListColumn
                 loading="lazy"
               />
               {discount !== null && (
-                <span className="absolute top-[3px] left-[3px] bg-red-500 text-white text-[0.52rem] font-extrabold tracking-[0.04em] px-[5px] py-[2px] rounded-[3px] leading-[1.4]">
+                <span className="absolute top-[3px] left-[3px] bg-[#e08a1e] text-white text-[0.52rem] font-extrabold tracking-[0.04em] px-[5px] py-[2px] rounded-[3px] leading-[1.4]">
                   -{discount}%
                 </span>
               )}
@@ -132,11 +132,11 @@ export function ProductListColumn({ title, products, linkTo }: ProductListColumn
               <div className="text-[0.62rem] font-semibold tracking-[0.12em] uppercase text-black/[0.32] dark:text-[#f0f2ed]/[0.28] mb-[0.2rem]">
                 {product.category}
               </div>
-              <div className="font-outfit text-[0.83rem] font-medium text-black/[0.75] dark:text-[#f0f2ed]/[0.8] leading-[1.35] line-clamp-2 transition-colors duration-150 group-hover:text-[#a8d63e]">
+              <div className="font-outfit text-[0.83rem] font-medium text-black/[0.75] dark:text-[#f0f2ed]/[0.8] leading-[1.35] line-clamp-2 transition-colors duration-150 group-hover:text-[#2f8b3d] dark:group-hover:text-[#a8d63e]">
                 {product.name}
               </div>
               <div className="flex items-baseline gap-[0.45rem] mt-[0.35rem]">
-                <span className="font-outfit font-bold text-[0.9rem] text-[#a8d63e]">
+                <span className="font-outfit font-bold text-[0.9rem] text-[#2f8b3d] dark:text-[#a8d63e]">
                   R {product.price.toFixed(2)}
                 </span>
                 {product.oldPrice && (
@@ -166,7 +166,7 @@ export function ProductListColumn({ title, products, linkTo }: ProductListColumn
                 }
               </button>
               <button
-                className="w-[30px] h-[30px] rounded-[5px] grid place-items-center cursor-pointer transition-all duration-150 active:scale-[0.92] bg-gradient-to-br from-[#3aaa49] to-[#a8d63e] text-white dark:text-[#0a0c0a] hover:shadow-[0_0_14px_rgba(168,214,62,0.35)] disabled:opacity-45 disabled:cursor-not-allowed"
+                className="w-[30px] h-[30px] rounded-[5px] grid place-items-center cursor-pointer transition-all duration-150 active:scale-[0.92] bg-gradient-to-r from-[#399746] to-[#a8d63e] text-white dark:text-[#0a0c0a] hover:shadow-[0_0_14px_rgba(168,214,62,0.35)] disabled:opacity-45 disabled:cursor-not-allowed"
                 onClick={e => handleCart(e, product.id)}
                 disabled={cartPending}
                 title="Add to cart"

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { Mail, Phone, MapPin, FileText, Receipt, Building2, Loader } from "lucide-react";
+import { Mail, Phone, MapPin, FileText, Receipt, Building2, Loader, Send, MessageSquare, Clock } from "lucide-react";
 
 interface ContactFormData {
   contactReason: string;
@@ -263,51 +263,132 @@ export default function ContactUs() {
     "Other",
   ];
 
-  const inputCls = "w-full px-4 py-3 text-[.85rem] bg-white dark:bg-black/[.05] border border-black/[.1] dark:border-white/[.08] rounded-lg text-black/80 dark:text-[rgba(240,242,237,.8)] placeholder-black/40 dark:placeholder-[rgba(240,242,237,.4)] focus:outline-none focus:border-lime-brand/30 focus:bg-lime-brand/[.05] transition-all duration-150";
-  const labelCls = "block text-[.8rem] font-medium text-black/70 dark:text-[rgba(240,242,237,.7)] mb-2";
+  const inputCls = "w-full px-[.9rem] py-[.8rem] text-[.85rem] bg-white dark:bg-[#141914] border border-[rgba(22,25,26,.1)] dark:border-white/10 rounded-[10px] text-[#16191a] dark:text-[#f1f3ea] placeholder-[rgba(22,25,26,.42)] dark:placeholder-[rgba(241,243,234,.42)] outline-none focus:border-[rgba(57,151,70,.4)] transition-colors";
+  const labelCls = "block text-[.8rem] font-medium mb-2 text-[rgba(22,25,26,.6)] dark:text-[rgba(241,243,234,.6)]";
   const errorCls = "text-red-600 dark:text-red-400 text-[.8rem] mt-1";
 
   return (
-    <div className="font-outfit bg-white dark:bg-dark-surface min-h-screen flex flex-col">
-      {/* Header Section with Background Image */}
-      <section className="relative bg-cover bg-center bg-no-repeat before:absolute before:inset-0 before:bg-lime-brand/[.02]">
-        <img
-          src="https://images.pexels.com/photos/9089222/pexels-photo-9089222.jpeg"
-          alt=""
-          className="absolute inset-0 w-full h-full object-cover animate-[zoomOut_14s_ease-out_forwards]"
-        />
-        {/* Light mode overlay */}
-        <div className="absolute inset-0 dark:hidden"
-          style={{ background: 'linear-gradient(to right, rgba(20,28,20,.85) 0%, rgba(20,28,20,.55) 55%, rgba(20,28,20,.3) 100%), linear-gradient(to top, rgba(20,28,20,.7) 0%, transparent 50%)' }}
-        />
-        {/* Dark mode overlay */}
-        <div className="absolute inset-0 hidden dark:block"
-          style={{ background: 'linear-gradient(to right, rgba(4,8,4,.92) 0%, rgba(4,8,4,.6) 55%, rgba(4,8,4,.25) 100%), linear-gradient(to top, rgba(4,8,4,.8) 0%, transparent 50%)' }}
-        />
-
-        {/* Header Content */}
-        <div className="relative z-10 px-8 py-12 max-sm:px-4 max-sm:py-8">
-          <div className="max-w-[1280px] mx-auto">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="bg-lime-brand/20 rounded-lg p-2">
-                <Mail className="w-8 h-8 text-lime-brand" />
-              </div>
-              <h1 className="font-bebas text-[clamp(2rem,5vw,3rem)] tracking-[.08em] text-[#f0f2ed] max-sm:text-[2rem]">Contact Us</h1>
-            </div>
-            <p className="text-[.95rem] max-sm:text-[.85rem] leading-[1.8] text-[rgba(240,242,237,.7)] max-w-2xl">
-              Have a question or feedback? We'd love to hear from you. Get in touch with our team at Lumo Electrical and we'll respond as soon as possible.
-            </p>
+    <div className="font-outfit bg-[#f6f5f0] dark:bg-[#0a0c0a] min-h-screen flex flex-col">
+      {/* Page header */}
+      <section className="px-4 sm:px-8 pt-12 pb-8">
+        <div className="max-w-[1280px] mx-auto">
+          <div className="inline-flex items-center gap-2 text-[.68rem] font-bold tracking-[.2em] uppercase text-[#2f8b3d] dark:text-[#a8d63e] mb-[.8rem] before:content-[''] before:w-6 before:h-0.5 before:bg-[#2f8b3d] dark:before:bg-[#a8d63e] before:rounded-sm before:shrink-0">
+            Get in touch
           </div>
+          <h1 className="font-bebas text-[clamp(2.6rem,6vw,4.4rem)] leading-none tracking-[.01em] text-[#16191a] dark:text-[#f1f3ea] mb-3">
+            Let's talk
+          </h1>
+          <p className="text-[.95rem] max-sm:text-[.88rem] leading-[1.8] max-w-2xl text-[rgba(22,25,26,.6)] dark:text-[rgba(241,243,234,.6)]">
+            Have a question or feedback? We'd love to hear from you. Get in touch with our team at Lumo Electrical and we'll respond as soon as possible.
+          </p>
         </div>
       </section>
 
       {/* Main Content */}
-      <section className="flex-1 py-12 px-4">
+      <section className="flex-1 pb-16 px-4 sm:px-8">
         <div className="max-w-[1280px] mx-auto">
-          <div className="grid md:grid-cols-3 gap-8">
-            {/* Contact Form */}
-            <div className="md:col-span-2 bg-white dark:bg-black/[.02] rounded-lg border border-black/[.08] dark:border-white/[.06] p-8">
-              <h2 className="font-bebas text-2xl tracking-[.08em] text-black/85 dark:text-[#f0f2ed] mb-6">Send us a Message</h2>
+          <div className="grid md:grid-cols-3 gap-6">
+
+            {/* LEFT: Contact info cards */}
+            <div className="md:col-span-1 flex flex-col gap-4">
+              <div className="bg-white dark:bg-[#141914] border border-[rgba(22,25,26,.1)] dark:border-white/10 rounded-[24px] p-7">
+                <h2 className="font-bebas text-[1.7rem] tracking-[.04em] text-[#16191a] dark:text-[#f1f3ea] mb-1">Contact details</h2>
+                <p className="text-[.8rem] mb-6 text-[rgba(22,25,26,.6)] dark:text-[rgba(241,243,234,.6)]">
+                  Reach us directly using the details below.
+                </p>
+
+                <div className="space-y-3">
+                  {contactDetails?.address && (
+                    <div className="flex items-start gap-3 bg-[#f7f6f1] dark:bg-[#171c16] border border-[rgba(22,25,26,.07)] dark:border-white/[.06] rounded-[14px] p-4">
+                      <div className="bg-gradient-to-r from-[#399746] to-[#a8d63e] rounded-[10px] p-2.5 text-white dark:text-[#0a0c0a] flex-shrink-0">
+                        <MapPin className="w-[18px] h-[18px]" />
+                      </div>
+                      <div className="min-w-0">
+                        <h3 className="text-[.7rem] font-bold tracking-[.12em] uppercase text-[rgba(22,25,26,.5)] dark:text-[rgba(241,243,234,.5)] mb-1">Address</h3>
+                        <p className="text-[.85rem] leading-relaxed text-[#16191a] dark:text-[#f1f3ea] whitespace-pre-wrap break-words">
+                          {contactDetails.address}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {contactDetails?.phone && (
+                    <div className="flex items-start gap-3 bg-[#f7f6f1] dark:bg-[#171c16] border border-[rgba(22,25,26,.07)] dark:border-white/[.06] rounded-[14px] p-4">
+                      <div className="bg-gradient-to-r from-[#399746] to-[#a8d63e] rounded-[10px] p-2.5 text-white dark:text-[#0a0c0a] flex-shrink-0">
+                        <Phone className="w-[18px] h-[18px]" />
+                      </div>
+                      <div className="min-w-0">
+                        <h3 className="text-[.7rem] font-bold tracking-[.12em] uppercase text-[rgba(22,25,26,.5)] dark:text-[rgba(241,243,234,.5)] mb-1">Phone</h3>
+                        <p className="text-[.85rem] text-[#16191a] dark:text-[#f1f3ea] break-words">{contactDetails.phone}</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {contactDetails?.email && (
+                    <div className="flex items-start gap-3 bg-[#f7f6f1] dark:bg-[#171c16] border border-[rgba(22,25,26,.07)] dark:border-white/[.06] rounded-[14px] p-4">
+                      <div className="bg-gradient-to-r from-[#399746] to-[#a8d63e] rounded-[10px] p-2.5 text-white dark:text-[#0a0c0a] flex-shrink-0">
+                        <Mail className="w-[18px] h-[18px]" />
+                      </div>
+                      <div className="min-w-0">
+                        <h3 className="text-[.7rem] font-bold tracking-[.12em] uppercase text-[rgba(22,25,26,.5)] dark:text-[rgba(241,243,234,.5)] mb-1">Email</h3>
+                        <p className="text-[.85rem] text-[#16191a] dark:text-[#f1f3ea] break-words">{contactDetails.email}</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {contactDetails?.vat_number && (
+                    <div className="flex items-start gap-3 bg-[#f7f6f1] dark:bg-[#171c16] border border-[rgba(22,25,26,.07)] dark:border-white/[.06] rounded-[14px] p-4">
+                      <div className="bg-gradient-to-r from-[#399746] to-[#a8d63e] rounded-[10px] p-2.5 text-white dark:text-[#0a0c0a] flex-shrink-0">
+                        <Receipt className="w-[18px] h-[18px]" />
+                      </div>
+                      <div className="min-w-0">
+                        <h3 className="text-[.7rem] font-bold tracking-[.12em] uppercase text-[rgba(22,25,26,.5)] dark:text-[rgba(241,243,234,.5)] mb-1">VAT Number</h3>
+                        <p className="text-[.85rem] text-[#16191a] dark:text-[#f1f3ea] break-words">{contactDetails.vat_number}</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {contactDetails?.registered_number && (
+                    <div className="flex items-start gap-3 bg-[#f7f6f1] dark:bg-[#171c16] border border-[rgba(22,25,26,.07)] dark:border-white/[.06] rounded-[14px] p-4">
+                      <div className="bg-gradient-to-r from-[#399746] to-[#a8d63e] rounded-[10px] p-2.5 text-white dark:text-[#0a0c0a] flex-shrink-0">
+                        <Building2 className="w-[18px] h-[18px]" />
+                      </div>
+                      <div className="min-w-0">
+                        <h3 className="text-[.7rem] font-bold tracking-[.12em] uppercase text-[rgba(22,25,26,.5)] dark:text-[rgba(241,243,234,.5)] mb-1">Registered Number</h3>
+                        <p className="text-[.85rem] text-[#16191a] dark:text-[#f1f3ea] break-words">{contactDetails.registered_number}</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {!isLoadingDetails && !contactDetails && (
+                    <p className="text-[.85rem] text-[rgba(22,25,26,.5)] dark:text-[rgba(241,243,234,.5)]">No contact details available</p>
+                  )}
+                </div>
+              </div>
+
+              {/* Hours card */}
+              <div className="bg-[#f7f6f1] dark:bg-[#171c16] border border-[rgba(22,25,26,.07)] dark:border-white/[.06] rounded-[14px] p-5 flex items-start gap-3">
+                <div className="bg-gradient-to-r from-[#399746] to-[#a8d63e] rounded-[10px] p-2.5 text-white dark:text-[#0a0c0a] flex-shrink-0">
+                  <Clock className="w-[18px] h-[18px]" />
+                </div>
+                <div>
+                  <h3 className="text-[.7rem] font-bold tracking-[.12em] uppercase text-[rgba(22,25,26,.5)] dark:text-[rgba(241,243,234,.5)] mb-1">Business Hours</h3>
+                  <p className="text-[.85rem] text-[#16191a] dark:text-[#f1f3ea]">Mon – Fri, 8:00 – 17:00</p>
+                </div>
+              </div>
+            </div>
+
+            {/* RIGHT: Contact form tile */}
+            <div className="md:col-span-2 bg-white dark:bg-[#141914] border border-[rgba(22,25,26,.1)] dark:border-white/10 rounded-[24px] p-8 sm:p-9">
+              <div className="flex items-center gap-3 mb-1">
+                <div className="bg-gradient-to-r from-[#399746] to-[#a8d63e] rounded-[10px] p-2 text-white dark:text-[#0a0c0a]">
+                  <MessageSquare className="w-5 h-5" />
+                </div>
+                <h2 className="font-bebas text-[1.9rem] tracking-[.04em] text-[#16191a] dark:text-[#f1f3ea]">Send us a message</h2>
+              </div>
+              <p className="text-[.85rem] mb-7 text-[rgba(22,25,26,.6)] dark:text-[rgba(241,243,234,.6)]">
+                Fill in the form and our team will get back to you shortly.
+              </p>
 
               <form onSubmit={(e) => {
                 e.preventDefault();
@@ -340,42 +421,44 @@ export default function ContactUs() {
                   )}
                 </div>
 
-                {/* Name */}
-                <div>
-                  <label htmlFor="name" className={labelCls}>
-                    Full Name <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    id="name"
-                    name="name"
-                    type="text"
-                    placeholder="John Doe"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    className={inputCls}
-                  />
-                  {errors.name && (
-                    <p className={errorCls}>{errors.name}</p>
-                  )}
-                </div>
+                <div className="grid sm:grid-cols-2 gap-5">
+                  {/* Name */}
+                  <div>
+                    <label htmlFor="name" className={labelCls}>
+                      Full Name <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      id="name"
+                      name="name"
+                      type="text"
+                      placeholder="John Doe"
+                      value={formData.name}
+                      onChange={handleInputChange}
+                      className={inputCls}
+                    />
+                    {errors.name && (
+                      <p className={errorCls}>{errors.name}</p>
+                    )}
+                  </div>
 
-                {/* Email */}
-                <div>
-                  <label htmlFor="email" className={labelCls}>
-                    Email Address <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    placeholder="john@example.com"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    className={inputCls}
-                  />
-                  {errors.email && (
-                    <p className={errorCls}>{errors.email}</p>
-                  )}
+                  {/* Email */}
+                  <div>
+                    <label htmlFor="email" className={labelCls}>
+                      Email Address <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      id="email"
+                      name="email"
+                      type="email"
+                      placeholder="john@example.com"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      className={inputCls}
+                    />
+                    {errors.email && (
+                      <p className={errorCls}>{errors.email}</p>
+                    )}
+                  </div>
                 </div>
 
                 {/* Phone */}
@@ -409,7 +492,7 @@ export default function ContactUs() {
                     rows={5}
                     value={formData.message}
                     onChange={handleInputChange}
-                    className={inputCls}
+                    className={`${inputCls} resize-y`}
                   />
                   {errors.message && (
                     <p className={errorCls}>{errors.message}</p>
@@ -421,24 +504,24 @@ export default function ContactUs() {
                   <label htmlFor="file" className={labelCls}>
                     File Attachment
                   </label>
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 bg-[#f7f6f1] dark:bg-[#171c16] border border-[rgba(22,25,26,.07)] dark:border-white/[.06] rounded-[14px] px-4 py-3">
+                    <FileText className="w-5 h-5 flex-shrink-0 text-[rgba(22,25,26,.42)] dark:text-[rgba(241,243,234,.42)]" />
                     <input
                       id="file"
                       name="file"
                       type="file"
                       onChange={handleFileChange}
-                      className="flex-1 text-[.85rem]"
+                      className="flex-1 min-w-0 text-[.85rem] text-[rgba(22,25,26,.7)] dark:text-[rgba(241,243,234,.7)] file:mr-3 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:text-[.78rem] file:font-medium file:bg-[#2f8b3d]/10 dark:file:bg-[#a8d63e]/15 file:text-[#2f8b3d] dark:file:text-[#a8d63e] file:cursor-pointer cursor-pointer"
                     />
-                    <FileText className="w-5 h-5 text-black/40 dark:text-[rgba(240,242,237,.4)]" />
                   </div>
-                  <p className="text-[.75rem] text-black/50 dark:text-[rgba(240,242,237,.5)] mt-1">Optional - Max file size: 5MB</p>
+                  <p className="text-[.75rem] mt-1.5 text-[rgba(22,25,26,.5)] dark:text-[rgba(241,243,234,.5)]">Optional - Max file size: 5MB</p>
                 </div>
 
                 {/* Submit Button */}
                 <button
                   type="submit"
                   disabled={isSubmitting || isLoadingProfile}
-                  className="w-full bg-gradient-to-br from-green-brand to-lime-brand text-white dark:text-dark-surface font-semibold py-3 rounded-lg transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="w-full mt-2 inline-flex items-center justify-center gap-2 font-semibold rounded-full px-6 py-[.8rem] bg-gradient-to-r from-[#399746] to-[#a8d63e] text-white dark:text-[#0a0c0a] text-[.9rem] transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)] disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isSubmitting ? (
                     <>
@@ -446,83 +529,13 @@ export default function ContactUs() {
                       Sending...
                     </>
                   ) : (
-                    'Send Message'
+                    <>
+                      <Send className="w-[18px] h-[18px]" />
+                      Send Message
+                    </>
                   )}
                 </button>
               </form>
-            </div>
-
-            {/* Contact Details */}
-            <div className="bg-white dark:bg-black/[.02] rounded-lg border border-black/[.08] dark:border-white/[.06] p-8">
-              <h2 className="font-bebas text-2xl tracking-[.08em] text-black/85 dark:text-[#f0f2ed] mb-6">Contact Details</h2>
-
-              <div className="space-y-6">
-                {contactDetails?.address && (
-                  <div className="flex items-start gap-4">
-                    <div className="bg-gradient-to-br from-green-brand to-lime-brand rounded-lg p-3 text-white dark:text-dark-surface flex-shrink-0">
-                      <MapPin className="w-6 h-6" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-black/85 dark:text-[#f0f2ed] mb-2">Address</h3>
-                      <p className="text-black/60 dark:text-[rgba(240,242,237,.6)] text-[.85rem] leading-relaxed whitespace-pre-wrap">
-                        {contactDetails.address}
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-                {contactDetails?.phone && (
-                  <div className="flex items-start gap-4">
-                    <div className="bg-gradient-to-br from-green-brand to-lime-brand rounded-lg p-3 text-white dark:text-dark-surface flex-shrink-0">
-                      <Phone className="w-6 h-6" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-black/85 dark:text-[#f0f2ed] mb-2">Phone</h3>
-                      <p className="text-black/60 dark:text-[rgba(240,242,237,.6)] text-[.85rem]">{contactDetails.phone}</p>
-                    </div>
-                  </div>
-                )}
-
-                {contactDetails?.vat_number && (
-                  <div className="flex items-start gap-4">
-                    <div className="bg-gradient-to-br from-green-brand to-lime-brand rounded-lg p-3 text-white dark:text-dark-surface flex-shrink-0">
-                      <Receipt className="w-6 h-6" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-black/85 dark:text-[#f0f2ed] mb-2">VAT Number</h3>
-                      <p className="text-black/60 dark:text-[rgba(240,242,237,.6)] text-[.85rem]">{contactDetails.vat_number}</p>
-                    </div>
-                  </div>
-                )}
-
-                {contactDetails?.registered_number && (
-                  <div className="flex items-start gap-4">
-                    <div className="bg-gradient-to-br from-green-brand to-lime-brand rounded-lg p-3 text-white dark:text-dark-surface flex-shrink-0">
-                      <Building2 className="w-6 h-6" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-black/85 dark:text-[#f0f2ed] mb-2">Registered Number</h3>
-                      <p className="text-black/60 dark:text-[rgba(240,242,237,.6)] text-[.85rem]">{contactDetails.registered_number}</p>
-                    </div>
-                  </div>
-                )}
-
-                {contactDetails?.email && (
-                  <div className="flex items-start gap-4">
-                    <div className="bg-gradient-to-br from-green-brand to-lime-brand rounded-lg p-3 text-white dark:text-dark-surface flex-shrink-0">
-                      <Mail className="w-6 h-6" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-black/85 dark:text-[#f0f2ed] mb-2">Email</h3>
-                      <p className="text-black/60 dark:text-[rgba(240,242,237,.6)] text-[.85rem]">{contactDetails.email}</p>
-                    </div>
-                  </div>
-                )}
-
-                {!isLoadingDetails && !contactDetails && (
-                  <p className="text-black/50 dark:text-[rgba(240,242,237,.5)] text-[.85rem]">No contact details available</p>
-                )}
-              </div>
             </div>
           </div>
         </div>

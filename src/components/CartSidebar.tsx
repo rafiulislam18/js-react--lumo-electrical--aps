@@ -116,7 +116,7 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
           />
         )}
         <div
-          className={`fixed right-0 top-0 h-screen w-full md:w-96 bg-white dark:bg-dark-surface shadow-2xl transform transition-transform duration-300 z-50 flex flex-col ${
+          className={`fixed right-0 top-0 h-screen w-full md:w-96 bg-[#f6f5f0] dark:bg-dark-surface shadow-2xl transform transition-transform duration-300 z-50 flex flex-col ${
             isOpen ? "translate-x-0" : "translate-x-full"
           }`}
         >
@@ -165,7 +165,7 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
 
       {/* Sidebar */}
       <div
-        className={`fixed right-0 top-0 h-screen w-full md:w-96 bg-white dark:bg-dark-surface shadow-2xl transform transition-transform duration-300 z-50 flex flex-col font-outfit ${
+        className={`fixed right-0 top-0 h-screen w-full md:w-96 bg-[#f6f5f0] dark:bg-dark-surface shadow-2xl transform transition-transform duration-300 z-50 flex flex-col font-outfit ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
@@ -270,7 +270,7 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
 
         {/* Footer */}
         {!isLoading && items.length > 0 && (
-          <div className="border-t border-black/[.08] dark:border-white/[.06] p-4 space-y-3 bg-white dark:bg-black/[.02]">
+          <div className="border-t border-black/[.08] dark:border-white/[.06] p-4 space-y-3 bg-[#f6f5f0] dark:bg-black/[.02]">
             {/* Totals */}
             <div className="space-y-1 text-sm">
               <div className="flex justify-between text-black/60 dark:text-[rgba(240,242,237,.6)]">

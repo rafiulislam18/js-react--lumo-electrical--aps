@@ -175,51 +175,49 @@ export default function Products() {
   }, [currentPage, q, searchQuery, setSearchParams]);
 
   return (
-    <div className="font-outfit bg-white dark:bg-dark-surface min-h-screen flex flex-col">
+    <div className="font-outfit bg-[#f6f5f0]/[.86] dark:bg-dark-surface min-h-screen flex flex-col">
       {/* Breadcrumb Section */}
-      <section className="border-b border-black/[.08] dark:border-white/[.06] bg-white dark:bg-black/[.02]">
-        <div className="max-w-[1280px] mx-auto px-4 py-4 sm:py-6">
-          <div className="flex items-center gap-2 text-[.8rem] overflow-x-auto">
-            <a href="/" className="text-black/60 dark:text-[rgba(240,242,237,.6)] hover:text-lime-brand dark:hover:text-lime-brand transition-colors whitespace-nowrap">Home</a>
-            <span className="text-black/40 dark:text-[rgba(240,242,237,.4)]">/</span>
-            <span className="text-green-deep dark:text-lime-brand font-semibold whitespace-nowrap">{getDisplayTitle()}</span>
-          </div>
+      <div className="border-b border-[rgba(22,25,26,.07)] dark:border-white/[.06]">
+        <div className="max-w-[1280px] mx-auto w-full px-4 sm:px-8 py-4 flex items-center gap-2 text-[.8rem] overflow-x-auto">
+          <a href="/" className="text-[rgba(22,25,26,.6)] dark:text-[rgba(241,243,234,.6)] hover:text-[#2f8b3d] dark:hover:text-[#a8d63e] transition-colors whitespace-nowrap">Home</a>
+          <span className="text-[rgba(22,25,26,.42)] dark:text-[rgba(241,243,234,.42)]">/</span>
+          <span className="font-semibold text-[#2f8b3d] dark:text-[#a8d63e] whitespace-nowrap">{getDisplayTitle()}</span>
+        </div>
+      </div>
 
+      {/* Main Content */}
+      <div className="flex-1 max-w-[1280px] mx-auto w-full px-4 sm:px-8 py-10">
+        {/* Header */}
+        <div className="mb-8">
+          <div className="inline-flex items-center gap-[.55rem] text-[.68rem] font-bold tracking-[.2em] uppercase text-[#2f8b3d] dark:text-[#a8d63e] mb-3 before:content-[''] before:w-[1.4rem] before:h-0.5 before:rounded-sm before:bg-[#2f8b3d] dark:before:bg-[#a8d63e] before:shrink-0">
+            Shop the range
+          </div>
+          {!getDisplayTitle().includes('Search') && (
+            <h1 className="font-bebas leading-[.9] text-[clamp(2.4rem,6vw,4rem)] text-[#16191a] dark:text-[#f1f3ea]">
+              {getDisplayTitle()}
+            </h1>
+          )}
           {!getDisplayDescription().includes('search') && (
-            <p className="text-[.9rem] text-black/60 dark:text-[rgba(240,242,237,.6)] mt-4">
+            <p className="mt-3 text-[.95rem] leading-relaxed max-w-[680px] text-[rgba(22,25,26,.6)] dark:text-[rgba(241,243,234,.6)]">
               {getDisplayDescription()}
             </p>
           )}
-        </div>
-      </section>
-
-      {/* Main Content */}
-      <div className="flex-1 max-w-[1280px] mx-auto w-full px-4 py-8">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-          <div className="flex-1 min-w-0">
-            {!getDisplayTitle().includes('Search') && (
-              <h2 className="font-bebas text-[2rem] tracking-[.08em] text-black/85 dark:text-[#f0f2ed] line-clamp-2 sm:line-clamp-none">
-                {getDisplayTitle()}
-              </h2>
-            )}
-            <p className="text-[.85rem] text-black/60 dark:text-[rgba(240,242,237,.6)] mt-2">
-              {isLoading ? 'Loading products...' : `Showing ${transformedProducts.length} of ${totalCount} products`}
-            </p>
-          </div>
+          <p className="mt-4 text-[.82rem] text-[rgba(22,25,26,.42)] dark:text-[rgba(241,243,234,.42)]">
+            {isLoading ? 'Loading products...' : `Showing ${transformedProducts.length} of ${totalCount} products`}
+          </p>
         </div>
 
         {/* Products Grid */}
         {isLoading ? (
           <div className="flex items-center justify-center min-h-96">
-            <Loader className="w-8 h-8 text-lime-brand animate-spin" />
+            <Loader className="w-8 h-8 text-[#a8d63e] animate-spin" />
           </div>
         ) : isError ? (
           <div className="text-center py-16">
             <p className="text-red-600 dark:text-red-400 text-lg">Failed to load products. Please try again later.</p>
           </div>
         ) : transformedProducts.length > 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-4 lg:gap-6 mb-12">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-4 lg:gap-5 mb-12">
             {transformedProducts.map((product: any) => (
               <div key={product.id}>
                 <ProductCard product={product} />
@@ -228,7 +226,7 @@ export default function Products() {
           </div>
         ) : (
           <div className="text-center py-16">
-            <p className="text-black/60 dark:text-[rgba(240,242,237,.6)] text-lg">No products found.</p>
+            <p className="text-[rgba(22,25,26,.6)] dark:text-[rgba(241,243,234,.6)] text-lg">No products found.</p>
           </div>
         )}
 
@@ -238,36 +236,34 @@ export default function Products() {
             <button
               onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
-              className="p-2 rounded-lg border border-black/[.1] dark:border-white/[.08] text-black/60 dark:text-[rgba(240,242,237,.6)] hover:border-lime-brand/30 dark:hover:border-lime-brand/20 hover:text-lime-brand dark:hover:text-lime-brand disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+              className="w-9 h-9 rounded-[10px] grid place-items-center border border-[rgba(22,25,26,.1)] dark:border-white/10 text-[rgba(22,25,26,.6)] dark:text-[rgba(241,243,234,.6)] hover:text-[#2f8b3d] dark:hover:text-[#a8d63e] disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
             >
-              <ChevronLeft className="w-5 h-5" />
+              <ChevronLeft className="w-4 h-4" />
             </button>
 
-            <div className="flex items-center gap-1">
-              {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
-                const pageNum = currentPage <= 3 ? i + 1 : currentPage - 2 + i;
-                return pageNum <= totalPages ? pageNum : null;
-              }).filter((p): p is number => p !== null).map(page => (
-                <button
-                  key={page}
-                  onClick={() => setCurrentPage(page)}
-                  className={`min-w-10 py-2 px-2 rounded-lg text-[.85rem] font-semibold transition-all duration-200 ${
-                    currentPage === page
-                      ? 'bg-gradient-to-br from-green-brand to-lime-brand text-white dark:text-dark-surface'
-                      : 'border border-black/[.1] dark:border-white/[.08] text-black/60 dark:text-[rgba(240,242,237,.6)] hover:border-lime-brand/30 dark:hover:border-lime-brand/20 hover:text-lime-brand dark:hover:text-lime-brand'
-                  }`}
-                >
-                  {page}
-                </button>
-              ))}
-            </div>
+            {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+              const pageNum = currentPage <= 3 ? i + 1 : currentPage - 2 + i;
+              return pageNum <= totalPages ? pageNum : null;
+            }).filter((p): p is number => p !== null).map(page => (
+              <button
+                key={page}
+                onClick={() => setCurrentPage(page)}
+                className={`min-w-9 h-9 px-2 rounded-[10px] text-[.85rem] font-semibold transition-colors duration-200 ${
+                  currentPage === page
+                    ? 'bg-gradient-to-br from-[#399746] to-[#3aaa49] text-white'
+                    : 'border border-[rgba(22,25,26,.1)] dark:border-white/10 text-[rgba(22,25,26,.6)] dark:text-[rgba(241,243,234,.6)] hover:text-[#2f8b3d] dark:hover:text-[#a8d63e]'
+                }`}
+              >
+                {page}
+              </button>
+            ))}
 
             <button
               onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
               disabled={currentPage === totalPages}
-              className="p-2 rounded-lg border border-black/[.1] dark:border-white/[.08] text-black/60 dark:text-[rgba(240,242,237,.6)] hover:border-lime-brand/30 dark:hover:border-lime-brand/20 hover:text-lime-brand dark:hover:text-lime-brand disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+              className="w-9 h-9 rounded-[10px] grid place-items-center border border-[rgba(22,25,26,.1)] dark:border-white/10 text-[rgba(22,25,26,.6)] dark:text-[rgba(241,243,234,.6)] hover:text-[#2f8b3d] dark:hover:text-[#a8d63e] disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
             >
-              <ChevronRight className="w-5 h-5" />
+              <ChevronRight className="w-4 h-4" />
             </button>
           </div>
         )}

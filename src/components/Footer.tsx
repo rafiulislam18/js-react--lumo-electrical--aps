@@ -22,7 +22,7 @@ export function Footer({ contactDetails }: FooterProps) {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="font-outfit bg-[#060806] text-[#f0f2ed]/60 border-t border-white/[0.06]">
+    <footer className="font-outfit bg-[#060806] text-[rgba(241,243,234,.6)] border-t border-white/[0.06]">
 
       {/* CTA BANNER */}
       <div className="relative overflow-hidden bg-[#0d1a0f] px-4 py-12 sm:px-8 sm:py-16">
@@ -67,7 +67,7 @@ export function Footer({ contactDetails }: FooterProps) {
             <Link to="/">
               <img src="/images/logo-light.png" alt="Lumo Electrical" className="h-[38px] mb-5 block" />
             </Link>
-            <p className="text-[0.88rem] leading-[1.8] font-light max-w-[280px] mb-7 text-[#f0f2ed]/60">
+            <p className="text-[0.88rem] leading-[1.8] font-light max-w-[280px] mb-7 text-[rgba(241,243,234,.55)]">
               Premium electrical components, tools and solutions trusted by professionals and DIY enthusiasts across Cape Town, South Africa.
             </p>
             {/* <div className="flex gap-[0.6rem]">
@@ -89,7 +89,7 @@ export function Footer({ contactDetails }: FooterProps) {
 
           {/* Quick Links */}
           <div>
-            <div className="font-bebas text-[1.1rem] tracking-[0.08em] text-[#f0f2ed] mb-5">Quick Links</div>
+            <div className="font-bebas text-[1.1rem] tracking-[0.08em] text-white mb-5">Quick Links</div>
             <ul className="list-none p-0 m-0 flex flex-col gap-[0.65rem]">
               {[
                 { label: 'Home',         href: '/' },
@@ -113,7 +113,7 @@ export function Footer({ contactDetails }: FooterProps) {
 
           {/* Account */}
           <div>
-            <div className="font-bebas text-[1.1rem] tracking-[0.08em] text-[#f0f2ed] mb-5">My Account</div>
+            <div className="font-bebas text-[1.1rem] tracking-[0.08em] text-white mb-5">My Account</div>
             <ul className="list-none p-0 m-0 flex flex-col gap-[0.65rem]">
               {[
                 { label: 'My Profile',      href: '/profile' },
@@ -137,7 +137,7 @@ export function Footer({ contactDetails }: FooterProps) {
 
           {/* Contact */}
           <div>
-            <div className="font-bebas text-[1.1rem] tracking-[0.08em] text-[#f0f2ed] mb-5">Contact Info</div>
+            <div className="font-bebas text-[1.1rem] tracking-[0.08em] text-white mb-5">Contact Info</div>
             {[
               { icon: <MapPin size={14} />, text: contactDetails.address, wrap: true },
               { icon: <Phone size={14} />,  text: contactDetails.phone, href: whatsappHref(contactDetails.phone), external: true },

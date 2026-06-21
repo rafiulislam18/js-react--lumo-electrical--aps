@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Eye, EyeOff, Mail, Lock, Loader } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, Loader, Package, Heart, ShoppingCart, ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/context/AuthContext";
 
@@ -117,137 +117,154 @@ export default function Login() {
   };
 
   return (
-    <div className="font-outfit bg-white dark:bg-dark-surface min-h-screen flex flex-col items-center justify-center px-4 py-12">
-      {/* Logo/Header */}
-      <div className="mb-12 text-center">
-        <h1 className="font-bebas text-[2.5rem] tracking-[.08em] text-black/85 dark:text-[#f0f2ed] mb-2">
-          Welcome Back
-        </h1>
-        <p className="text-[.9rem] text-black/55 dark:text-[rgba(240,242,237,.55)]">
-          Sign in to your account
-        </p>
-      </div>
+    <div className="font-outfit bg-[#f6f5f0] dark:bg-[#0a0c0a] min-h-screen flex items-center justify-center px-4 py-12">
+      <div className="w-full max-w-[860px]">
+        <div className="bg-white dark:bg-[#141914] border border-[rgba(22,25,26,.1)] dark:border-white/10 rounded-[24px] overflow-hidden grid md:grid-cols-2">
 
-      {/* Form Card */}
-      <div className="w-full max-w-md">
-        <div className="bg-white dark:bg-black/[.02] rounded-xl border border-black/[.08] dark:border-white/[.06] overflow-hidden">
+          {/* Brand panel */}
+          <div
+            className="relative hidden md:flex flex-col justify-between p-9 overflow-hidden"
+            style={{ background: 'linear-gradient(150deg,#399746,#a8d63e)' }}
+          >
+            <div className="self-start inline-flex rounded-xl px-3.5 py-2.5 relative">
+              {/* <img src="/images/logo-light.png" alt="Lumo Electrical" className="h-8" /> */}
+            </div>
+            <div className="relative">
+              <div className="font-bebas leading-[.95] text-white text-[2.8rem]">Welcome back.</div>
+              <p className="text-[.9rem] leading-relaxed mt-3 text-white/85">
+                You'll need an account to place orders, check out and track deliveries. Sign in to pick up where you left off.
+              </p>
+            </div>
+            <div className="relative flex flex-col gap-2.5 text-[.82rem] text-white/90">
+              <span className="flex items-center gap-2"><Heart className="w-4 h-4" /> Save items to your wishlist</span>
+              <span className="flex items-center gap-2"><Package className="w-4 h-4" /> Place &amp; manage your orders</span>
+              <span className="flex items-center gap-2"><ShoppingCart className="w-4 h-4" /> Cart, questions, reviews &amp; much more</span>
+            </div>
+          </div>
+
           {/* Form */}
-          <form onSubmit={handleSubmit} className="p-8 space-y-5">
-
-            {/* Email */}
-            <div>
-              <label className="block text-[.8rem] font-medium text-black/70 dark:text-[rgba(240,242,237,.7)] mb-2">
-                Email Address <span className="text-red-500">*</span>
-              </label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-black/40 dark:text-[rgba(240,242,237,.4)]" />
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="your@email.com"
-                  className="w-full pl-10 pr-4 py-3 text-[.85rem] bg-white dark:bg-black/[.05] border border-black/[.1] dark:border-white/[.08] rounded-lg text-black/80 dark:text-[rgba(240,242,237,.8)] placeholder-black/40 dark:placeholder-[rgba(240,242,237,.4)] focus:outline-none focus:border-lime-brand/30 focus:bg-lime-brand/[.05] dark:focus:bg-lime-brand/[.05] transition-all duration-150"
-                  required
-                />
-              </div>
+          <div className="p-8 sm:p-9">
+            <div className="inline-flex items-center gap-2 text-[.68rem] font-bold tracking-[.2em] uppercase text-[#2f8b3d] dark:text-[#a8d63e] mb-3 before:content-[''] before:w-6 before:h-0.5 before:bg-[#2f8b3d] dark:before:bg-[#a8d63e] before:rounded-sm before:shrink-0">
+              Welcome back
             </div>
+            <h1 className="font-bebas text-[2.2rem] leading-none mb-1.5 text-[#16191a] dark:text-[#f1f3ea]">Sign In</h1>
+            <p className="text-[.88rem] mb-7 text-[rgba(22,25,26,.6)] dark:text-[rgba(241,243,234,.6)]">Sign in to your account</p>
 
-            {/* Password */}
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <label className="block text-[.8rem] font-medium text-black/70 dark:text-[rgba(240,242,237,.7)]">
-                  Password <span className="text-red-500">*</span>
+            <form onSubmit={handleSubmit} className="space-y-5">
+
+              {/* Email */}
+              <div>
+                <label className="block text-[.8rem] font-medium mb-2 text-[rgba(22,25,26,.6)] dark:text-[rgba(241,243,234,.6)]">
+                  Email Address <span className="text-red-500">*</span>
                 </label>
-                <Link
-                  to="/forgot-password"
-                  className="text-[.75rem] text-green-deep dark:text-lime-brand hover:text-green-deep/80 dark:hover:text-lime-brand/80 font-medium transition-colors duration-150"
-                >
-                  Forgot password?
-                </Link>
+                <div className="relative">
+                  <Mail className="w-[18px] h-[18px] absolute left-3 top-1/2 -translate-y-1/2 text-[rgba(22,25,26,.42)] dark:text-[rgba(241,243,234,.42)]" />
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    placeholder="your@email.com"
+                    className="w-full pl-10 pr-[.9rem] py-[.8rem] text-[.85rem] bg-white dark:bg-[#141914] border border-[rgba(22,25,26,.1)] dark:border-white/10 rounded-[10px] text-[#16191a] dark:text-[#f1f3ea] placeholder-[rgba(22,25,26,.42)] dark:placeholder-[rgba(241,243,234,.42)] outline-none focus:border-[rgba(57,151,70,.4)] transition-colors"
+                    required
+                  />
+                </div>
               </div>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-black/40 dark:text-[rgba(240,242,237,.4)]" />
+
+              {/* Password */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="text-[.8rem] font-medium text-[rgba(22,25,26,.6)] dark:text-[rgba(241,243,234,.6)]">
+                    Password <span className="text-red-500">*</span>
+                  </label>
+                  <Link
+                    to="/forgot-password"
+                    className="text-[.75rem] font-medium text-[#2f8b3d] dark:text-[#a8d63e] hover:opacity-80 transition-opacity"
+                  >
+                    Forgot password?
+                  </Link>
+                </div>
+                <div className="relative">
+                  <Lock className="w-[18px] h-[18px] absolute left-3 top-1/2 -translate-y-1/2 text-[rgba(22,25,26,.42)] dark:text-[rgba(241,243,234,.42)]" />
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    placeholder="••••••••"
+                    className="w-full pl-10 pr-10 py-[.8rem] text-[.85rem] bg-white dark:bg-[#141914] border border-[rgba(22,25,26,.1)] dark:border-white/10 rounded-[10px] text-[#16191a] dark:text-[#f1f3ea] placeholder-[rgba(22,25,26,.42)] dark:placeholder-[rgba(241,243,234,.42)] outline-none focus:border-[rgba(57,151,70,.4)] transition-colors"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[rgba(22,25,26,.42)] dark:text-[rgba(241,243,234,.42)] hover:text-[rgba(22,25,26,.7)] dark:hover:text-[rgba(241,243,234,.7)] transition-colors"
+                  >
+                    {showPassword ? (
+                      <EyeOff className="w-[18px] h-[18px]" />
+                    ) : (
+                      <Eye className="w-[18px] h-[18px]" />
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {/* Remember Me */}
+              <label className="flex items-center gap-3 cursor-pointer">
                 <input
-                  type={showPassword ? "text" : "password"}
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  placeholder="••••••••"
-                  className="w-full pl-10 pr-10 py-3 text-[.85rem] bg-white dark:bg-black/[.05] border border-black/[.1] dark:border-white/[.08] rounded-lg text-black/80 dark:text-[rgba(240,242,237,.8)] placeholder-black/40 dark:placeholder-[rgba(240,242,237,.4)] focus:outline-none focus:border-lime-brand/30 focus:bg-lime-brand/[.05] dark:focus:bg-lime-brand/[.05] transition-all duration-150"
-                  required
+                  type="checkbox"
+                  id="remember"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="w-4 h-4 rounded accent-[#3aaa49] cursor-pointer"
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-black/40 dark:text-[rgba(240,242,237,.4)] hover:text-black/60 dark:hover:text-[rgba(240,242,237,.6)] transition-colors duration-150"
-                >
-                  {showPassword ? (
-                    <EyeOff className="w-5 h-5" />
-                  ) : (
-                    <Eye className="w-5 h-5" />
-                  )}
-                </button>
-              </div>
-            </div>
-
-            {/* Remember Me */}
-            <div className="flex items-center gap-3">
-              <input
-                type="checkbox"
-                id="remember"
-                checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
-                className="w-4 h-4 rounded accent-lime-brand cursor-pointer"
-              />
-              <label htmlFor="remember" className="text-[.8rem] text-black/60 dark:text-[rgba(240,242,237,.6)] cursor-pointer">
-                Remember me
+                <span className="text-[.8rem] text-[rgba(22,25,26,.6)] dark:text-[rgba(241,243,234,.6)]">
+                  Remember me
+                </span>
               </label>
-            </div>
 
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full py-3 rounded-lg bg-gradient-to-br from-green-brand to-lime-brand text-white dark:text-dark-surface font-semibold text-[.9rem] cursor-pointer transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-6"
-            >
-              {isLoading ? (
-                <>
-                  <Loader size={16} className="animate-spin" />
-                  Signing In...
-                </>
-              ) : (
-                'Sign In'
-              )}
-            </button>
-          </form>
+              {/* Submit Button */}
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full mt-6 inline-flex items-center justify-center gap-2 font-semibold rounded-full px-6 py-[.8rem] bg-gradient-to-r from-[#399746] to-[#a8d63e] text-white dark:text-[#0a0c0a] text-[.9rem] transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)] disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isLoading ? (
+                  <>
+                    <Loader size={16} className="animate-spin" />
+                    Signing In...
+                  </>
+                ) : (
+                  'Sign In'
+                )}
+              </button>
+            </form>
 
-          {/* Footer */}
-          <div className="px-8 py-5 bg-black/[.02] dark:bg-white/[.02] border-t border-black/[.08] dark:border-white/[.06] text-center">
-            <p className="text-[.8rem] text-black/60 dark:text-[rgba(240,242,237,.6)]">
+            {/* Sign up */}
+            <div className="text-center text-[.8rem] mt-6 pt-5 border-t border-[rgba(22,25,26,.07)] dark:border-white/[.07] text-[rgba(22,25,26,.6)] dark:text-[rgba(241,243,234,.6)]">
               Don't have an account?{" "}
-              <Link to="/signup" className="text-green-deep dark:text-lime-brand hover:text-green-deep/80 dark:hover:text-lime-brand/80 font-semibold transition-colors duration-150">
+              <Link to="/signup" className="font-semibold text-[#2f8b3d] dark:text-[#a8d63e] hover:opacity-80 transition-opacity">
                 Sign Up
               </Link>
-            </p>
+            </div>
+
+            {/* Divider */}
+            <div className="flex items-center gap-4 my-5">
+              <div className="flex-1 h-px bg-[rgba(22,25,26,.07)] dark:bg-white/[.07]" />
+              <span className="text-[.74rem] text-[rgba(22,25,26,.42)] dark:text-[rgba(241,243,234,.42)]">OR</span>
+              <div className="flex-1 h-px bg-[rgba(22,25,26,.07)] dark:bg-white/[.07]" />
+            </div>
+
+            {/* Continue as Guest */}
+            <div className="text-center">
+              <Link
+                to="/"
+                className="inline-flex items-center gap-2 text-[.8rem] font-medium text-[rgba(22,25,26,.6)] dark:text-[rgba(241,243,234,.6)] hover:text-[#2f8b3d] dark:hover:text-[#a8d63e] transition-colors"
+              >
+                <ArrowLeft className="w-4 h-4" /> Continue as Guest
+              </Link>
+            </div>
           </div>
-        </div>
-
-        {/* Divider */}
-        <div className="mt-8 flex items-center gap-4">
-          <div className="flex-1 h-px bg-black/[.08] dark:bg-white/[.06]" />
-          <span className="text-[.75rem] text-black/40 dark:text-[rgba(240,242,237,.4)]">OR</span>
-          <div className="flex-1 h-px bg-black/[.08] dark:bg-white/[.06]" />
-        </div>
-
-        {/* Back Home */}
-        <div className="mt-6 text-center">
-          <Link
-            to="/"
-            className="inline-flex items-center gap-2 text-[.8rem] text-black/60 dark:text-[rgba(240,242,237,.6)] hover:text-green-deep dark:hover:text-lime-brand transition-colors duration-150 font-medium"
-          >
-            ← Continue as Guest
-          </Link>
         </div>
       </div>
     </div>

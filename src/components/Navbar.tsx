@@ -28,8 +28,8 @@ interface NavbarProps {
 
 function CategoryMenuItem({ category, light }: { category: Category; light: boolean }) {
   const [isOpen, setIsOpen] = useState(false);
-  const itemCls = `flex items-center justify-between px-[0.7rem] py-2 rounded text-[0.82rem] no-underline cursor-pointer transition-all duration-[140ms] ${light ? "text-black/[0.68] hover:bg-[#399746]/[0.09] hover:text-[#399746]" : "text-[#f0f2ed]/[0.68] hover:bg-[#a8d63e]/[0.09] hover:text-[#a8d63e]"}`;
-  const panelCls = `absolute left-full top-0 border rounded-md p-2 min-w-[220px] z-[100] ${light ? "bg-[#f5f5f5] border-black/[0.12] shadow-[0_18px_44px_rgba(0,0,0,0.1)]" : "bg-[#111411] border-white/[0.09] shadow-[0_18px_44px_rgba(0,0,0,0.65)]"}`;
+  const itemCls = `flex items-center justify-between px-[0.7rem] py-2 rounded-[8px] text-[0.82rem] no-underline cursor-pointer transition-all duration-[140ms] ${light ? "text-[rgba(22,25,26,.6)] hover:bg-[#399746]/[0.09] hover:text-[#2f8b3d]" : "text-[rgba(241,243,234,.6)] hover:bg-[#a8d63e]/[0.09] hover:text-[#a8d63e]"}`;
+  const panelCls = `absolute left-full top-0 border rounded-[10px] p-2 min-w-[220px] z-[100] ${light ? "bg-white border-[rgba(22,25,26,.1)] shadow-[0_18px_44px_rgba(0,0,0,0.1)]" : "bg-[#141914] border-white/10 shadow-[0_18px_44px_rgba(0,0,0,0.65)]"}`;
   if (!category.children?.length) {
     return <a href={`/${category.slug}`} className={itemCls}>{category.name}</a>;
   }
@@ -50,8 +50,8 @@ function CategoryMenuItem({ category, light }: { category: Category; light: bool
 
 function QuickCat({ category, light }: { category: Category; light: boolean }) {
   const [open, setOpen] = useState(false);
-  const linkCls = `text-[0.77rem] font-medium no-underline flex items-center gap-[0.28rem] h-[42px] transition-colors duration-[180ms] whitespace-nowrap ${light ? "text-black/[0.52] hover:text-[#399746]" : "text-[#f0f2ed]/[0.52] hover:text-[#a8d63e]"}`;
-  const panelCls = `absolute left-0 top-[42px] border border-t-0 rounded-b-lg p-2 min-w-[220px] z-[9999] ${light ? "bg-[#f5f5f5] border-black/[0.12] shadow-[0_18px_44px_rgba(0,0,0,0.1)]" : "bg-[#111411] border-white/[0.09] shadow-[0_18px_44px_rgba(0,0,0,0.65)]"}`;
+  const linkCls = `text-[0.77rem] font-medium no-underline flex items-center gap-[0.28rem] h-[42px] transition-colors duration-[180ms] whitespace-nowrap ${light ? "text-[rgba(22,25,26,.6)] hover:text-[#2f8b3d]" : "text-[rgba(241,243,234,.6)] hover:text-[#a8d63e]"}`;
+  const panelCls = `absolute left-0 top-[42px] border border-t-0 rounded-b-[10px] p-2 min-w-[220px] z-[9999] ${light ? "bg-white border-[rgba(22,25,26,.1)] shadow-[0_18px_44px_rgba(0,0,0,0.1)]" : "bg-[#141914] border-white/10 shadow-[0_18px_44px_rgba(0,0,0,0.65)]"}`;
   if (!category.children?.length) {
     return <a href={`/${category.slug}`} className={linkCls}>{category.name}</a>;
   }
@@ -73,17 +73,17 @@ function MobileCategoryItem({ category, level = 0, light }: { category: Category
   const [expanded, setExpanded] = useState(false);
   return (
     <div>
-      <div className={`flex items-center border-b ${light ? "border-black/[0.08]" : "border-white/[0.04]"}`}>
+      <div className={`flex items-center border-b ${light ? "border-[rgba(22,25,26,.07)]" : "border-white/[0.06]"}`}>
         <a
           href={`/${category.slug}`}
-          className={`flex-1 py-[0.82rem] text-[0.87rem] font-medium no-underline transition-colors duration-150 ${light ? "text-black/[0.68] hover:text-[#399746]" : "text-[#f0f2ed]/[0.68] hover:text-[#a8d63e]"}`}
+          className={`flex-1 py-[0.82rem] text-[0.87rem] font-medium no-underline transition-colors duration-150 ${light ? "text-[rgba(22,25,26,.6)] hover:text-[#2f8b3d]" : "text-[rgba(241,243,234,.6)] hover:text-[#a8d63e]"}`}
           style={{ paddingLeft: `${1 + level * 0.75}rem` }}
         >
           {category.name}
         </a>
         {!!category.children?.length && (
           <button
-            className={`px-4 py-[0.82rem] bg-transparent border-none cursor-pointer ${light ? "text-black/[0.38]" : "text-[#f0f2ed]/[0.38]"}`}
+            className={`px-4 py-[0.82rem] bg-transparent border-none cursor-pointer ${light ? "text-[rgba(22,25,26,.42)]" : "text-[rgba(241,243,234,.42)]"}`}
             onClick={() => setExpanded(!expanded)}
           >
             <ChevronDown
@@ -160,13 +160,13 @@ export function Navbar({ categories }: NavbarProps) {
 
   const light = theme === 'light';
 
-  const iconBtn = `relative grid place-items-center w-[38px] h-[38px] rounded-md border-none cursor-pointer no-underline bg-transparent transition-all duration-[180ms] flex-shrink-0 ${light ? "text-black/60 hover:bg-black/[0.08] hover:text-black" : "text-[#f0f2ed]/[0.72] hover:bg-white/[0.09] hover:text-[#f0f2ed]"}`;
+  const iconBtn = `relative grid place-items-center w-10 h-10 rounded-[10px] border-none cursor-pointer no-underline bg-transparent transition-all duration-[180ms] flex-shrink-0 ${light ? "text-[rgba(22,25,26,.6)] hover:bg-[rgba(22,25,26,.06)] hover:text-[#16191a]" : "text-[rgba(241,243,234,.6)] hover:bg-white/[0.07] hover:text-[#f1f3ea]"}`;
 
   return (
     <>
       <CartSidebar isOpen={cartOpen} onClose={() => setCartOpen(false)} />
 
-      <nav className={`sticky top-0 z-[40] font-outfit w-full transition-all duration-500 ${light ? 'bg-white shadow-[0_1px_0_rgba(0,0,0,0.08)]' : 'bg-[#0d110d] shadow-[0_1px_0_rgba(255,255,255,0.07)]'}`}>
+      <nav className="sticky top-0 z-[40] font-outfit w-full transition-all duration-500 bg-[#f6f5f0]/[.86] dark:bg-[#0a0c0a]/[.86] backdrop-blur-[14px] border-b border-[rgba(22,25,26,.07)] dark:border-white/[.06]">
 
         {/* TOPBAR */}
         <div className="flex items-center h-[68px] max-w-[1280px] mx-auto px-4 sm:px-8 gap-4">
@@ -184,9 +184,13 @@ export function Navbar({ categories }: NavbarProps) {
           
 
           {/* Search — desktop */}
-          <div className="hidden sm:block flex-1 min-w-0 max-w-[520px] relative md:flex-1">
+          <div className="hidden sm:flex items-center flex-1 min-w-0 max-w-[520px] ml-3 relative md:flex-1">
+            <Search
+              size={16}
+              className={`absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none z-[1] ${light ? "text-[rgba(22,25,26,.42)]" : "text-[rgba(241,243,234,.42)]"}`}
+            />
             <input
-              className={`w-full h-10 border rounded-md pr-[5.5rem] pl-4 font-outfit text-[0.875rem] outline-none transition-all duration-200 box-border ${light ? "bg-white border-black/[0.12] text-[#222] placeholder:text-black/30 focus:border-[#399746]/55 focus:bg-white" : "bg-white/[0.08] border-white/[0.12] text-[#f0f2ed] placeholder:text-[#f0f2ed]/30 focus:border-[#a8d63e]/55 focus:bg-white/[0.11]"}`}
+              className={`w-full h-10 border rounded-[10px] pr-[5.25rem] pl-10 font-outfit text-[0.85rem] outline-none transition-all duration-150 box-border ${light ? "bg-white border-[rgba(22,25,26,.1)] text-[#16191a] placeholder:text-[rgba(22,25,26,.42)] focus:border-[#399746]/40 focus:bg-[#399746]/[0.04]" : "bg-[#141914] border-white/10 text-[#f1f3ea] placeholder:text-[rgba(241,243,234,.42)] focus:border-[#a8d63e]/40 focus:bg-[#a8d63e]/[0.06]"}`}
               placeholder="Search products, brands, categories…"
               value={query}
               onChange={e => handleSearch(e.target.value)}
@@ -194,28 +198,28 @@ export function Navbar({ categories }: NavbarProps) {
               onBlur={() => setTimeout(() => setResults([]), 180)}
             />
             <button
-              className={`absolute right-[5px] top-[5px] bottom-[5px] px-[0.85rem] rounded bg-gradient-to-r from-[#3aaa49] to-[#a8d63e] font-outfit text-[0.68rem] font-bold tracking-[0.08em] uppercase border-none cursor-pointer transition-opacity duration-200 whitespace-nowrap hover:opacity-85 ${light ? "text-white" : "text-[#0a0c0a]"}`}
+              className={`absolute right-[5px] top-[5px] bottom-[5px] px-[0.85rem] rounded-[7px] bg-gradient-to-r from-[#3aaa49] to-[#a8d63e] font-outfit text-[0.68rem] font-bold tracking-[0.08em] uppercase border-none cursor-pointer transition-opacity duration-200 whitespace-nowrap hover:opacity-85 ${light ? "text-white" : "text-[#0a0c0a]"}`}
               onClick={submitSearch}
             >
               Search
             </button>
             {results.length > 0 && (
-              <div className={`absolute top-[calc(100%+6px)] left-0 right-0 border rounded-lg overflow-hidden z-[200] ${light ? "bg-[#f5f5f5] border-black/[0.12] shadow-[0_20px_50px_rgba(0,0,0,0.1)]" : "bg-[#141814] border-[#a8d63e]/20 shadow-[0_20px_50px_rgba(0,0,0,0.7)]"}`}>
+              <div className={`absolute top-[calc(100%+6px)] left-0 right-0 border rounded-[10px] overflow-hidden z-[200] ${light ? "bg-white border-[rgba(22,25,26,.1)] shadow-[0_20px_50px_rgba(0,0,0,0.1)]" : "bg-[#141914] border-[#a8d63e]/20 shadow-[0_20px_50px_rgba(0,0,0,0.7)]"}`}>
                 {results.map(p => (
                   <button
                     key={p.id}
-                    className={`w-full flex items-center gap-[0.85rem] px-4 py-[0.7rem] bg-transparent border-none border-b last:border-b-0 cursor-pointer text-left transition-colors duration-150 ${light ? "border-black/[0.08] text-[#222] hover:bg-[#399746]/[0.06]" : "border-white/[0.05] text-[#f0f2ed] hover:bg-[#a8d63e]/[0.06]"}`}
+                    className={`w-full flex items-center gap-[0.85rem] px-4 py-[0.7rem] bg-transparent border-none border-b last:border-b-0 cursor-pointer text-left transition-colors duration-150 ${light ? "border-[rgba(22,25,26,.07)] text-[#16191a] hover:bg-[#399746]/[0.06]" : "border-white/[0.06] text-[#f1f3ea] hover:bg-[#a8d63e]/[0.06]"}`}
                     onMouseDown={() => goProduct(p.id)}
                   >
-                    <img className="w-9 h-9 object-cover rounded bg-[#222] flex-shrink-0" src={imgSrc(p.image)} alt={p.name} />
+                    <img className="w-9 h-9 object-cover rounded-[8px] bg-[#222] flex-shrink-0" src={imgSrc(p.image)} alt={p.name} />
                     <div>
                       <div className="text-[0.84rem] font-medium text-left">{p.name}</div>
-                      <div className={`text-[0.73rem] ${light ? "text-black/40" : "text-[#f0f2ed]/40"}`}>R {p.price}</div>
+                      <div className={`text-[0.73rem] ${light ? "text-[rgba(22,25,26,.42)]" : "text-[rgba(241,243,234,.42)]"}`}>R {p.price}</div>
                     </div>
                   </button>
                 ))}
                 <button
-                  className={`block w-full text-center px-0 py-[0.6rem] text-[0.7rem] font-bold tracking-[0.09em] uppercase bg-transparent border-none border-t cursor-pointer transition-colors duration-150 ${light ? "text-[#399746] border-black/[0.06] hover:bg-[#399746]/[0.05]" : "text-[#a8d63e] border-white/[0.06] hover:bg-[#a8d63e]/[0.05]"}`}
+                  className={`block w-full text-center px-0 py-[0.6rem] text-[0.7rem] font-bold tracking-[0.09em] uppercase bg-transparent border-none border-t cursor-pointer transition-colors duration-150 ${light ? "text-[#2f8b3d] border-[rgba(22,25,26,.07)] hover:bg-[#399746]/[0.05]" : "text-[#a8d63e] border-white/[0.06] hover:bg-[#a8d63e]/[0.05]"}`}
                   onMouseDown={submitSearch}
                 >
                   View all results →
@@ -235,7 +239,7 @@ export function Navbar({ categories }: NavbarProps) {
             <button className={iconBtn} onClick={() => setCartOpen(true)} title="Cart">
               <ShoppingCart size={17} />
               {cartCount > 0 && (
-                <span className="absolute top-[3px] right-[3px] min-w-[15px] h-[15px] rounded-full bg-gradient-to-r from-[#3aaa49] to-[#a8d63e] text-[#0a0c0a] text-[0.5rem] font-extrabold flex items-center justify-center px-[3px] pointer-events-none">
+                <span className="absolute top-[7px] right-[7px] min-w-[15px] h-[15px] rounded-full bg-gradient-to-r from-[#3aaa49] to-[#a8d63e] text-white text-[0.5rem] font-extrabold flex items-center justify-center px-[3px] pointer-events-none">
                   {cartCount}
                 </span>
               )}
@@ -243,7 +247,7 @@ export function Navbar({ categories }: NavbarProps) {
             <Link to="/wishlist" className={`${iconBtn} hidden md:grid`} title="Wishlist">
               <Heart size={17} />
               {wishlistCount > 0 && (
-                <span className="absolute top-[3px] right-[3px] min-w-[15px] h-[15px] rounded-full bg-red-500 text-white text-[0.5rem] font-extrabold flex items-center justify-center px-[3px] pointer-events-none">
+                <span className="absolute top-[7px] right-[7px] min-w-[15px] h-[15px] rounded-full bg-red-500 text-white text-[0.5rem] font-extrabold flex items-center justify-center px-[3px] pointer-events-none">
                   {wishlistCount}
                 </span>
               )}
@@ -257,22 +261,22 @@ export function Navbar({ categories }: NavbarProps) {
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 align="end"
-                className={`w-52 border rounded-lg p-[0.35rem] ${light ? "bg-white border-black/[0.12] text-[#222]" : "bg-[#111411] border-white/[0.09] text-[#f0f2ed]"}`}
+                className={`w-52 border rounded-[10px] p-[0.35rem] ${light ? "bg-white border-[rgba(22,25,26,.1)] text-[#16191a]" : "bg-[#141914] border-white/10 text-[#f1f3ea]"}`}
                 onMouseLeave={() => setUserOpen(false)}
               >
                 {isAuthenticated ? (
                   <>
-                    <DropdownMenuLabel className={`text-[0.74rem] px-2 py-1.5 ${light ? "text-black/[0.38]" : "text-[#f0f2ed]/[0.38]"}`}>
+                    <DropdownMenuLabel className={`text-[0.74rem] px-2 py-1.5 ${light ? "text-[rgba(22,25,26,.42)]" : "text-[rgba(241,243,234,.42)]"}`}>
                       {user?.first_name} {user?.last_name}
                     </DropdownMenuLabel>
-                    <DropdownMenuSeparator className={light ? "bg-black/[0.07]" : "bg-white/[0.07]"} />
-                    <DropdownMenuItem className={`rounded font-outfit text-[0.82rem] cursor-pointer ${light ? "text-black/70 hover:bg-[#399746]/[0.09] hover:text-[#399746] focus:bg-[#399746]/[0.09] focus:text-[#399746]" : "text-[#f0f2ed]/70 hover:bg-[#a8d63e]/[0.09] hover:text-[#a8d63e] focus:bg-[#a8d63e]/[0.09] focus:text-[#a8d63e]"}`} asChild>
+                    <DropdownMenuSeparator className={light ? "bg-[rgba(22,25,26,.07)]" : "bg-white/[0.07]"} />
+                    <DropdownMenuItem className={`rounded font-outfit text-[0.82rem] cursor-pointer ${light ? "text-[rgba(22,25,26,.6)] hover:bg-[#399746]/[0.09] hover:text-[#2f8b3d] focus:bg-[#399746]/[0.09] focus:text-[#2f8b3d]" : "text-[rgba(241,243,234,.6)] hover:bg-[#a8d63e]/[0.09] hover:text-[#a8d63e] focus:bg-[#a8d63e]/[0.09] focus:text-[#a8d63e]"}`} asChild>
                       <Link to="/profile"><User size={13} className="mr-2" />Profile</Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem className={`rounded font-outfit text-[0.82rem] cursor-pointer ${light ? "text-black/70 hover:bg-[#399746]/[0.09] hover:text-[#399746] focus:bg-[#399746]/[0.09] focus:text-[#399746]" : "text-[#f0f2ed]/70 hover:bg-[#a8d63e]/[0.09] hover:text-[#a8d63e] focus:bg-[#a8d63e]/[0.09] focus:text-[#a8d63e]"}`} asChild>
+                    <DropdownMenuItem className={`rounded font-outfit text-[0.82rem] cursor-pointer ${light ? "text-[rgba(22,25,26,.6)] hover:bg-[#399746]/[0.09] hover:text-[#2f8b3d] focus:bg-[#399746]/[0.09] focus:text-[#2f8b3d]" : "text-[rgba(241,243,234,.6)] hover:bg-[#a8d63e]/[0.09] hover:text-[#a8d63e] focus:bg-[#a8d63e]/[0.09] focus:text-[#a8d63e]"}`} asChild>
                       <Link to="/orders"><Package size={13} className="mr-2" />Orders</Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem className={`rounded font-outfit text-[0.82rem] cursor-pointer ${light ? "text-black/70 hover:bg-[#399746]/[0.09] hover:text-[#399746] focus:bg-[#399746]/[0.09] focus:text-[#399746]" : "text-[#f0f2ed]/70 hover:bg-[#a8d63e]/[0.09] hover:text-[#a8d63e] focus:bg-[#a8d63e]/[0.09] focus:text-[#a8d63e]"}`} asChild>
+                    <DropdownMenuItem className={`rounded font-outfit text-[0.82rem] cursor-pointer ${light ? "text-[rgba(22,25,26,.6)] hover:bg-[#399746]/[0.09] hover:text-[#2f8b3d] focus:bg-[#399746]/[0.09] focus:text-[#2f8b3d]" : "text-[rgba(241,243,234,.6)] hover:bg-[#a8d63e]/[0.09] hover:text-[#a8d63e] focus:bg-[#a8d63e]/[0.09] focus:text-[#a8d63e]"}`} asChild>
                       <Link to="/change-password"><Lock size={13} className="mr-2" />Change Password</Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator className={light ? "bg-black/[0.07]" : "bg-white/[0.07]"} />
@@ -288,11 +292,11 @@ export function Navbar({ categories }: NavbarProps) {
                   </>
                 ) : (
                   <>
-                    <DropdownMenuLabel className={`text-[0.74rem] px-2 py-1.5 ${light ? "text-black/[0.38]" : "text-[#f0f2ed]/[0.38]"}`}>My Account</DropdownMenuLabel>
-                    <DropdownMenuItem className={`rounded font-outfit text-[0.82rem] cursor-pointer ${light ? "text-black/70 hover:bg-[#399746]/[0.09] hover:text-[#399746] focus:bg-[#399746]/[0.09] focus:text-[#399746]" : "text-[#f0f2ed]/70 hover:bg-[#a8d63e]/[0.09] hover:text-[#a8d63e] focus:bg-[#a8d63e]/[0.09] focus:text-[#a8d63e]"}`} asChild>
+                    <DropdownMenuLabel className={`XXX : "text-[#f0f2ed]/[0.38]"}`}>My Account</DropdownMenuLabel>
+                    <DropdownMenuItem className={`rounded font-outfit text-[0.82rem] cursor-pointer ${light ? "text-[rgba(22,25,26,.6)] hover:bg-[#399746]/[0.09] hover:text-[#2f8b3d] focus:bg-[#399746]/[0.09] focus:text-[#2f8b3d]" : "text-[rgba(241,243,234,.6)] hover:bg-[#a8d63e]/[0.09] hover:text-[#a8d63e] focus:bg-[#a8d63e]/[0.09] focus:text-[#a8d63e]"}`} asChild>
                       <Link to="/login"><LogIn size={13} className="mr-2" />Log In</Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem className={`rounded font-outfit text-[0.82rem] cursor-pointer ${light ? "text-black/70 hover:bg-[#399746]/[0.09] hover:text-[#399746] focus:bg-[#399746]/[0.09] focus:text-[#399746]" : "text-[#f0f2ed]/70 hover:bg-[#a8d63e]/[0.09] hover:text-[#a8d63e] focus:bg-[#a8d63e]/[0.09] focus:text-[#a8d63e]"}`} asChild>
+                    <DropdownMenuItem className={`rounded font-outfit text-[0.82rem] cursor-pointer ${light ? "text-[rgba(22,25,26,.6)] hover:bg-[#399746]/[0.09] hover:text-[#2f8b3d] focus:bg-[#399746]/[0.09] focus:text-[#2f8b3d]" : "text-[rgba(241,243,234,.6)] hover:bg-[#a8d63e]/[0.09] hover:text-[#a8d63e] focus:bg-[#a8d63e]/[0.09] focus:text-[#a8d63e]"}`} asChild>
                       <Link to="/signup"><UserPlus size={13} className="mr-2" />Sign Up</Link>
                     </DropdownMenuItem>
                   </>
@@ -301,68 +305,75 @@ export function Navbar({ categories }: NavbarProps) {
             </DropdownMenu>
 
             {/* Divider */}
-            <div className={`w-px h-[24px] flex-shrink-0 ${light ? "bg-black/[0.1]" : "bg-white/[0.1]"}`} />
+            <div className={`w-px h-[24px] flex-shrink-0 mx-1 ${light ? "bg-[rgba(22,25,26,.1)]" : "bg-white/10"}`} />
             <button className={iconBtn} onClick={toggleTheme} title={theme === 'dark' ? 'Light Mode' : 'Dark Mode'}>
               {theme === 'dark' ? <Sun size={17} /> : <Moon size={17} />}
             </button>
-            
+
           </div>
         </div>
 
         {/* CATEGORY BAR — desktop */}
-        <div className={`hidden md:block border-t ${light ? "border-black/[0.08] bg-black/[0.02]" : "border-white/[0.06] bg-black/[0.18]"}`}>
+        <div className={`hidden md:block border-t ${light ? "border-[rgba(22,25,26,.07)] bg-[rgba(22,25,26,.03)]" : "border-white/[0.06] bg-white/[0.03]"}`}>
           <div className="flex items-center gap-6 h-[42px] max-w-[1280px] mx-auto px-8 overflow-visible">
             <div
               className="relative h-[42px] flex items-center"
               onMouseEnter={() => setAllCatOpen(true)}
               onMouseLeave={() => setAllCatOpen(false)}
             >
-              <button className={`inline-flex items-center gap-[0.45rem] text-[0.72rem] font-bold tracking-[0.1em] uppercase bg-transparent border-none cursor-pointer whitespace-nowrap flex-shrink-0 h-full transition-opacity duration-200 hover:opacity-70 ${light ? "text-[#399746]" : "text-[#a8d63e]"}`}>
+              <button className={`inline-flex items-center gap-[0.45rem] text-[0.72rem] font-bold tracking-[0.1em] uppercase bg-transparent border-none cursor-pointer whitespace-nowrap flex-shrink-0 h-full transition-opacity duration-200 hover:opacity-70 ${light ? "text-[#2f8b3d]" : "text-[#a8d63e]"}`}>
                 <Menu size={13} /> All Categories <ChevronDown size={11} />
               </button>
               {allCatOpen && (
-                <div className={`absolute top-full left-0 border border-t-0 rounded-b-lg p-2 min-w-[260px] z-[9999] ${light ? "bg-[#f5f5f5] border-black/[0.12] shadow-[0_28px_56px_rgba(0,0,0,0.1)]" : "bg-[#111411] border-white/[0.09] shadow-[0_28px_56px_rgba(0,0,0,0.75)]"}`}>
+                <div className={`absolute top-full left-0 border border-t-0 rounded-b-[10px] p-2 min-w-[260px] z-[9999] ${light ? "bg-white border-[rgba(22,25,26,.1)] shadow-[0_28px_56px_rgba(0,0,0,0.1)]" : "bg-[#141914] border-white/10 shadow-[0_28px_56px_rgba(0,0,0,0.75)]"}`}>
                   {allCategories.map(cat => <CategoryMenuItem key={cat.id} category={cat} light={light} />)}
                 </div>
               )}
             </div>
-            <div className={`w-px h-[18px] flex-shrink-0 ${light ? "bg-black/[0.1]" : "bg-white/[0.1]"}`} />
+            <div className={`w-px h-[18px] flex-shrink-0 ${light ? "bg-[rgba(22,25,26,.1)]" : "bg-white/10"}`} />
             <div className="flex items-center gap-6 overflow-visible">
               {first8.map(cat => <QuickCat key={cat.id} category={cat} light={light} />)}
             </div>
           </div>
         </div>
 
-        {/* MOBILE DRAWER */}
-        <>
-          {mobileOpen && (
-            <div className="md:hidden fixed inset-0 top-[68px] z-[35] bg-black/40" onClick={closeMobileDrawer} />
-          )}
-          <div className={`md:hidden fixed top-[68px] left-0 bottom-0 w-full max-w-[80vw] border-t overflow-y-auto z-[36] transition-transform duration-300 ease-in-out ${mobileOpen ? 'translate-x-0' : '-translate-x-full'} ${light ? "bg-[#f5f5f5] border-black/[0.08]" : "bg-[#0d110d] border-white/[0.06]"}`}>
+      </nav>
+
+      {/* MOBILE DRAWER — rendered outside <nav> so its `fixed` positioning resolves
+          against the viewport (the nav's backdrop-blur would otherwise make it the
+          containing block for fixed descendants, breaking the drawer). */}
+      {mobileOpen && (
+        <div className="md:hidden fixed inset-0 top-[68px] z-[35] bg-black/40" onClick={closeMobileDrawer} />
+      )}
+      <div className={`md:hidden fixed top-[68px] left-0 bottom-0 w-full max-w-[80vw] border-t overflow-y-auto z-[36] transition-transform duration-300 ease-in-out ${mobileOpen ? 'translate-x-0' : '-translate-x-full'} ${light ? "bg-[#f6f5f0] border-[rgba(22,25,26,.07)]" : "bg-[#0a0c0a] border-white/[0.06]"}`}>
             <Link
               to="/contact-us"
-              className={`block px-4 py-4 border-b text-[0.87rem] font-medium no-underline transition-colors duration-150 ${light ? "border-black/[0.08] text-black/[0.68] hover:text-[#399746]" : "border-white/[0.06] text-[#f0f2ed]/[0.68] hover:text-[#a8d63e]"}`}
+              className={`block px-4 py-4 border-b text-[0.87rem] font-medium no-underline transition-colors duration-150 ${light ? "border-[rgba(22,25,26,.07)] text-[rgba(22,25,26,.6)] hover:text-[#2f8b3d]" : "border-white/[0.06] text-[rgba(241,243,234,.6)] hover:text-[#a8d63e]"}`}
               onClick={() => setMobileOpen(false)}
             >
               <PhoneCall size={13} className="inline mr-2 opacity-55" />
               Contact Us
             </Link>
+            <div className={`px-4 pt-4 pb-[0.45rem] text-[0.63rem] font-bold tracking-[0.18em] uppercase ${light ? "text-[rgba(22,25,26,.42)]" : "text-[rgba(241,243,234,.42)]"}`}>
+              Categories
+            </div>
+            {allCategories.map(cat => <MobileCategoryItem key={cat.id} category={cat} light={light} />)}
             {/* <Link
               to="/profile"
-              className={`block px-4 py-4 border-b text-[0.87rem] font-medium no-underline transition-colors duration-150 ${light ? "border-black/[0.08] text-black/[0.68] hover:text-[#399746]" : "border-white/[0.06] text-[#f0f2ed]/[0.68] hover:text-[#a8d63e]"}`}
+              className={`block px-4 py-4 border-b text-[0.87rem] font-medium no-underline transition-colors duration-150 ${light ? "border-[rgba(22,25,26,.07)] text-[rgba(22,25,26,.6)] hover:text-[#2f8b3d]" : "border-white/[0.06] text-[rgba(241,243,234,.6)] hover:text-[#a8d63e]"}`}
               onClick={() => setMobileOpen(false)}
             >
               <User size={13} className="inline mr-2 opacity-55" />
               {isAuthenticated ? 'Profile' : 'My Account'}
             </Link> */}
-            <div className={`px-4 pt-4 pb-[0.45rem] text-[0.63rem] font-bold tracking-[0.18em] uppercase ${light ? "text-black/[0.22]" : "text-[#f0f2ed]/[0.22]"}`}>
+            <div className={`px-4 pt-4 pb-[0.45rem] text-[0.63rem] font-bold tracking-[0.18em] uppercase ${light ? "text-[rgba(22,25,26,.42)]" : "text-[rgba(241,243,234,.42)]"}`}>
               My Account
             </div>
             { isAuthenticated ? (
                 <>
                   <Link
                     to="/profile"
-                    className={`block px-4 py-4 border-b text-[0.87rem] font-medium no-underline transition-colors duration-150 ${light ? "border-black/[0.08] text-black/[0.68] hover:text-[#399746]" : "border-white/[0.06] text-[#f0f2ed]/[0.68] hover:text-[#a8d63e]"}`}
+                    className={`block px-4 py-4 border-b text-[0.87rem] font-medium no-underline transition-colors duration-150 ${light ? "border-[rgba(22,25,26,.07)] text-[rgba(22,25,26,.6)] hover:text-[#2f8b3d]" : "border-white/[0.06] text-[rgba(241,243,234,.6)] hover:text-[#a8d63e]"}`}
                     onClick={() => setMobileOpen(false)}
                   >
                     <User size={13} className="inline mr-2 opacity-55" />
@@ -370,7 +381,7 @@ export function Navbar({ categories }: NavbarProps) {
                   </Link>
                   <Link
                     to="/wishlist"
-                    className={`block px-4 py-4 border-b text-[0.87rem] font-medium no-underline transition-colors duration-150 ${light ? "border-black/[0.08] text-black/[0.68] hover:text-[#399746]" : "border-white/[0.06] text-[#f0f2ed]/[0.68] hover:text-[#a8d63e]"}`}
+                    className={`block px-4 py-4 border-b text-[0.87rem] font-medium no-underline transition-colors duration-150 ${light ? "border-[rgba(22,25,26,.07)] text-[rgba(22,25,26,.6)] hover:text-[#2f8b3d]" : "border-white/[0.06] text-[rgba(241,243,234,.6)] hover:text-[#a8d63e]"}`}
                     onClick={() => setMobileOpen(false)}
                   >
                     <Heart size={13} className="inline mr-2 opacity-55" />
@@ -378,7 +389,7 @@ export function Navbar({ categories }: NavbarProps) {
                   </Link>
                   <Link
                     to="/orders"
-                    className={`block px-4 py-4 border-b text-[0.87rem] font-medium no-underline transition-colors duration-150 ${light ? "border-black/[0.08] text-black/[0.68] hover:text-[#399746]" : "border-white/[0.06] text-[#f0f2ed]/[0.68] hover:text-[#a8d63e]"}`}
+                    className={`block px-4 py-4 border-b text-[0.87rem] font-medium no-underline transition-colors duration-150 ${light ? "border-[rgba(22,25,26,.07)] text-[rgba(22,25,26,.6)] hover:text-[#2f8b3d]" : "border-white/[0.06] text-[rgba(241,243,234,.6)] hover:text-[#a8d63e]"}`}
                     onClick={() => setMobileOpen(false)}
                   >
                     <Package size={13} className="inline mr-2 opacity-55" />
@@ -386,14 +397,14 @@ export function Navbar({ categories }: NavbarProps) {
                   </Link>
                   <Link
                     to="/change-password"
-                    className={`block px-4 py-4 border-b text-[0.87rem] font-medium no-underline transition-colors duration-150 ${light ? "border-black/[0.08] text-black/[0.68] hover:text-[#399746]" : "border-white/[0.06] text-[#f0f2ed]/[0.68] hover:text-[#a8d63e]"}`}
+                    className={`block px-4 py-4 border-b text-[0.87rem] font-medium no-underline transition-colors duration-150 ${light ? "border-[rgba(22,25,26,.07)] text-[rgba(22,25,26,.6)] hover:text-[#2f8b3d]" : "border-white/[0.06] text-[rgba(241,243,234,.6)] hover:text-[#a8d63e]"}`}
                     onClick={() => setMobileOpen(false)}
                   >
                     <Lock size={13} className="inline mr-2 opacity-55" />
                     Change Password
                   </Link>
                   <button
-                    className={`w-full text-left px-4 py-4 border-b text-[0.87rem] font-medium no-underline transition-colors duration-150 text-red-400 hover:bg-red-400/[0.09] hover:text-red-400 focus:bg-red-400/[0.09] focus:text-red-400 ${light ? "border-black/[0.08]" : "border-white/[0.06]"}`}
+                    className={`w-full text-left px-4 py-4 border-b text-[0.87rem] font-medium no-underline transition-colors duration-150 text-red-400 hover:bg-red-400/[0.09] hover:text-red-400 focus:bg-red-400/[0.09] focus:text-red-400 ${light ? "border-[rgba(22,25,26,.07)]" : "border-white/[0.06]"}`}
                     onClick={() => {
                       logout();
                       toast({ title: 'Logged out', className: 'bg-green-700 text-white' });
@@ -408,7 +419,7 @@ export function Navbar({ categories }: NavbarProps) {
                 <>
                   <Link
                     to="/login"
-                    className={`block px-4 py-4 border-b text-[0.87rem] font-medium no-underline transition-colors duration-150 ${light ? "border-black/[0.08] text-black/[0.68] hover:text-[#399746]" : "border-white/[0.06] text-[#f0f2ed]/[0.68] hover:text-[#a8d63e]"}`}
+                    className={`block px-4 py-4 border-b text-[0.87rem] font-medium no-underline transition-colors duration-150 ${light ? "border-[rgba(22,25,26,.07)] text-[rgba(22,25,26,.6)] hover:text-[#2f8b3d]" : "border-white/[0.06] text-[rgba(241,243,234,.6)] hover:text-[#a8d63e]"}`}
                     onClick={() => setMobileOpen(false)}
                   >
                     <LogIn size={13} className="inline mr-2 opacity-55" />
@@ -416,7 +427,7 @@ export function Navbar({ categories }: NavbarProps) {
                   </Link>
                   <Link
                     to="/signup"
-                    className={`block px-4 py-4 border-b text-[0.87rem] font-medium no-underline transition-colors duration-150 ${light ? "border-black/[0.08] text-black/[0.68] hover:text-[#399746]" : "border-white/[0.06] text-[#f0f2ed]/[0.68] hover:text-[#a8d63e]"}`}
+                    className={`block px-4 py-4 border-b text-[0.87rem] font-medium no-underline transition-colors duration-150 ${light ? "border-[rgba(22,25,26,.07)] text-[rgba(22,25,26,.6)] hover:text-[#2f8b3d]" : "border-white/[0.06] text-[rgba(241,243,234,.6)] hover:text-[#a8d63e]"}`}
                     onClick={() => setMobileOpen(false)}
                   >
                     <UserPlus size={13} className="inline mr-2 opacity-55" />
@@ -427,35 +438,29 @@ export function Navbar({ categories }: NavbarProps) {
             }
             {/* <Link
               to="/wishlist"
-              className={`block px-4 py-4 border-b text-[0.87rem] font-medium no-underline transition-colors duration-150 ${light ? "border-black/[0.08] text-black/[0.68] hover:text-[#399746]" : "border-white/[0.06] text-[#f0f2ed]/[0.68] hover:text-[#a8d63e]"}`}
+              className={`block px-4 py-4 border-b text-[0.87rem] font-medium no-underline transition-colors duration-150 ${light ? "border-[rgba(22,25,26,.07)] text-[rgba(22,25,26,.6)] hover:text-[#2f8b3d]" : "border-white/[0.06] text-[rgba(241,243,234,.6)] hover:text-[#a8d63e]"}`}
               onClick={() => setMobileOpen(false)}
             >
               <Heart size={13} className="inline mr-2 opacity-55" />
               Wishlist {wishlistCount > 0 && `(${wishlistCount})`}
             </Link> */}
-            
-            <div className={`px-4 pt-4 pb-[0.45rem] text-[0.63rem] font-bold tracking-[0.18em] uppercase ${light ? "text-black/[0.22]" : "text-[#f0f2ed]/[0.22]"}`}>
-              Categories
-            </div>
-            {allCategories.map(cat => <MobileCategoryItem key={cat.id} category={cat} light={light} />)}
-          </div>
-        </>
+      </div>
 
-        {/* MOBILE SEARCH MODAL */}
-        {searchOpen && (
-          <div className={`fixed inset-0 z-[99999] backdrop-blur-[10px] flex flex-col ${light ? "bg-white/[0.96]" : "bg-[#040804]/[0.96]"}`}>
-            <div className={`flex items-center gap-3 px-5 py-4 border-b ${light ? "border-black/[0.08]" : "border-white/[0.07]"}`}>
-              <Search size={17} className={`flex-shrink-0 ${light ? "text-black/35" : "text-[#f0f2ed]/35"}`} />
+      {/* MOBILE SEARCH MODAL */}
+      {searchOpen && (
+          <div className={`fixed inset-0 z-[99999] backdrop-blur-[10px] flex flex-col ${light ? "bg-[#f6f5f0]/[0.96]" : "bg-[#0a0c0a]/[0.96]"}`}>
+            <div className={`flex items-center gap-3 px-5 py-4 border-b ${light ? "border-[rgba(22,25,26,.07)]" : "border-white/[0.06]"}`}>
+              <Search size={17} className={`flex-shrink-0 ${light ? "text-[rgba(22,25,26,.42)]" : "text-[rgba(241,243,234,.42)]"}`} />
               <input
                 autoFocus
-                className={`flex-1 h-11 border rounded-md px-4 font-outfit text-[0.95rem] outline-none ${light ? "bg-black/[0.05] border-black/[0.12] text-[#222]" : "bg-white/[0.09] border-white/[0.12] text-[#f0f2ed]"}`}
+                className={`flex-1 h-11 border rounded-[10px] px-4 font-outfit text-[0.95rem] outline-none ${light ? "bg-white border-[rgba(22,25,26,.1)] text-[#16191a]" : "bg-[#141914] border-white/10 text-[#f1f3ea]"}`}
                 placeholder="Search products…"
                 value={query}
                 onChange={e => handleSearch(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && submitSearch()}
               />
               <button
-                className={`bg-transparent border-none cursor-pointer font-outfit text-[0.82rem] whitespace-nowrap ${light ? "text-black/[0.48]" : "text-[#f0f2ed]/[0.48]"}`}
+                className={`bg-transparent border-none cursor-pointer font-outfit text-[0.82rem] whitespace-nowrap ${light ? "text-[rgba(22,25,26,.6)]" : "text-[rgba(241,243,234,.6)]"}`}
                 onClick={() => { setSearchOpen(false); setQuery(''); setResults([]); }}
               >
                 Cancel
@@ -466,18 +471,18 @@ export function Navbar({ categories }: NavbarProps) {
                 {results.map(p => (
                   <button
                     key={p.id}
-                    className={`w-full flex items-center gap-[0.85rem] px-4 py-[0.7rem] bg-transparent border-none border-b last:border-b-0 cursor-pointer text-left transition-colors duration-150 ${light ? "border-black/[0.08] text-[#222] hover:bg-[#399746]/[0.06]" : "border-white/[0.05] text-[#f0f2ed] hover:bg-[#a8d63e]/[0.06]"}`}
+                    className={`w-full flex items-center gap-[0.85rem] px-4 py-[0.7rem] bg-transparent border-none border-b last:border-b-0 cursor-pointer text-left transition-colors duration-150 ${light ? "border-[rgba(22,25,26,.07)] text-[#16191a] hover:bg-[#399746]/[0.06]" : "border-white/[0.06] text-[#f1f3ea] hover:bg-[#a8d63e]/[0.06]"}`}
                     onClick={() => goProduct(p.id)}
                   >
-                    <img className="w-9 h-9 object-cover rounded bg-[#222] flex-shrink-0" src={imgSrc(p.image)} alt={p.name} />
+                    <img className="w-9 h-9 object-cover rounded-[8px] bg-[#222] flex-shrink-0" src={imgSrc(p.image)} alt={p.name} />
                     <div>
                       <div className="text-[0.84rem] font-medium">{p.name}</div>
-                      <div className={`text-[0.73rem] ${light ? "text-black/40" : "text-[#f0f2ed]/40"}`}>R {p.price}</div>
+                      <div className={`text-[0.73rem] ${light ? "text-[rgba(22,25,26,.42)]" : "text-[rgba(241,243,234,.42)]"}`}>R {p.price}</div>
                     </div>
                   </button>
                 ))}
                 <button
-                  className={`block w-full text-center py-[0.6rem] text-[0.7rem] font-bold tracking-[0.09em] uppercase bg-transparent border-none border-t cursor-pointer transition-colors duration-150 ${light ? "text-[#399746] border-black/[0.06] hover:bg-[#399746]/[0.05]" : "text-[#a8d63e] border-white/[0.06] hover:bg-[#a8d63e]/[0.05]"}`}
+                  className={`block w-full text-center py-[0.6rem] text-[0.7rem] font-bold tracking-[0.09em] uppercase bg-transparent border-none border-t cursor-pointer transition-colors duration-150 ${light ? "text-[#2f8b3d] border-[rgba(22,25,26,.07)] hover:bg-[#399746]/[0.05]" : "text-[#a8d63e] border-white/[0.06] hover:bg-[#a8d63e]/[0.05]"}`}
                   onClick={submitSearch}
                 >
                   View all results →
@@ -486,8 +491,6 @@ export function Navbar({ categories }: NavbarProps) {
             )}
           </div>
         )}
-
-      </nav>
     </>
   );
 }

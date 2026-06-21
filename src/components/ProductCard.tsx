@@ -146,39 +146,40 @@ export function ProductCard({ product }: ProductCardProps) {
   const wishlistPending = addToWishlistMutation.isPending || removeFromWishlistMutation.isPending;
 
   return (
-    <div className="group font-outfit relative rounded-[10px] overflow-hidden bg-white dark:bg-white/[.04] border border-black/[.08] dark:border-white/[.06] flex flex-col h-full transition-all duration-300 ease-[cubic-bezier(.25,.46,.45,.94)] hover:border-green-deep/20 dark:hover:border-lime-brand/20 hover:shadow-[0_8px_32px_rgba(168,214,62,.12)] hover:scale-[1.01]">
+    <div className="group font-outfit relative flex flex-col h-full bg-white dark:bg-[#141914] border border-[rgba(22,25,26,.1)] dark:border-white/10 rounded-[14px] overflow-hidden transition duration-300 ease-[cubic-bezier(.25,.46,.45,.94)] hover:-translate-y-[3px] hover:border-[rgba(57,151,70,.3)] hover:shadow-[0_12px_34px_rgba(22,25,26,.1)] dark:hover:border-[rgba(168,214,62,.25)] dark:hover:shadow-[0_12px_34px_rgba(0,0,0,.55)]">
       {/* Image */}
       <div
-        className="relative w-full aspect-square overflow-hidden bg-black/[.05] dark:bg-white/[.02] border-b border-black/[.08] dark:border-white/[.05] cursor-pointer"
+        className="relative w-full aspect-square overflow-hidden bg-[#f7f6f1] dark:bg-[#171c16] border-b border-[rgba(22,25,26,.07)] dark:border-white/[.06] cursor-pointer"
         onClick={handleProductClick}
       >
         <img
           src={product.image}
           alt={product.name}
-          className="w-full h-full object-cover object-center transition-transform duration-[400ms] ease-[cubic-bezier(.25,.46,.45,.94)] group-hover:scale-[1.08]"
+          className="w-full h-full object-cover object-center transition-transform duration-[400ms] ease-[cubic-bezier(.25,.46,.45,.94)] group-hover:scale-[1.07]"
           loading="lazy"
         />
 
         {product.badge && (
           <span className={[
-            "absolute top-2 left-2 z-10 text-[.65rem] font-extrabold tracking-[.05em] uppercase px-1.5 py-0.5 rounded text-[#f0f2ed] backdrop-blur-[8px]",
-            product.badge.toLowerCase() === 'hot' ? "bg-red-500/90" :
-            product.badge.toLowerCase() === 'new' ? "bg-blue-500/90" :
-            "bg-green-brand/90"
+            "absolute top-2 left-2 z-10 text-[.62rem] font-extrabold uppercase tracking-wide px-2 py-0.5 rounded-[7px] backdrop-blur-[8px]",
+            product.badge.toLowerCase() === 'new'
+              ? "bg-gradient-to-br from-[#399746] to-[#a8d63e] text-white"
+              : "bg-[#e08a1e] text-white"
           ].join(' ')}>
             {product.badge}
           </span>
         )}
 
         {discountPercent !== null && (
-          <span className="absolute top-2 right-2 z-10 text-[.65rem] font-extrabold tracking-[.05em] bg-red-500/90 backdrop-blur-[8px] text-[#f0f2ed] px-1.5 py-0.5 rounded">
+          <span className="absolute top-2 right-2 z-10 text-[.62rem] font-extrabold uppercase tracking-wide px-2 py-0.5 rounded-[7px] bg-[#e08a1e] text-white backdrop-blur-[8px]">
             -{discountPercent}%
           </span>
         )}
 
         <button
           className={[
-            "absolute top-10 right-2 z-20 w-8 h-8 rounded-md grid place-items-center cursor-pointer",
+            "absolute z-20 w-8 h-8 rounded-md grid place-items-center cursor-pointer right-2",
+            discountPercent !== null ? "top-9" : "top-2",
             "opacity-0 translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200",
             "bg-white/[.95] border border-white/20",
             "hover:bg-red-500/10 hover:border-red-500/30",
@@ -198,66 +199,66 @@ export function ProductCard({ product }: ProductCardProps) {
       </div>
 
       {/* Content */}
-      <div className="flex-1 p-4 flex flex-col gap-2">
-        <div className="text-[.65rem] font-bold tracking-[.1em] uppercase text-green-deep/70 dark:text-lime-brand/70">
+      <div className="flex-1 p-3.5 flex flex-col gap-1.5">
+        <div className="text-[.62rem] font-bold tracking-[.1em] uppercase text-[#2f8b3d]/75 dark:text-[#a8d63e]/75">
           {product.category}
         </div>
 
         <h3
-          className="text-[.85rem] font-medium text-black/80 dark:text-[rgba(240,242,237,.85)] leading-[1.35] line-clamp-2 cursor-pointer transition-colors duration-200 group-hover:text-green-deep dark:group-hover:text-lime-brand"
+          className="text-[.84rem] font-medium text-[#16191a]/85 dark:text-[rgba(241,243,234,.85)] leading-[1.35] line-clamp-2 cursor-pointer transition-colors duration-200 group-hover:text-[#2f8b3d] dark:group-hover:text-[#a8d63e]"
           onClick={handleProductClick}
         >
           {product.name}
         </h3>
 
         {/* Rating */}
-        <div className="flex items-center gap-1.5 text-[.75rem]">
+        <div className="flex items-center gap-1.5 text-[.72rem]">
           <div className="flex gap-0.5">
             {[...Array(5)].map((_, i) => (
               <Star
                 key={i}
                 size={12}
                 style={{
-                  fill: i < Math.floor(product.rating) ? '#fbbf24' : 'none',
-                  color: i < Math.floor(product.rating) ? '#fbbf24' : 'rgba(141, 141, 141, 0.51)',
+                  fill: i < Math.floor(product.rating) ? '#f5a524' : 'none',
+                  color: i < Math.floor(product.rating) ? '#f5a524' : 'rgba(141, 141, 141, 0.51)',
                   strokeWidth: 1.5
                 }}
               />
             ))}
           </div>
-          <span className="text-black/50 dark:text-[rgba(240,242,237,.5)] font-medium">
+          <span className="text-[#16191a]/42 dark:text-[rgba(241,243,234,.42)] font-medium">
             ({product.reviews ?? 0})
           </span>
         </div>
 
         {/* Price Section */}
-        <div className="py-3 border-t border-b border-black/[.08] dark:border-white/[.05]">
-          <div className="flex items-baseline gap-2 mb-1">
-            <span className="text-[.95rem] font-extrabold text-green-deep dark:text-lime-brand">
+        <div className="py-2.5 my-0.5 border-t border-b border-[rgba(22,25,26,.07)] dark:border-white/[.06]">
+          <div className="flex items-baseline gap-2">
+            <span className="text-[.95rem] font-extrabold text-[#2f8b3d] dark:text-[#a8d63e]">
               R {product.price.toFixed(2)}
             </span>
             {product.oldPrice && (
-              <span className="text-[.75rem] text-black/[.32] dark:text-[rgba(240,242,237,.3)] line-through">
+              <span className="text-[.74rem] text-[#16191a]/42 dark:text-[rgba(241,243,234,.42)] line-through">
                 R {product.oldPrice.toFixed(2)}
               </span>
             )}
           </div>
           {discountPercent !== null && (
-            <div className="text-[.7rem] text-green-deep/80 dark:text-lime-brand/80 font-semibold">
+            <div className="text-[.7rem] mt-0.5 text-[#2f8b3d]/85 dark:text-[#a8d63e]/85 font-semibold">
               Save R {(product.oldPrice! - product.price).toFixed(2)}
             </div>
           )}
         </div>
 
         {/* Action Buttons */}
-        <div className="flex gap-2 pt-3">
+        <div className="flex gap-2 pt-1">
           <button
             className={[
-              "flex-1 flex items-center justify-center gap-1 py-2 px-2 rounded-md border text-[.75rem] font-semibold cursor-pointer transition-all duration-200",
+              "flex items-center justify-center gap-1 py-2 px-2.5 rounded-[10px] text-[.74rem] font-semibold cursor-pointer transition-all duration-200",
               "disabled:opacity-50 disabled:cursor-not-allowed",
               isWishlisted
-                ? "bg-red-500/12 border-red-500/30 text-red-400"
-                : "bg-green-deep/[.08] border-green-deep/20 text-green-deep dark:border-lime-brand/20 dark:bg-lime-brand/[.08] dark:text-lime-brand hover:bg-green-deep/15 dark:hover:bg-lime-brand/15 hover:shadow-[0_0_12px_rgba(57,151,70,.2)]  dark:hover:shadow-[0_0_12px_rgba(168,214,62,.2)]"
+                ? "bg-red-500/12 text-red-400"
+                : "bg-[rgba(57,151,70,.09)] dark:bg-[rgba(168,214,62,.1)] text-[#2f8b3d] dark:text-[#a8d63e] hover:-translate-y-px hover:shadow-[0_10px_30px_rgba(57,151,70,.3)]"
             ].join(' ')}
             onClick={handleWishlistToggle}
             disabled={wishlistPending}
@@ -270,7 +271,7 @@ export function ProductCard({ product }: ProductCardProps) {
             )}
           </button>
           <button
-            className="flex-1 flex items-center justify-center gap-1 py-2 px-2 rounded-md border text-[.75rem] font-semibold cursor-pointer transition-all duration-200 bg-gradient-to-br from-green-brand to-lime-brand border-lime-brand/50 text-white dark:text-dark-surface hover:shadow-[0_0_16px_rgba(168,214,62,.4)] disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 flex items-center justify-center gap-1 py-2 px-2 rounded-[10px] text-[.74rem] font-semibold cursor-pointer transition-all duration-200 bg-gradient-to-r from-[#399746] to-[#a8d63e] text-white dark:text-[#0a0c0a] hover:-translate-y-px hover:shadow-[0_10px_30px_rgba(57,151,70,.3)] disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={handleAddToCart}
             disabled={isAdding}
           >
