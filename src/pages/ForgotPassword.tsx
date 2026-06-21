@@ -1,9 +1,27 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Mail, AlertCircle, CheckCircle, Loader, Lock, KeyRound, ArrowLeft, ShieldCheck } from "lucide-react";
+import { Mail, AlertCircle, CheckCircle, Loader, Lock, KeyRound, ArrowLeft, ShieldCheck, Clock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const API_URL = (import.meta as any).env.VITE_API_URL || 'http://localhost:8000/api';
+
+// Forgot-password request is rate limited to 1 request / minute on the backend
+// (ResendVerificationCodeThrottle). Keep this in sync as the default cooldown.
+const RESEND_COOLDOWN_SECONDS = 60;
+
+// Pull the seconds-to-wait out of a 429 response. Prefer the standard Retry-After
+// header; fall back to parsing DRF's "...available in N seconds." detail message.
+const parseRetryAfter = (response: Response, detail?: string): number => {
+  const header = response.headers.get('Retry-After');
+  if (header && !Number.isNaN(Number(header))) {
+    return Math.ceil(Number(header));
+  }
+  const match = detail?.match(/(\d+)\s*second/i);
+  if (match) {
+    return parseInt(match[1], 10);
+  }
+  return RESEND_COOLDOWN_SECONDS;
+};
 
 export default function ForgotPassword() {
   const navigate = useNavigate();
@@ -16,6 +34,16 @@ export default function ForgotPassword() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [resendSuccess, setResendSuccess] = useState(false);
+  const [cooldown, setCooldown] = useState(0);
+
+  // Tick the resend cooldown down to zero every second.
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const timer = setInterval(() => {
+      setCooldown((prev) => (prev <= 1 ? 0 : prev - 1));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [cooldown]);
 
   const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,6 +51,11 @@ export default function ForgotPassword() {
 
     if (!email) {
       setError("Please enter your email address");
+      return;
+    }
+
+    if (cooldown > 0) {
+      setError(`Please wait ${cooldown}s before requesting another code.`);
       return;
     }
 
@@ -41,6 +74,14 @@ export default function ForgotPassword() {
 
       const data = await response.json();
 
+      if (response.status === 429) {
+        const wait = parseRetryAfter(response, data.detail);
+        setCooldown(wait);
+        setError(`Too many requests. Please wait ${wait}s before trying again.`);
+        setIsLoading(false);
+        return;
+      }
+
       if (!response.ok) {
         setError(data.detail || 'Failed to send verification code');
         setIsLoading(false);
@@ -48,6 +89,7 @@ export default function ForgotPassword() {
       }
 
       setIsLoading(false);
+      setCooldown(RESEND_COOLDOWN_SECONDS);
       toast({
         title: "Code Sent",
         description: "Verification code sent to your email. It will expire in 15 minutes.",
@@ -162,6 +204,11 @@ export default function ForgotPassword() {
     setError("");
     setResendSuccess(false);
 
+    if (cooldown > 0) {
+      setError(`Please wait ${cooldown}s before requesting another code.`);
+      return;
+    }
+
     try {
       const response = await fetch(`${API_URL}/users/forgot-password/request/`, {
         method: 'POST',
@@ -175,11 +222,19 @@ export default function ForgotPassword() {
 
       const data = await response.json();
 
+      if (response.status === 429) {
+        const wait = parseRetryAfter(response, data.detail);
+        setCooldown(wait);
+        setError(`Too many requests. Please wait ${wait}s before requesting another code.`);
+        return;
+      }
+
       if (!response.ok) {
         setError(data.detail || 'Failed to resend code');
         return;
       }
 
+      setCooldown(RESEND_COOLDOWN_SECONDS);
       setResendSuccess(true);
       setCode("");
       // Hide success message after 3 seconds
@@ -285,13 +340,18 @@ export default function ForgotPassword() {
 
                   <button
                     type="submit"
-                    disabled={isLoading || !email}
+                    disabled={isLoading || !email || cooldown > 0}
                     className="w-full mt-1 inline-flex items-center justify-center gap-2 font-semibold rounded-full px-6 py-[.8rem] bg-gradient-to-r from-[#399746] to-[#a8d63e] text-white dark:text-[#0a0c0a] text-[.9rem] transition-all duration-200 hover:shadow-[0_0_16px_rgba(168,214,62,.4)] disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isLoading ? (
                       <>
                         <Loader size={16} className="animate-spin" />
                         Sending Code...
+                      </>
+                    ) : cooldown > 0 ? (
+                      <>
+                        <Clock size={16} />
+                        Resend available in {cooldown}s
                       </>
                     ) : (
                       'Send Verification Code'
@@ -349,9 +409,17 @@ export default function ForgotPassword() {
                   <button
                     type="button"
                     onClick={handleResendCode}
-                    className="w-full text-[.8rem] font-medium text-[#2f8b3d] dark:text-[#a8d63e] hover:opacity-80 py-1 transition-opacity"
+                    disabled={cooldown > 0}
+                    className="w-full inline-flex items-center justify-center gap-1.5 text-[.8rem] font-medium text-[#2f8b3d] dark:text-[#a8d63e] hover:opacity-80 py-1 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:opacity-50"
                   >
-                    Didn't receive the code? Resend
+                    {cooldown > 0 ? (
+                      <>
+                        <Clock className="w-3.5 h-3.5" />
+                        Resend code in {cooldown}s
+                      </>
+                    ) : (
+                      "Didn't receive the code? Resend"
+                    )}
                   </button>
 
                   <button
