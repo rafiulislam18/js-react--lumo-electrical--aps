@@ -29,7 +29,7 @@ interface NavbarProps {
 function CategoryMenuItem({ category, light }: { category: Category; light: boolean }) {
   const [isOpen, setIsOpen] = useState(false);
   const itemCls = `flex items-center justify-between px-[0.7rem] py-2 rounded-[8px] text-[0.82rem] no-underline cursor-pointer transition-all duration-[140ms] ${light ? "text-[rgba(22,25,26,.6)] hover:bg-[#399746]/[0.09] hover:text-[#2f8b3d]" : "text-[rgba(241,243,234,.6)] hover:bg-[#a8d63e]/[0.09] hover:text-[#a8d63e]"}`;
-  const panelCls = `absolute left-full top-0 border rounded-[10px] p-2 min-w-[220px] z-[100] ${light ? "bg-white border-[rgba(22,25,26,.1)] shadow-[0_18px_44px_rgba(0,0,0,0.1)]" : "bg-[#141914] border-white/10 shadow-[0_18px_44px_rgba(0,0,0,0.65)]"}`;
+  const panelCls = `absolute left-full top-0 border rounded-[10px] p-2 min-w-[220px] z-[100] ${light ? "bg-[#f4f3ee] border-[rgba(22,25,26,.1)] shadow-[0_18px_44px_rgba(0,0,0,0.1)]" : "bg-[#141914] border-white/10 shadow-[0_18px_44px_rgba(0,0,0,0.65)]"}`;
   if (!category.children?.length) {
     return <a href={`/${category.slug}`} className={itemCls}>{category.name}</a>;
   }
@@ -51,7 +51,7 @@ function CategoryMenuItem({ category, light }: { category: Category; light: bool
 function QuickCat({ category, light }: { category: Category; light: boolean }) {
   const [open, setOpen] = useState(false);
   const linkCls = `text-[0.77rem] font-medium no-underline flex items-center gap-[0.28rem] h-[42px] transition-colors duration-[180ms] whitespace-nowrap ${light ? "text-[rgba(22,25,26,.6)] hover:text-[#2f8b3d]" : "text-[rgba(241,243,234,.6)] hover:text-[#a8d63e]"}`;
-  const panelCls = `absolute left-0 top-[42px] border border-t-0 rounded-b-[10px] p-2 min-w-[220px] z-[9999] ${light ? "bg-white border-[rgba(22,25,26,.1)] shadow-[0_18px_44px_rgba(0,0,0,0.1)]" : "bg-[#141914] border-white/10 shadow-[0_18px_44px_rgba(0,0,0,0.65)]"}`;
+  const panelCls = `absolute left-0 top-[42px] border border-t-0 rounded-b-[10px] p-2 min-w-[220px] z-[9999] ${light ? "bg-[#f4f3ee] border-[rgba(22,25,26,.1)] shadow-[0_18px_44px_rgba(0,0,0,0.1)]" : "bg-[#141914] border-white/10 shadow-[0_18px_44px_rgba(0,0,0,0.65)]"}`;
   if (!category.children?.length) {
     return <a href={`/${category.slug}`} className={linkCls}>{category.name}</a>;
   }
@@ -261,7 +261,7 @@ export function Navbar({ categories }: NavbarProps) {
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 align="end"
-                className={`w-52 border rounded-[10px] p-[0.35rem] ${light ? "bg-white border-[rgba(22,25,26,.1)] text-[#16191a]" : "bg-[#141914] border-white/10 text-[#f1f3ea]"}`}
+                className={`w-52 border rounded-[10px] p-[0.35rem] ${light ? "bg-[#f4f3ee] border-[rgba(22,25,26,.1)] text-[#16191a]" : "bg-[#141914] border-white/10 text-[#f1f3ea]"}`}
                 onMouseLeave={() => setUserOpen(false)}
               >
                 {isAuthenticated ? (
@@ -325,7 +325,7 @@ export function Navbar({ categories }: NavbarProps) {
                 <Menu size={13} /> All Categories <ChevronDown size={11} />
               </button>
               {allCatOpen && (
-                <div className={`absolute top-full left-0 border border-t-0 rounded-b-[10px] p-2 min-w-[260px] z-[9999] ${light ? "bg-white border-[rgba(22,25,26,.1)] shadow-[0_28px_56px_rgba(0,0,0,0.1)]" : "bg-[#141914] border-white/10 shadow-[0_28px_56px_rgba(0,0,0,0.75)]"}`}>
+                <div className={`absolute top-full left-0 border border-t-0 rounded-b-[10px] p-2 min-w-[260px] z-[9999] ${light ? "bg-[#f4f3ee] border-[rgba(22,25,26,.1)] shadow-[0_28px_56px_rgba(0,0,0,0.1)]" : "bg-[#141914] border-white/10 shadow-[0_28px_56px_rgba(0,0,0,0.75)]"}`}>
                   {allCategories.map(cat => <CategoryMenuItem key={cat.id} category={cat} light={light} />)}
                 </div>
               )}

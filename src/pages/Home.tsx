@@ -1,7 +1,6 @@
-import { useState, useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { ProductListColumn } from "@/components/ProductListColumn";
-import { Loader, ArrowRight, Zap, Shield, Truck, Wrench, Package } from "lucide-react";
+import { Loader, ArrowRight, Zap, Truck, Wrench } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
@@ -74,36 +73,6 @@ const transformProduct = (product: Product) => ({
   inStock: product.in_stock,
 });
 
-/* ── Animated counter ── */
-function AnimatedNumber({ target, suffix = '' }: { target: number; suffix?: string }) {
-  const [count, setCount] = useState(0);
-  const ref = useRef<HTMLSpanElement>(null);
-  const started = useRef(false);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(([e]) => {
-      if (e.isIntersecting && !started.current) {
-        started.current = true;
-        const duration = 1800;
-        const start = performance.now();
-        const step = (now: number) => {
-          const progress = Math.min((now - start) / duration, 1);
-          const eased = 1 - Math.pow(1 - progress, 4);
-          setCount(Math.round(eased * target));
-          if (progress < 1) requestAnimationFrame(step);
-        };
-        requestAnimationFrame(step);
-      }
-    }, { threshold: 0.5 });
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, [target]);
-
-  return <span ref={ref}>{count.toLocaleString()}{suffix}</span>;
-}
-
 export default function Home() {
   const { data: homeData, isLoading, isError } = useQuery<HomeResponse>({
     queryKey: ['home'],
@@ -126,8 +95,11 @@ export default function Home() {
   return (
     <div className="font-outfit bg-[#f6f5f0]/[.86] dark:bg-dark-elevated-900 text-[#f0f2ed]">
 
+      {/* Hero + Categories share one continuous gradient */}
+      <div className="bg-gradient-to-br from-[#f6f5f0]/[.86] to-white dark:from-dark-elevated-950 dark:to-dark-elevated-900">
+
       {/* ══ HERO (BENTO GRID) ══ */}
-      <section className="bg-gradient-to-br from-[#f6f5f0]/[.86] to-white dark:from-dark-elevated-950 dark:to-dark-elevated-900 pt-6 sm:pt-8 pb-10 sm:pb-14">
+      <section className="pt-6 sm:pt-8 pb-20">
         <div className="max-w-[1280px] mx-auto px-4 sm:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-3 sm:gap-4">
 
@@ -179,18 +151,15 @@ export default function Home() {
             {/* Stat tiles wrapper — keeps the two stat tiles on one row below lg (down to 320px);
                 `lg:contents` dissolves the wrapper at lg so the original 4-col layout is unchanged. */}
             <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:contents">
-            {/* Stat tile — products in stock (inverted "ink" tile: dark in light mode, light in dark mode) */}
+            {/* Stat tile — trade accounts (inverted "ink" tile: dark in light mode, light in dark mode) */}
             <div className={`${pcard} group rounded-[24px] p-4 sm:p-6 flex flex-col justify-between bg-[#14160f] dark:bg-[#f1f3ea] animate-[hero-rise_.6s_cubic-bezier(.22,1,.36,1)_.16s_both]`} style={{ minHeight: '150px' }}>
               <span className="relative grid place-items-center w-11 h-11 -m-[10px]">
                 <span className="absolute inset-0 rounded-full bg-[#a8d63e]/25 scale-0 transition-transform duration-500 ease-[cubic-bezier(.22,1,.36,1)] group-hover:scale-100" />
-                <Package size={24} className="relative text-[#a8d63e] dark:text-[#34883f]" />
+                <Wrench size={24} className="relative text-[#a8d63e] dark:text-[#34883f]" />
               </span>
               <div>
-                <div className="font-bebas leading-none text-[2rem] sm:text-[2.6rem] text-white dark:text-[#14160f]">
-                  <AnimatedNumber target={5000} />
-                  <span className="text-[#a8d63e] dark:text-[#34883f]">+</span>
-                </div>
-                <div className="text-[.78rem] mt-1.5 text-white/65 dark:text-[rgba(20,22,15,.6)]">products in stock</div>
+                <div className="font-bebas leading-none text-[2rem] sm:text-[2.6rem] text-white dark:text-[#14160f]">Trade accounts</div>
+                <div className="text-[.78rem] mt-1.5 text-white/65 dark:text-[rgba(20,22,15,.6)]">Exclusive pricing for the trade</div>
               </div>
             </div>
 
@@ -202,7 +171,7 @@ export default function Home() {
               </span>
               <div>
                 <div className="font-bebas leading-none text-[2rem] sm:text-[2.6rem] text-[#14160f] dark:text-[#f1f3ea]">Free</div>
-                <div className="text-[.78rem] mt-1.5 text-[rgba(20,22,15,.6)] dark:text-[rgba(241,243,234,.6)]">delivery across Cape Town</div>
+                <div className="text-[.78rem] mt-1.5 text-[rgba(20,22,15,.6)] dark:text-[rgba(241,243,234,.6)]">across Cape Town, for orders of at least R1000</div>
               </div>
             </div>
             </div>
@@ -210,63 +179,9 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ══ TICKER ══ */}
-      <div className="bg-[#a8d63e] overflow-hidden py-[.55rem]">
-        <div className="flex gap-12 animate-ticker w-max">
-          {[...Array(2)].map((_, i) =>
-            ['Free delivery in Cape Town','5000+ products in stock','Trade accounts available','Professional grade quality','Same-week dispatch','30-day returns'].map((t, j) => (
-              <span key={`${i}-${j}`} className="font-outfit font-bold text-[.7rem] tracking-[.12em] uppercase text-[#0a0c0a] whitespace-nowrap flex items-center gap-[.6rem]">
-                <Zap size={10} /> {t} <span className="w-1 h-1 rounded-full bg-[rgba(10,12,10,.35)]" />
-              </span>
-            ))
-          )}
-        </div>
-      </div>
-
-      {/* ══ VALUE BAND (Quality + Trade) ══ */}
-      <div className="bg-gradient-to-br from-[#f6f5f0]/[.86] to-white dark:from-dark-elevated-950 dark:to-dark-elevated-900">
-        <div className="max-w-[1280px] mx-auto px-4 sm:px-8 pt-14 pb-20">
-          <div className="grid sm:grid-cols-2 gap-3 sm:gap-4">
-
-            {/* Quality */}
-            <div className={`${pcardSubtle} group rounded-[24px] p-7 sm:p-8 flex items-start gap-5 bg-white dark:bg-dark-elevated-800 border border-[rgba(26,26,26,.1)] dark:border-white/10`}>
-              <div className="w-12 h-12 rounded-xl grid place-items-center shrink-0 bg-[#e4e6dd] dark:bg-white/5 text-[#3aaa49] dark:text-[#a8d63e] transition-[background-color,color] duration-500 ease-[cubic-bezier(.22,1,.36,1)] group-hover:bg-primary-gradient group-hover:text-white">
-                <Shield size={22} />
-              </div>
-              <div>
-                <div className="font-bold text-[1.05rem] mb-1.5 text-[#1a1a1a] dark:text-[#f0f2ed]">Quality you can trust</div>
-                <div className="text-[.88rem] leading-relaxed text-[rgba(26,26,26,.6)] dark:text-white/60">
-                  Durable, professional-grade components — quality-checked before every dispatch, for trade and home alike.
-                </div>
-              </div>
-            </div>
-
-            {/* Trade (inverted ink tile) */}
-            <div className={`${pcardSubtle} group rounded-[24px] p-7 sm:p-8 flex items-start gap-5 bg-[#14160f] dark:bg-[#f1f3ea] border border-transparent`}>
-              <div className="w-12 h-12 rounded-xl grid place-items-center shrink-0 bg-[rgba(168,214,62,.16)] dark:bg-[rgba(52,136,63,.12)] text-[#a8d63e] dark:text-[#34883f] transition-[background-color,color] duration-500 ease-[cubic-bezier(.22,1,.36,1)] group-hover:bg-primary-gradient group-hover:text-white">
-                <Wrench size={22} />
-              </div>
-              <div>
-                <div className="font-bold text-[1.05rem] mb-1.5 text-white dark:text-[#14160f]">Trade accounts available</div>
-                <div className="text-[.88rem] leading-relaxed mb-3 text-white/60 dark:text-[rgba(20,22,15,.6)]">
-                  Exclusive pricing for contractors and electricians, with dedicated support on every order.
-                </div>
-                <a
-                  href="/contact-us"
-                  className="inline-flex items-center gap-1.5 text-[.82rem] font-bold text-[#a8d63e] dark:text-[#34883f] no-underline transition-[gap] duration-200 hover:gap-[.6rem]"
-                >
-                  Open a trade account <ArrowRight size={14} />
-                </a>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </div>
-
       {/* ══ CATEGORIES ══ */}
       <div
-        className="bg-gradient-to-br from-[#f6f5f0]/[.86] to-white dark:from-dark-elevated-950 dark:to-dark-elevated-900 py-20"
+        className="pb-20"
         id="categories-section"
         style={{ scrollMarginTop: '5rem' }}
       >
@@ -318,6 +233,7 @@ export default function Home() {
             })}
           </div>
         </div>
+      </div>
       </div>
 
       {/* ══ PRODUCTS ══ */}
