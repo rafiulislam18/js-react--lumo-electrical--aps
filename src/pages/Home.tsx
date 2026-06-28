@@ -151,15 +151,15 @@ export default function Home() {
             {/* Stat tiles wrapper — keeps the two stat tiles on one row below lg (down to 320px);
                 `lg:contents` dissolves the wrapper at lg so the original 4-col layout is unchanged. */}
             <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:contents">
-            {/* Stat tile — trade accounts (inverted "ink" tile: dark in light mode, light in dark mode) */}
+            {/* Trade accounts tile — trade accounts (inverted "ink" tile: dark in light mode, light in dark mode) */}
             <div className={`${pcard} group rounded-[24px] p-4 sm:p-6 flex flex-col justify-between bg-[#14160f] dark:bg-[#f1f3ea] animate-[hero-rise_.6s_cubic-bezier(.22,1,.36,1)_.16s_both]`} style={{ minHeight: '150px' }}>
               <span className="relative grid place-items-center w-11 h-11 -m-[10px]">
                 <span className="absolute inset-0 rounded-full bg-[#a8d63e]/25 scale-0 transition-transform duration-500 ease-[cubic-bezier(.22,1,.36,1)] group-hover:scale-100" />
-                <Wrench size={24} className="relative text-[#a8d63e] dark:text-[#34883f]" />
+                <Truck size={24} className="relative text-[#a8d63e] dark:text-[#34883f]" />
               </span>
               <div>
-                <div className="font-bebas leading-none text-[2rem] sm:text-[2.6rem] text-white dark:text-[#14160f]">Trade accounts</div>
-                <div className="text-[.78rem] mt-1.5 text-white/65 dark:text-[rgba(20,22,15,.6)]">Exclusive pricing for the trade</div>
+                <div className="font-bebas leading-none text-[2rem] sm:text-[2.6rem] text-white dark:text-[#14160f]">Free Delivery</div>
+                <div className="text-[.78rem] mt-1.5 text-white/65 dark:text-[rgba(20,22,15,.6)]">For orders of at least R1000 in Cape Town</div>
               </div>
             </div>
 
@@ -167,11 +167,11 @@ export default function Home() {
             <div className={`${pcard} group rounded-[24px] p-4 sm:p-6 flex flex-col justify-between bg-white dark:bg-dark-elevated-800 border border-[rgba(26,26,26,.1)] dark:border-white/10 animate-[hero-rise_.6s_cubic-bezier(.22,1,.36,1)_.24s_both]`} style={{ minHeight: '150px' }}>
               <span className="relative grid place-items-center w-11 h-11 -m-[10px]">
                 <span className="absolute inset-0 rounded-full bg-[#3aaa49]/15 dark:bg-[#a8d63e]/20 scale-0 transition-transform duration-500 ease-[cubic-bezier(.22,1,.36,1)] group-hover:scale-100" />
-                <Truck size={24} className="relative text-[#34883f] dark:text-[#a8d63e]" />
+                <Wrench size={24} className="relative text-[#34883f] dark:text-[#a8d63e]" />
               </span>
               <div>
-                <div className="font-bebas leading-none text-[2rem] sm:text-[2.6rem] text-[#14160f] dark:text-[#f1f3ea]">Free</div>
-                <div className="text-[.78rem] mt-1.5 text-[rgba(20,22,15,.6)] dark:text-[rgba(241,243,234,.6)]">across Cape Town, for orders of at least R1000</div>
+                <div className="font-bebas leading-none text-[2rem] sm:text-[2.6rem] text-[#14160f] dark:text-[#f1f3ea]">Trade accounts</div>
+                <div className="text-[.78rem] mt-1.5 text-[rgba(20,22,15,.6)] dark:text-[rgba(241,243,234,.6)]">Exclusive pricing for the trade</div>
               </div>
             </div>
             </div>
