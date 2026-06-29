@@ -92,13 +92,41 @@ export default function CategorizedProducts() {
   const { categorySlug } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const [sortBy, setSortBy] = useState(searchParams.get('sort') || 'newest');
-  const [minPrice, setMinPrice] = useState(parseFloat(searchParams.get('min_price') || '0'));
-  const [maxPrice, setMaxPrice] = useState(parseFloat(searchParams.get('max_price') || '10000'));
-  const [availability, setAvailability] = useState(searchParams.get('availability') || 'all');
-  const [rating, setRating] = useState(searchParams.get('rating') || 'all');
-  const [currentPage, setCurrentPage] = useState(parseInt(searchParams.get('page') || '1'));
+  // The URL query string is the single source of truth for the filter/page
+  // state. Deriving these values from `searchParams` on every render (rather
+  // than mirroring them into useState) keeps the page in sync when the user
+  // navigates with the browser Back/Forward buttons — which change the URL but
+  // would otherwise leave stale local state behind.
+  const sortBy = searchParams.get('sort') || 'newest';
+  const minPrice = parseFloat(searchParams.get('min_price') || '0');
+  const maxPrice = parseFloat(searchParams.get('max_price') || '10000');
+  const availability = searchParams.get('availability') || 'all';
+  const rating = searchParams.get('rating') || 'all';
+  const currentPage = parseInt(searchParams.get('page') || '1');
   const [showFilters, setShowFilters] = useState(false);
+
+  // Merge a set of changes into the URL query params. Pass null (or '') to drop
+  // a key. Each call pushes a history entry by default so Back/Forward step
+  // through filter/page changes; pass { replace: true } to edit in place.
+  const updateParams = (
+    changes: Record<string, string | number | null>,
+    options?: { replace?: boolean }
+  ) => {
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev);
+        Object.entries(changes).forEach(([key, value]) => {
+          if (value === null || value === '') {
+            next.delete(key);
+          } else {
+            next.set(key, value.toString());
+          }
+        });
+        return next;
+      },
+      options
+    );
+  };
 
   const queryParams = new URLSearchParams();
   queryParams.append('page', currentPage.toString());
@@ -147,58 +175,58 @@ export default function CategorizedProducts() {
   const MIN_PRICE = priceRange.min || 0;
   const MAX_PRICE = priceRange.max || 10000;
 
+  // The price inputs need a local draft so the user can type freely without
+  // rewriting the URL on every keystroke. They are seeded from the URL (or the
+  // category's price range) and committed to the URL on blur.
+  const [minPriceInput, setMinPriceInput] = useState<string>(searchParams.get('min_price') || '');
+  const [maxPriceInput, setMaxPriceInput] = useState<string>(searchParams.get('max_price') || '');
+
+  // Keep the price drafts in sync with the URL (Back/Forward navigation) and
+  // with the category's actual price range once it has loaded.
   useEffect(() => {
-    const params = new URLSearchParams();
-    params.append('page', currentPage.toString());
-    if (sortBy !== 'newest') params.append('sort', sortBy);
-    if (availability !== 'all') params.append('availability', availability);
-    if (rating !== 'all') params.append('rating', rating);
-    if (minPrice > 0) params.append('min_price', minPrice.toString());
-    if (maxPrice < 10000) params.append('max_price', maxPrice.toString());
-    setSearchParams(params);
-  }, [currentPage, sortBy, availability, rating, minPrice, maxPrice, setSearchParams]);
+    const urlMin = searchParams.get('min_price');
+    setMinPriceInput(urlMin ?? (priceRange.min != null ? priceRange.min.toString() : ''));
+  }, [searchParams, priceRange.min]);
 
-  const handleMinPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const inputValue = e.target.value;
-    setMinPrice(inputValue === '' ? 0 : parseFloat(inputValue) || minPrice);
-  };
+  useEffect(() => {
+    const urlMax = searchParams.get('max_price');
+    setMaxPriceInput(urlMax ?? (priceRange.max != null ? priceRange.max.toString() : ''));
+  }, [searchParams, priceRange.max]);
 
-  const handleMaxPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const inputValue = e.target.value;
-    setMaxPrice(inputValue === '' ? 10000 : parseFloat(inputValue) || maxPrice);
-  };
+  // Scroll back to the top when the page number changes. The global
+  // ScrollToTop only reacts to pathname changes, not the ?page= query param.
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [currentPage]);
 
   const handleMinPriceBlur = () => {
-    const constrainedValue = Math.max(MIN_PRICE || 0, Math.min(minPrice, maxPrice));
-    setMinPrice(constrainedValue);
-    setCurrentPage(1);
+    const parsed = parseFloat(minPriceInput);
+    const value = isNaN(parsed) ? (MIN_PRICE || 0) : parsed;
+    const constrained = Math.max(MIN_PRICE || 0, Math.min(value, maxPrice));
+    updateParams({ min_price: constrained > (MIN_PRICE || 0) ? constrained : null, page: 1 });
   };
 
   const handleMaxPriceBlur = () => {
-    const constrainedValue = Math.min(MAX_PRICE || 10000, Math.max(maxPrice, minPrice));
-    setMaxPrice(constrainedValue);
-    setCurrentPage(1);
+    const parsed = parseFloat(maxPriceInput);
+    const value = isNaN(parsed) ? (MAX_PRICE || 10000) : parsed;
+    const constrained = Math.min(MAX_PRICE || 10000, Math.max(value, minPrice));
+    updateParams({ max_price: constrained < (MAX_PRICE || 10000) ? constrained : null, page: 1 });
   };
 
-  useEffect(() => {
-    if (priceRange.min !== null && priceRange.max !== null) {
-      if (minPrice === 0 && !searchParams.get('min_price')) {
-        setMinPrice(priceRange.min);
-      }
-      if (maxPrice === 10000 && !searchParams.get('max_price')) {
-        setMaxPrice(priceRange.max);
-      }
-    }
-  }, [priceRange]);
-
-  const filtersActive = availability !== 'all' || rating !== 'all' || minPrice !== (MIN_PRICE || 0) || maxPrice !== (MAX_PRICE || 10000);
+  const filtersActive =
+    availability !== 'all' ||
+    rating !== 'all' ||
+    searchParams.has('min_price') ||
+    searchParams.has('max_price');
 
   const clearFilters = () => {
-    setMinPrice(MIN_PRICE || 0);
-    setMaxPrice(MAX_PRICE || 10000);
-    setAvailability('all');
-    setRating('all');
-    setCurrentPage(1);
+    updateParams({
+      min_price: null,
+      max_price: null,
+      availability: null,
+      rating: null,
+      page: 1,
+    });
   };
 
   // Shared style fragments — mapped from design tokens (.tile / .field / .btn-soft / eyebrow)
@@ -299,8 +327,8 @@ export default function CategorizedProducts() {
                   type="number"
                   min={MIN_PRICE}
                   max={MAX_PRICE}
-                  value={minPrice}
-                  onChange={handleMinPriceChange}
+                  value={minPriceInput}
+                  onChange={(e) => setMinPriceInput(e.target.value)}
                   onBlur={handleMinPriceBlur}
                   placeholder="Min"
                   className={`${fieldInsetCls} flex-1 min-w-0`}
@@ -309,8 +337,8 @@ export default function CategorizedProducts() {
                   type="number"
                   min={MIN_PRICE}
                   max={MAX_PRICE}
-                  value={maxPrice}
-                  onChange={handleMaxPriceChange}
+                  value={maxPriceInput}
+                  onChange={(e) => setMaxPriceInput(e.target.value)}
                   onBlur={handleMaxPriceBlur}
                   placeholder="Max"
                   className={`${fieldInsetCls} flex-1 min-w-0`}
@@ -333,7 +361,7 @@ export default function CategorizedProducts() {
                       name="availability"
                       value={value}
                       checked={availability === value}
-                      onChange={(e) => { setAvailability(e.target.value); setCurrentPage(1); }}
+                      onChange={(e) => updateParams({ availability: e.target.value === 'all' ? null : e.target.value, page: 1 })}
                       className="peer accent-[#2f8b3d] dark:accent-lime-brand cursor-pointer w-[15px] h-[15px]"
                     />
                     <span className={radioSpanCls}>{label}</span>
@@ -359,7 +387,7 @@ export default function CategorizedProducts() {
                       name="rating"
                       value={value}
                       checked={rating === value}
-                      onChange={(e) => { setRating(e.target.value); setCurrentPage(1); }}
+                      onChange={(e) => updateParams({ rating: e.target.value === 'all' ? null : e.target.value, page: 1 })}
                       className="peer accent-[#2f8b3d] dark:accent-lime-brand cursor-pointer w-[15px] h-[15px]"
                     />
                     <span className={radioSpanCls}>{label}</span>
@@ -391,7 +419,7 @@ export default function CategorizedProducts() {
               <div className="flex items-center gap-4 flex-wrap max-sm:w-full max-sm:gap-3">
                 <select
                   value={sortBy}
-                  onChange={(e) => { setSortBy(e.target.value); setCurrentPage(1); }}
+                  onChange={(e) => updateParams({ sort: e.target.value === 'newest' ? null : e.target.value, page: 1 })}
                   className="min-w-[170px] max-sm:flex-1 max-sm:min-w-0 max-sm:text-[.75rem] px-[.9rem] py-[.7rem] text-[.85rem] bg-white dark:bg-[#141914] border border-[rgba(22,25,26,.1)] dark:border-white/10 rounded-[10px] text-[#16191a] dark:text-[#f1f3ea] cursor-pointer outline-none transition-colors duration-150 focus:border-[rgba(57,151,70,.4)] dark:focus:border-lime-brand/40"
                 >
                   <option className="bg-white dark:bg-dark-elevated-900" value="newest">Newest</option>
@@ -435,8 +463,14 @@ export default function CategorizedProducts() {
                 <button
                   className={clearBtnCls}
                   onClick={() => {
-                    clearFilters();
-                    setSortBy('newest');
+                    updateParams({
+                      min_price: null,
+                      max_price: null,
+                      availability: null,
+                      rating: null,
+                      sort: null,
+                      page: 1,
+                    });
                   }}
                 >
                   Clear All Filters
@@ -449,7 +483,7 @@ export default function CategorizedProducts() {
               <div className="flex items-center justify-center gap-2">
                 <button
                   className="w-9 h-9 grid place-items-center rounded-[10px] border border-[rgba(22,25,26,.1)] dark:border-white/10 text-black/60 dark:text-[rgba(241,243,234,.6)] cursor-pointer transition-all duration-200 hover:enabled:border-[rgba(57,151,70,.4)] hover:enabled:text-[#2f8b3d] dark:hover:enabled:border-lime-brand/40 dark:hover:enabled:text-lime-brand disabled:opacity-40 disabled:cursor-not-allowed"
-                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                  onClick={() => updateParams({ page: Math.max(currentPage - 1, 1) })}
                   disabled={currentPage === 1}
                 >
                   <ChevronLeft size={16} />
@@ -462,12 +496,13 @@ export default function CategorizedProducts() {
                   <button
                     key={page}
                     className={[
-                      "min-w-9 h-9 px-2 rounded-[10px] font-semibold text-[.85rem] cursor-pointer transition-all duration-200",
+                      "min-w-9 h-9 px-2 rounded-[10px] font-semibold text-[.85rem] transition-all duration-200",
                       currentPage === page
-                        ? "bg-gradient-to-br from-green-deep to-green-brand text-white dark:text-dark-surface"
-                        : "border border-[rgba(22,25,26,.1)] dark:border-white/10 text-black/60 dark:text-[rgba(241,243,234,.6)] hover:border-[rgba(57,151,70,.4)] hover:text-[#2f8b3d] dark:hover:border-lime-brand/40 dark:hover:text-lime-brand"
+                        ? "bg-gradient-to-br from-green-deep to-green-brand text-white dark:text-dark-surface cursor-default"
+                        : "border border-[rgba(22,25,26,.1)] dark:border-white/10 text-black/60 dark:text-[rgba(241,243,234,.6)] cursor-pointer hover:border-[rgba(57,151,70,.4)] hover:text-[#2f8b3d] dark:hover:border-lime-brand/40 dark:hover:text-lime-brand"
                     ].join(' ')}
-                    onClick={() => setCurrentPage(page)}
+                    onClick={() => updateParams({ page })}
+                    disabled={currentPage === page}
                   >
                     {page}
                   </button>
@@ -475,7 +510,7 @@ export default function CategorizedProducts() {
 
                 <button
                   className="w-9 h-9 grid place-items-center rounded-[10px] border border-[rgba(22,25,26,.1)] dark:border-white/10 text-black/60 dark:text-[rgba(241,243,234,.6)] cursor-pointer transition-all duration-200 hover:enabled:border-[rgba(57,151,70,.4)] hover:enabled:text-[#2f8b3d] dark:hover:enabled:border-lime-brand/40 dark:hover:enabled:text-lime-brand disabled:opacity-40 disabled:cursor-not-allowed"
-                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                  onClick={() => updateParams({ page: Math.min(currentPage + 1, totalPages) })}
                   disabled={currentPage === totalPages}
                 >
                   <ChevronRight size={16} />
