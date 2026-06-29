@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   User,
   Mail,
@@ -37,6 +37,28 @@ const BUSINESS_TYPES = [
   { value: "reseller", label: "Reseller" },
   { value: "other", label: "Other" },
 ];
+
+// Section tile wrapper (surface-2 header bar + icon + title).
+// Defined at module scope so its identity is stable across renders — declaring
+// it inside Profile would give it a new reference on every keystroke, causing
+// React to remount the whole subtree and drop input focus.
+const SectionTile = ({
+  icon,
+  title,
+  children,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  children: React.ReactNode;
+}) => (
+  <div className="bg-white dark:bg-[#141914] border border-[rgba(22,25,26,.1)] dark:border-white/10 rounded-[24px] overflow-hidden">
+    <div className="px-5 sm:px-6 py-4 flex items-center gap-2.5 border-b border-[rgba(22,25,26,.07)] dark:border-white/[.06] bg-[#f3f1ea] dark:bg-[#10150f]">
+      <span className="text-[#2f8b3d] dark:text-[#a8d63e]">{icon}</span>
+      <h3 className="text-[.98rem] font-semibold text-[#16191a] dark:text-[#f1f3ea]">{title}</h3>
+    </div>
+    <div className="p-5 sm:p-6 grid sm:grid-cols-2 gap-x-6 gap-y-5">{children}</div>
+  </div>
+);
 
 interface CustomerProfile {
   phone: string;
@@ -103,6 +125,8 @@ export default function Profile() {
   const [userEmail, setUserEmail] = useState("");
   const [existingTradeDocsUrl, setExistingTradeDocsUrl] = useState<string | null>(null);
   const [stats, setStats] = useState({ total_orders: 0, wishlist_items: 0, total_spent: 0 });
+  // Snapshot of the last-saved form values, used to revert edits on Cancel.
+  const savedFormData = useRef<FormData | null>(null);
   const [formData, setFormData] = useState<FormData>({
     first_name: "",
     last_name: "",
@@ -153,7 +177,7 @@ export default function Profile() {
         total_spent: profile.total_spent,
       });
 
-      setFormData({
+      const loadedFormData: FormData = {
         first_name: profile.first_name,
         last_name: profile.last_name,
         phone: profile.customer_profile.phone || "",
@@ -173,7 +197,12 @@ export default function Profile() {
         po_number: profile.customer_profile.po_number || "",
         procurement_contact: profile.customer_profile.procurement_contact || "",
         monthly_statement_preference: profile.customer_profile.monthly_statement_preference || false,
-      });
+        trade_docs: null,
+      };
+
+      // Keep a snapshot so a Cancel can restore the last-saved values.
+      savedFormData.current = loadedFormData;
+      setFormData(loadedFormData);
     } catch (err) {
       toast({
         variant: "destructive",
@@ -346,6 +375,14 @@ export default function Profile() {
     }
   };
 
+  const handleCancelEdit = () => {
+    // Discard unsaved edits by restoring the last-saved snapshot.
+    if (savedFormData.current) {
+      setFormData(savedFormData.current);
+    }
+    setIsEditingProfile(false);
+  };
+
   const handleLogout = () => {
     localStorage.removeItem("authToken");
     navigate("/login");
@@ -364,25 +401,6 @@ export default function Profile() {
 
   const initials = `${formData.first_name?.[0] || ""}${formData.last_name?.[0] || ""}`.toUpperCase();
   const isTrade = formData.customer_type === "Trade";
-
-  // Section tile wrapper (surface-2 header bar + icon + title)
-  const SectionTile = ({
-    icon,
-    title,
-    children,
-  }: {
-    icon: React.ReactNode;
-    title: string;
-    children: React.ReactNode;
-  }) => (
-    <div className="bg-white dark:bg-[#141914] border border-[rgba(22,25,26,.1)] dark:border-white/10 rounded-[24px] overflow-hidden">
-      <div className="px-5 sm:px-6 py-4 flex items-center gap-2.5 border-b border-[rgba(22,25,26,.07)] dark:border-white/[.06] bg-[#f3f1ea] dark:bg-[#10150f]">
-        <span className="text-[#2f8b3d] dark:text-[#a8d63e]">{icon}</span>
-        <h3 className="text-[.98rem] font-semibold text-[#16191a] dark:text-[#f1f3ea]">{title}</h3>
-      </div>
-      <div className="p-5 sm:p-6 grid sm:grid-cols-2 gap-x-6 gap-y-5">{children}</div>
-    </div>
-  );
 
   return (
     <div className="font-outfit bg-[#f6f5f0]/[.86] dark:bg-dark-surface min-h-screen flex flex-col">
@@ -884,7 +902,7 @@ export default function Profile() {
                       </button>
                       <button
                         type="button"
-                        onClick={() => setIsEditingProfile(false)}
+                        onClick={handleCancelEdit}
                         className="flex-1 inline-flex items-center justify-center gap-2 py-[.8rem] px-6 rounded-full font-semibold text-[.88rem] border border-[rgba(22,25,26,.1)] dark:border-white/10 text-[#16191a] dark:text-[#f1f3ea] transition-colors hover:border-[#2f8b3d] hover:text-[#2f8b3d] dark:hover:border-[#a8d63e] dark:hover:text-[#a8d63e]"
                       >
                         Cancel
