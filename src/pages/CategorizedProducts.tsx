@@ -177,20 +177,27 @@ export default function CategorizedProducts() {
 
   // The price inputs need a local draft so the user can type freely without
   // rewriting the URL on every keystroke. They are seeded from the URL (or the
-  // category's price range) and committed to the URL on blur.
+  // category's price range) and committed to the URL (debounced) as the user
+  // types — so the filter applies on value change rather than requiring a blur.
   const [minPriceInput, setMinPriceInput] = useState<string>(searchParams.get('min_price') || '');
   const [maxPriceInput, setMaxPriceInput] = useState<string>(searchParams.get('max_price') || '');
+  // Tracks whether the user is actively editing the price inputs, so the
+  // debounced commit below doesn't fire for programmatic syncs (URL/range).
+  const [priceDirty, setPriceDirty] = useState(false);
 
   // Keep the price drafts in sync with the URL (Back/Forward navigation) and
-  // with the category's actual price range once it has loaded.
+  // with the category's actual price range once it has loaded. These are
+  // programmatic syncs, so clear the dirty flag to avoid re-committing them.
   useEffect(() => {
     const urlMin = searchParams.get('min_price');
     setMinPriceInput(urlMin ?? (priceRange.min != null ? priceRange.min.toString() : ''));
+    setPriceDirty(false);
   }, [searchParams, priceRange.min]);
 
   useEffect(() => {
     const urlMax = searchParams.get('max_price');
     setMaxPriceInput(urlMax ?? (priceRange.max != null ? priceRange.max.toString() : ''));
+    setPriceDirty(false);
   }, [searchParams, priceRange.max]);
 
   // Scroll back to the top when the page number changes. The global
@@ -199,19 +206,53 @@ export default function CategorizedProducts() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [currentPage]);
 
-  const handleMinPriceBlur = () => {
-    const parsed = parseFloat(minPriceInput);
-    const value = isNaN(parsed) ? (MIN_PRICE || 0) : parsed;
-    const constrained = Math.max(MIN_PRICE || 0, Math.min(value, maxPrice));
-    updateParams({ min_price: constrained > (MIN_PRICE || 0) ? constrained : null, page: 1 });
-  };
+  // Apply the price filter shortly after the user stops typing (debounced) so
+  // it takes effect on value change without rewriting the URL on every
+  // keystroke and without requiring the input to lose focus.
+  useEffect(() => {
+    if (!priceDirty) return;
 
-  const handleMaxPriceBlur = () => {
-    const parsed = parseFloat(maxPriceInput);
-    const value = isNaN(parsed) ? (MAX_PRICE || 10000) : parsed;
-    const constrained = Math.min(MAX_PRICE || 10000, Math.max(value, minPrice));
-    updateParams({ max_price: constrained < (MAX_PRICE || 10000) ? constrained : null, page: 1 });
-  };
+    const timer = setTimeout(() => {
+      const floor = MIN_PRICE || 0;
+      const ceil = MAX_PRICE || 10000;
+
+      // Min: empty/invalid -> drop the filter; otherwise clamp to [floor, ceil].
+      const minTrimmed = minPriceInput.trim();
+      const parsedMin = parseFloat(minTrimmed);
+      const nextMin =
+        minTrimmed === '' || isNaN(parsedMin)
+          ? null
+          : (() => {
+              const c = Math.max(floor, Math.min(parsedMin, ceil));
+              return c > floor ? c : null;
+            })();
+
+      // Max: empty/invalid -> drop the filter; otherwise clamp to [floor, ceil].
+      const maxTrimmed = maxPriceInput.trim();
+      const parsedMax = parseFloat(maxTrimmed);
+      const nextMax =
+        maxTrimmed === '' || isNaN(parsedMax)
+          ? null
+          : (() => {
+              const c = Math.min(ceil, Math.max(parsedMax, floor));
+              return c < ceil ? c : null;
+            })();
+
+      const currentMin = searchParams.get('min_price');
+      const currentMax = searchParams.get('max_price');
+      const nextMinStr = nextMin != null ? nextMin.toString() : null;
+      const nextMaxStr = nextMax != null ? nextMax.toString() : null;
+
+      // Skip the URL write (and the resulting refetch/history entry) when
+      // nothing actually changed.
+      if (nextMinStr === currentMin && nextMaxStr === currentMax) return;
+
+      updateParams({ min_price: nextMinStr, max_price: nextMaxStr, page: 1 });
+    }, 500);
+
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [minPriceInput, maxPriceInput, priceDirty, MIN_PRICE, MAX_PRICE]);
 
   const filtersActive =
     availability !== 'all' ||
@@ -328,8 +369,7 @@ export default function CategorizedProducts() {
                   min={MIN_PRICE}
                   max={MAX_PRICE}
                   value={minPriceInput}
-                  onChange={(e) => setMinPriceInput(e.target.value)}
-                  onBlur={handleMinPriceBlur}
+                  onChange={(e) => { setMinPriceInput(e.target.value); setPriceDirty(true); }}
                   placeholder="Min"
                   className={`${fieldInsetCls} flex-1 min-w-0`}
                 />
@@ -338,8 +378,7 @@ export default function CategorizedProducts() {
                   min={MIN_PRICE}
                   max={MAX_PRICE}
                   value={maxPriceInput}
-                  onChange={(e) => setMaxPriceInput(e.target.value)}
-                  onBlur={handleMaxPriceBlur}
+                  onChange={(e) => { setMaxPriceInput(e.target.value); setPriceDirty(true); }}
                   placeholder="Max"
                   className={`${fieldInsetCls} flex-1 min-w-0`}
                 />
