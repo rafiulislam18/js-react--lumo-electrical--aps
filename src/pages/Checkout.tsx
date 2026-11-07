@@ -15,6 +15,29 @@ const SOUTH_AFRICAN_PROVINCES = [
   "Western Cape",
 ];
 
+// Free delivery applies to Cape Town (Western Cape) orders with a subtotal of
+// at least R1000. Otherwise a flat R50 shipping fee is charged. This must mirror
+// the backend `calculate_shipping` logic in apps/orders/views.py.
+const FREE_DELIVERY_THRESHOLD = 1000;
+const SHIPPING_FEE = 50;
+
+const calculateShipping = (
+  subtotal: number,
+  city: string,
+  province: string
+): number => {
+  const normalisedCity = (city || "").trim().toLowerCase().replace(/\s+/g, "");
+  const normalisedProvince = (province || "").trim().toLowerCase().replace(/\s+/g, "");
+
+  const isCapeTown = normalisedCity === "capetown";
+  const isWesternCape = normalisedProvince === "westerncape";
+
+  if (isCapeTown && isWesternCape && subtotal >= FREE_DELIVERY_THRESHOLD) {
+    return 0;
+  }
+  return SHIPPING_FEE;
+};
+
 interface CartItem {
   id: string;
   product_name: string;
@@ -155,6 +178,19 @@ export default function Checkout() {
 
     fetchCheckoutData();
   }, [navigate, toast]);
+
+  // Recompute shipping (and total) whenever the delivery city/province or
+  // subtotal change, so the summary reflects what the user actually entered.
+  useEffect(() => {
+    setPricing((prev) => {
+      const shipping = calculateShipping(prev.subtotal, formData.city, formData.state);
+      return {
+        ...prev,
+        shipping,
+        total: prev.subtotal + prev.tax + shipping,
+      };
+    });
+  }, [formData.city, formData.state]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
